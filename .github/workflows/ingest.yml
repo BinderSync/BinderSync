@@ -1,0 +1,40 @@
+name: Nightly card ingest
+
+on:
+  schedule:
+    # 09:00 UTC daily — after TCGplayer/cardmarket price updates settle
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      series:
+        description: "Comma-separated series ids (empty = all)"
+        required: false
+        default: ""
+      details:
+        description: "Fetch per-card detail (rarity/reverse/pricing)"
+        type: boolean
+        default: true
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Ingest
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POKEMONTCG_API_KEY: ${{ secrets.POKEMONTCG_API_KEY }}
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.series }}" ]; then ARGS="$ARGS --series=${{ github.event.inputs.series }}"; fi
+          if [ "${{ github.event.inputs.details || 'true' }}" = "true" ]; then ARGS="$ARGS --details"; fi
+          npm run ingest -- $ARGS

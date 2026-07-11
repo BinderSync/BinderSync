@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    @keyframes bdxsh { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  </style>
+</helmet>
+<div style="min-height:100vh;background:#f7f6f4;color:#17181a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;{{ rootOv }}">
+
+  <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);{{ headerOv }};border-bottom:1px solid color-mix(in srgb, currentColor 9%, transparent);">
+    <div style="max-width:1280px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+      <div onClick="{{ backHome }}" style="font-size:17px;font-weight:800;letter-spacing:-0.02em;cursor:pointer;white-space:nowrap;">Binder Sync</div>
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.18em;opacity:0.45;white-space:nowrap;">POKÉMON TCG · MASTER-SET BINDERS</div>
+        <div style="flex:1;"></div>
+        <div style="position:relative;display:flex;align-items:center;">
+          <input value="{{ homeQuery }}" onInput="{{ setQuery }}" placeholder="Search sets or Pokémon…" style="font-family:inherit;font-size:13px;padding:8px 32px 8px 14px;border-radius:9px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);background:transparent;color:inherit;outline:none;width:230px;box-sizing:border-box;" />
+          <sc-if value="{{ homeClearOn }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ clearHomeQuery }}" title="Clear search" style="position:absolute;right:6px;appearance:none;border:0;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;opacity:0.45;padding:5px;border-radius:6px;" style-hover="opacity:1;background:color-mix(in srgb, currentColor 8%, transparent);">✕</button>
+          </sc-if>
+        </div>
+        <div onClick="{{ openPlans }}" style="display:flex;align-items:center;font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;padding:6px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;box-sizing:border-box;{{ planChipOv }}">{{ planChipLabel }}</div>
+        <button onClick="{{ goDash }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 15%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;">My collection</button>
+      </sc-if>
+      <sc-if value="{{ isDash }}">
+        <div style="width:1px;height:22px;background:color-mix(in srgb, currentColor 15%, transparent);"></div>
+        <div style="font-size:14px;font-weight:700;">My collection</div>
+        <div style="flex:1;"></div>
+        <div onClick="{{ openPlans }}" style="display:flex;align-items:center;font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;padding:6px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;box-sizing:border-box;{{ planChipOv }}">{{ planChipLabel }}</div>
+      </sc-if>
+      <sc-if value="{{ isSet }}">
+        <div style="width:1px;height:22px;background:color-mix(in srgb, currentColor 15%, transparent);"></div>
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <sc-if value="{{ hasSetSymbol }}" hint-placeholder-val="{{ false }}"><div style="width:18px;height:18px;background-image:url('{{ setSymbolUrl }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div></sc-if>
+          <div style="min-width:0;">
+            <div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ setName }}</div>
+            <div style="font-size:10.5px;opacity:0.5;white-space:nowrap;">{{ setSerie }}</div>
+          </div>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:110px;height:4px;border-radius:2px;background:color-mix(in srgb, currentColor 12%, transparent);overflow:hidden;">
+            <div style="height:100%;border-radius:2px;width:{{ progressPct }};{{ accentBg }};"></div>
+          </div>
+          <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;opacity:0.6;white-space:nowrap;">{{ progressLabel }}</div>
+        </div>
+        <button onClick="{{ goDash }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 15%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;">My collection</button>
+        <div style="width:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:-8px;">
+        <div style="position:relative;display:flex;align-items:center;">
+          <input value="{{ cardQuery }}" onInput="{{ setCardQuery }}" placeholder="Find a card…" style="font-family:inherit;font-size:12px;padding:7px 28px 7px 12px;border-radius:9px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);background:transparent;color:inherit;outline:none;width:138px;box-sizing:border-box;" />
+          <sc-if value="{{ cardClearOn }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ clearCardQuery }}" title="Clear search" style="position:absolute;right:5px;appearance:none;border:0;background:transparent;color:inherit;font-size:12px;line-height:1;cursor:pointer;opacity:0.45;padding:4px;border-radius:6px;" style-hover="opacity:1;background:color-mix(in srgb, currentColor 8%, transparent);">✕</button>
+          </sc-if>
+          <sc-if value="{{ cardDropOn }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 8px);left:0;width:300px;max-height:330px;overflow:auto;border-radius:12px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);box-shadow:0 24px 60px -20px rgba(0,0,0,0.4);z-index:50;padding:5px;box-sizing:border-box;{{ surfOv }};">
+              <sc-if value="{{ cardDropEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:12px;font-size:12px;opacity:0.55;">No cards match “{{ cardQuery }}” in this binder.</div></sc-if>
+              <sc-for list="{{ cardDropRows }}" as="h" hint-placeholder-count="3">
+                <div onClick="{{ h.jump }}" style="display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;cursor:pointer;" style-hover="background:color-mix(in srgb, currentColor 7%, transparent);">
+                  <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.5;width:36px;flex:none;">{{ h.num }}</div>
+                  <div style="flex:1;min-width:0;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ h.name }}</div>
+                  <sc-if value="{{ h.rev }}"><div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:8.5px;font-weight:600;letter-spacing:0.06em;background:color-mix(in srgb, currentColor 12%, transparent);padding:2px 5px;border-radius:4px;flex:none;">REV</div></sc-if>
+                  <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.55;white-space:nowrap;flex:none;">{{ h.loc }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display:flex;gap:2px;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+          <sc-for list="{{ sizeOpts }}" as="o" hint-placeholder-count="3">
+            <button onClick="{{ o.pick }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;{{ o.ov }}">{{ o.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:2px;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+          <sc-for list="{{ modeOpts }}" as="o" hint-placeholder-count="2">
+            <button onClick="{{ o.pick }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;{{ o.ov }}">{{ o.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:2px;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+          <sc-for list="{{ viewOpts }}" as="o" hint-placeholder-count="2">
+            <button onClick="{{ o.pick }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;{{ o.ov }}">{{ o.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+          <button onClick="{{ priceToggle }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;display:flex;align-items:center;gap:6px;{{ priceOv }}">$ Prices<sc-if value="{{ priceLockOn }}"><span style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:8px;font-weight:600;letter-spacing:0.1em;padding:2px 5px;border-radius:4px;color:#ffffff;{{ accentBg }};">MASTER</span></sc-if></button>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+          <button onClick="{{ needToggle }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;{{ needOv }}">Need list · {{ needCount }}</button>
+        </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isSell }}">
+        <div style="width:1px;height:22px;background:color-mix(in srgb, currentColor 15%, transparent);"></div>
+        <div style="font-size:14px;font-weight:700;">Sell Binder</div>
+        <div style="flex:1;"></div>
+        <div onClick="{{ openPlans }}" style="display:flex;align-items:center;font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;padding:6px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;box-sizing:border-box;{{ planChipOv }}">{{ planChipLabel }}</div>
+        <button onClick="{{ goDash }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 15%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;">My collection</button>
+      </sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Home — set browser">
+      <div style="max-width:1280px;margin:0 auto;padding:64px 28px 20px;">
+        <h1 style="margin:0;font-size:42px;font-weight:800;letter-spacing:-0.03em;line-height:1.05;text-wrap:pretty;">Every set. In your binder.</h1>
+        <p style="margin:14px 0 0;font-size:15px;opacity:0.55;max-width:560px;line-height:1.5;text-wrap:pretty;">Pick a set, choose a binder size, and flip through the whole thing page by page — including the full master set with reverse holos. Click cards to track what you own.</p>
+      </div>
+
+      <sc-if value="{{ cardResultsOn }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:1280px;margin:0 auto;padding:24px 28px 8px;">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:12px;">
+            <h2 style="margin:0;font-size:19px;font-weight:700;letter-spacing:-0.01em;">Cards matching “{{ homeQuery }}”</h2>
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.45;">{{ cardResultsLabel }}</div>
+          </div>
+          <sc-if value="{{ cardSearching }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+              <sc-for list="{{ shimmers }}" as="x" hint-placeholder-count="6">
+                <div style="aspect-ratio:63/88;border-radius:10px;background:linear-gradient(90deg, color-mix(in srgb, currentColor 6%, transparent) 25%, color-mix(in srgb, currentColor 12%, transparent) 50%, color-mix(in srgb, currentColor 6%, transparent) 75%);background-size:200% 100%;animation:bdxsh 1.3s linear infinite;"></div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ cardNoResults }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;opacity:0.55;">No cards found — try more of the name, e.g. “Charizard”.</div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+            <sc-for list="{{ cardResults }}" as="c" hint-placeholder-count="3">
+              <div onClick="{{ c.open }}" style="border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;cursor:pointer;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};transition:transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px -14px rgba(0,0,0,0.3);">
+                <div style="aspect-ratio:63/88;border-radius:7px;background-image:url('{{ c.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div>
+                <div style="min-width:0;">
+                  <div style="font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.name }}</div>
+                  <div style="font-size:10.5px;opacity:0.5;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ cardMoreNote }}"><div style="margin-top:10px;font-size:11px;opacity:0.45;">{{ cardMoreNote }}</div></sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ chipsOn }}">
+        <div style="max-width:1280px;margin:0 auto;padding:20px 28px 0;display:flex;flex-wrap:wrap;gap:6px;">
+          <sc-for list="{{ eraNav }}" as="e" hint-placeholder-count="6">
+            <button onClick="{{ e.pick }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 14%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:11.5px;font-weight:600;opacity:0.7;padding:6px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;" style-hover="opacity:1;background:color-mix(in srgb, currentColor 7%, transparent);">{{ e.name }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="max-width:1280px;margin:0 auto;display:flex;align-items:flex-start;">
+        <sc-if value="{{ railOn }}">
+          <div style="position:sticky;top:72px;width:180px;flex:none;padding:32px 0 28px 28px;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 90px);overflow:auto;">
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:9.5px;letter-spacing:0.16em;opacity:0.45;margin-bottom:8px;">ERAS</div>
+            <sc-for list="{{ eraNav }}" as="e" hint-placeholder-count="6">
+              <button onClick="{{ e.pick }}" style="appearance:none;border:0;background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;opacity:0.6;text-align:left;padding:6px 9px;border-radius:7px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" style-hover="opacity:1;background:color-mix(in srgb, currentColor 7%, transparent);">{{ e.name }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="flex:1;min-width:0;">
+
+      <sc-if value="{{ homeLoading }}">
+        <div style="max-width:1280px;margin:0 auto;padding:28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
+          <sc-for list="{{ shimmers }}" as="x" hint-placeholder-count="8">
+            <div style="height:112px;border-radius:12px;background:linear-gradient(90deg, color-mix(in srgb, currentColor 6%, transparent) 25%, color-mix(in srgb, currentColor 12%, transparent) 50%, color-mix(in srgb, currentColor 6%, transparent) 75%);background-size:200% 100%;animation:bdxsh 1.3s linear infinite;"></div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ homeNoMatch }}">
+        <div style="max-width:1280px;margin:0 auto;padding:40px 28px;font-size:14px;opacity:0.55;">No sets match “{{ homeQuery }}”.</div>
+      </sc-if>
+
+      <sc-if value="{{ homeError }}">
+        <div style="max-width:1280px;margin:0 auto;padding:48px 28px;display:flex;flex-direction:column;align-items:flex-start;gap:14px;">
+          <div style="font-size:14px;opacity:0.6;">Couldn't reach the card database ({{ homeError }}).</div>
+          <button onClick="{{ retryHome }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 20%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:9px;cursor:pointer;">Try again</button>
+        </div>
+      </sc-if>
+
+      <sc-for list="{{ seriesList }}" as="serie" hint-placeholder-count="2">
+        <div id="era-{{ serie.eid }}" style="max-width:1280px;margin:0 auto;padding:10px 28px 38px;">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px;">
+            <h2 style="margin:0;font-size:19px;font-weight:700;letter-spacing:-0.01em;">{{ serie.name }}</h2>
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.45;">{{ serie.countLabel }}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
+            <sc-for list="{{ serie.sets }}" as="st" hint-placeholder-count="4">
+              <div onClick="{{ st.open }}" style="border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};transition:transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform:translateY(-2px);box-shadow:0 12px 26px -14px rgba(0,0,0,0.3);">
+                <div style="height:54px;display:flex;align-items:center;justify-content:center;">
+                  <sc-if value="{{ st.logoUrl }}"><img src="{{ st.logoUrl }}" loading="lazy" style="max-width:86%;max-height:54px;object-fit:contain;" /></sc-if>
+                  <sc-if value="{{ st.noLogo }}"><div style="font-size:15px;font-weight:700;opacity:0.4;text-align:center;">{{ st.name }}</div></sc-if>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <sc-if value="{{ st.symbolUrl }}"><img src="{{ st.symbolUrl }}" loading="lazy" style="width:15px;height:15px;object-fit:contain;flex:none;" /></sc-if>
+                  <div style="font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ st.name }}</div>
+                  <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.5;white-space:nowrap;">{{ st.countLabel }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="max-width:1280px;margin:0 auto;padding:24px 28px 48px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;opacity:0.4;line-height:1.7;">Card data &amp; images via TCGdex · market prices via the Pokémon TCG API (TCGplayer / Cardmarket). Fan-made viewer — not affiliated with or endorsed by Nintendo, Creatures, GAME FREAK, or The Pokémon Company.</div>
+
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDash }}">
+    <div data-screen-label="Collection dashboard">
+      <div style="max-width:920px;margin:0 auto;padding:52px 28px 64px;">
+        <h1 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-0.03em;">My collection</h1>
+
+        <div style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap;">
+          <sc-for list="{{ dashStats }}" as="d" hint-placeholder-count="3">
+            <div style="flex:1;min-width:150px;border-radius:12px;padding:16px 18px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};">
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:24px;font-weight:700;">{{ d.v }}</div>
+              <div style="font-size:11.5px;opacity:0.55;margin-top:4px;">{{ d.k }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:14px;border-radius:12px;padding:18px 20px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="font-size:15px;font-weight:800;letter-spacing:-0.01em;">{{ planTitle }}</div>
+              <sc-if value="{{ isProPlan }}" hint-placeholder-val="{{ false }}"><div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;padding:3px 7px;border-radius:5px;color:#ffffff;{{ accentBg }};">{{ planBadge }}</div></sc-if>
+            </div>
+            <div style="font-size:12.5px;opacity:0.55;line-height:1.5;text-wrap:pretty;max-width:420px;">{{ planDesc }}</div>
+            <sc-if value="{{ meterOn }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:180px;height:5px;border-radius:3px;background:color-mix(in srgb, currentColor 10%, transparent);overflow:hidden;">
+                  <div style="height:100%;border-radius:3px;width:{{ binderUsePct }};{{ accentBg }};"></div>
+                </div>
+                <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.6;">{{ binderUseLabel }}</div>
+              </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ isFreePlan }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ openPlans }}" style="appearance:none;border:0;border-radius:10px;padding:11px 18px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">Upgrade to Pro — $3/mo</button>
+          </sc-if>
+          <sc-if value="{{ isProPlan }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ cancelPro }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;opacity:0.75;">Cancel subscription</button>
+          </sc-if>
+        </div>
+
+        <div style="margin-top:14px;border-radius:12px;padding:18px 20px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};">
+          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;gap:9px;">
+                <div style="font-size:15px;font-weight:800;letter-spacing:-0.01em;">Sell Binders</div>
+                <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;padding:3px 7px;border-radius:5px;color:#ffffff;{{ accentBg }};">MASTER</div>
+              </div>
+              <div style="font-size:12.5px;opacity:0.55;line-height:1.5;text-wrap:pretty;max-width:420px;">Pick any cards from any set, place them where you want, set asking prices, and share each binder with its own QR code.</div>
+            </div>
+            <sc-if value="{{ sellLocked }}" hint-placeholder-val="{{ false }}"><button onClick="{{ unlockSell }}" style="appearance:none;border:0;border-radius:10px;padding:11px 18px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">Unlock with Master</button></sc-if>
+            <sc-if value="{{ sellListOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ newSellDash }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer;white-space:nowrap;">＋ New sell binder</button></sc-if>
+          </div>
+          <sc-if value="{{ sellListOn }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ sellBinderRows }}" as="sb" hint-placeholder-count="1">
+                <div onClick="{{ sb.open }}" style="display:flex;align-items:center;gap:14px;padding:11px 14px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);cursor:pointer;" style-hover="background:color-mix(in srgb, currentColor 5%, transparent);">
+                  <div style="flex:1;min-width:0;">
+                    <sc-if value="{{ sb.notRenaming }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ sb.title }}</div></sc-if>
+                    <sc-if value="{{ sb.renaming }}" hint-placeholder-val="{{ false }}"><input value="{{ sb.renameVal }}" onInput="{{ sb.renameInput }}" onBlur="{{ sb.renameDone }}" onKeyDown="{{ sb.renameKey }}" onClick="{{ sb.eatRow }}" autoFocus="{{ true }}" style="font-family:inherit;font-size:13px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid color-mix(in srgb, currentColor 25%, transparent);background:transparent;color:inherit;outline:none;width:100%;max-width:280px;box-sizing:border-box;" /></sc-if>
+                    <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.55;margin-top:2px;">{{ sb.meta }}</div>
+                  </div>
+                  <button onClick="{{ sb.startRename }}" title="Rename binder" style="appearance:none;border:0;background:transparent;color:inherit;cursor:pointer;opacity:0.45;padding:6px;line-height:1;display:flex;" style-hover="opacity:0.9"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M9.7 1.7l2.6 2.6L4.6 12 1.5 12.5 2 9.4z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path></svg></button>
+                  <div style="font-size:12px;font-weight:600;opacity:0.55;white-space:nowrap;">Open →</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;opacity:0.5;">Prices in</div>
+            <div style="display:flex;gap:2px;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+              <sc-for list="{{ curOpts }}" as="o" hint-placeholder-count="2">
+                <button onClick="{{ o.pick }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;{{ o.ov }}">{{ o.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <button onClick="{{ exportColl }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;">Export collection (.json)</button>
+          <button onClick="{{ exportExcel }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;">Export for Excel (.csv)</button>
+          <label style="border:1px solid color-mix(in srgb, currentColor 18%, transparent);font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;">
+            Import collection
+            <input type="file" accept=".json,application/json" onChange="{{ importColl }}" style="display:none;" />
+          </label>
+          <sc-if value="{{ dashHasBinders }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ openClearConfirm }}" style="appearance:none;border:1px solid color-mix(in srgb, #c0392b 45%, transparent);background:transparent;color:#c0392b;font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;" style-hover="background:color-mix(in srgb, #c0392b 8%, transparent);">Clear all binders</button>
+          </sc-if>
+          <sc-if value="{{ dashMsg }}"><div style="font-size:12px;opacity:0.6;">{{ dashMsg }}</div></sc-if>
+        </div>
+
+        <sc-if value="{{ dashEmpty }}">
+          <div style="margin-top:40px;font-size:14px;opacity:0.55;line-height:1.6;text-wrap:pretty;">No cards marked yet. Open a set and click cards (or their ✓) to start tracking — your progress will show up here.</div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:30px;">
+          <sc-for list="{{ dashRows }}" as="r" hint-placeholder-count="3">
+            <div onClick="{{ r.open }}" style="display:flex;align-items:center;gap:14px;border-radius:12px;padding:14px 18px;cursor:pointer;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};transition:transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform:translateY(-1px);box-shadow:0 10px 22px -14px rgba(0,0,0,0.3);">
+              <sc-if value="{{ r.symbolUrl }}"><img src="{{ r.symbolUrl }}" loading="lazy" style="width:20px;height:20px;object-fit:contain;flex:none;" /></sc-if>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.name }}</div>
+                <div style="font-size:11px;opacity:0.5;margin-top:2px;">{{ r.serie }}</div>
+              </div>
+              <div style="width:200px;flex:none;display:flex;flex-direction:column;gap:5px;">
+                <div style="height:5px;border-radius:3px;background:color-mix(in srgb, currentColor 10%, transparent);overflow:hidden;">
+                  <div style="height:100%;border-radius:3px;width:{{ r.pct }};{{ accentBg }};"></div>
+                </div>
+                <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.55;">{{ r.label }}</div>
+              </div>
+              <button onClick="{{ r.clear }}" title="Clear this binder" style="appearance:none;border:0;background:transparent;color:#c0392b;font-size:14px;line-height:1;cursor:pointer;padding:8px;border-radius:8px;opacity:0.45;flex:none;" style-hover="opacity:1;background:color-mix(in srgb, #c0392b 10%, transparent);">✕</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSell }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Sell binder">
+      <div style="max-width:1100px;margin:0 auto;padding:44px 28px 80px;">
+
+        <sc-if value="{{ sellEditOn }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.18em;opacity:0.45;">SELL BINDER · MASTER</div>
+                <select value="{{ sellSwitchVal }}" onChange="{{ sellSwitchChange }}" style="appearance:none;font-family:inherit;font-size:11px;font-weight:600;padding:5px 24px 5px 10px;border-radius:7px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);color:inherit;cursor:pointer;{{ surfOv }};background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%226%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%23888%22 stroke-width=%221.5%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 8px center;">
+                  <sc-for list="{{ sellSwitchOpts }}" as="sb" hint-placeholder-count="1"><option value="{{ sb.v }}">{{ sb.label }}</option></sc-for>
+                </select>
+                <button onClick="{{ newSell }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;white-space:nowrap;">＋ New binder</button>
+                <sc-if value="{{ sellCanDelete }}"><button onClick="{{ deleteSellBinder }}" style="appearance:none;border:0;background:transparent;color:#c0392b;font-family:inherit;font-size:11px;font-weight:600;padding:5px 4px;cursor:pointer;opacity:0.8;">Delete</button></sc-if>
+              </div>
+              <input value="{{ sellTitle }}" onInput="{{ setSellTitle }}" style="font-family:inherit;font-size:30px;font-weight:800;letter-spacing:-0.02em;border:0;background:transparent;color:inherit;outline:none;padding:0;width:100%;box-sizing:border-box;" />
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;opacity:0.55;">{{ sellTotalLabel }}</div>
+              <textarea value="{{ sellNote }}" onInput="{{ setSellNote }}" rows="2" placeholder="Note for buyers — payment, shipping, where to find you…" style="font-family:inherit;font-size:12.5px;line-height:1.5;padding:9px 12px;border-radius:9px;border:1px solid color-mix(in srgb, currentColor 13%, transparent);background:transparent;color:inherit;outline:none;resize:vertical;max-width:520px;box-sizing:border-box;"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button onClick="{{ openSellPicker }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer;white-space:nowrap;">+ Add cards</button>
+              <button onClick="{{ togglePreview }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer;white-space:nowrap;">{{ previewLabel }}</button>
+              <button onClick="{{ openShare }}" style="appearance:none;border:0;border-radius:9px;padding:10px 16px;font-family:inherit;font-size:12.5px;font-weight:700;color:#ffffff;cursor:pointer;white-space:nowrap;{{ accentBg }};">Share · QR</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ sellRowsOn }}" hint-placeholder-val="{{ false }}">
+          <div style="height:{{ bStageH }}px;overflow:visible;margin-top:28px;">
+            <div style="transform:scale({{ bStageScale }});transform-origin:top center;width:{{ bCoverW }}px;position:relative;left:50%;margin-left:-{{ bCoverHalf }}px;">
+              <div style="position:relative;width:{{ bCoverW }}px;height:{{ bCoverH }}px;border-radius:18px;{{ bLeatherBg }};box-shadow:0 30px 70px -24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);">
+                <div style="position:absolute;inset:7px;border:1.5px dashed {{ bStitchCol }};border-radius:12px;pointer-events:none;"></div>
+                <div style="position:absolute;inset:16px;display:flex;">
+                  <sc-if value="{{ bLeftIsCover }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;display:flex;align-items:center;justify-content:center;">
+                      <div style="width:76%;border-radius:12px;padding:28px 26px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.32);display:flex;flex-direction:column;gap:15px;align-items:center;text-align:center;box-sizing:border-box;">
+                        <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.18em;opacity:0.45;">FOR SALE</div>
+                        <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;">{{ sellTitle }}</div>
+                        <div style="width:100%;height:1px;background:color-mix(in srgb, currentColor 12%, transparent);"></div>
+                        <div style="width:100%;display:flex;flex-direction:column;gap:7px;">
+                          <sc-for list="{{ bCoverStats }}" as="row" hint-placeholder-count="3">
+                            <div style="display:flex;justify-content:space-between;gap:12px;font-size:12px;">
+                              <span style="opacity:0.55;white-space:nowrap;">{{ row.k }}</span>
+                              <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-weight:600;white-space:nowrap;">{{ row.v }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <div style="font-size:11px;opacity:0.5;text-wrap:pretty;">Tap a price tag to edit · use + on an empty pocket to add a card</div>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bLeftOn }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;position:relative;border-radius:8px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ bCols }},minmax(0,1fr));grid-template-rows:repeat({{ bRows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ bLeftSlots }}" as="s" hint-placeholder-count="9">
+                          <div draggable="{{ s.has }}" onDragStart="{{ s.dragStart }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" style="position:relative;border-radius:7px;overflow:hidden;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), inset 0 -12px 16px -14px rgba(0,0,0,0.4);{{ s.dragOv }}">
+                            <sc-if value="{{ s.img }}"><div onClick="{{ s.zoomClick }}" style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;cursor:grab;"></div></sc-if>
+                            <sc-if value="{{ s.noImg }}"><div style="position:absolute;inset:8%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:600;opacity:0.5;">{{ s.name }}</div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;top:6%;left:50%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;background:rgba(20,20,24,0.75);color:#ffffff;padding:3px 5px;border-radius:4px;pointer-events:none;">REV</div></sc-if>
+                            <sc-if value="{{ s.has }}">
+                              <div onClick="{{ s.remove }}" title="Remove from sell binder" style="position:absolute;top:4%;left:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;background:rgba(20,20,24,0.68);color:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,0.35);">✕</div>
+                              <div onClick="{{ s.change }}" title="Change which card goes here" style="position:absolute;top:4%;right:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;background:rgba(20,20,24,0.68);color:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,0.35);">⇄</div>
+                              <div onClick="{{ s.editListing }}" title="Edit price &amp; condition" style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:700;background:rgba(20,20,24,0.78);color:#ffffff;padding:3px 8px;border-radius:5px;white-space:nowrap;cursor:pointer;">{{ s.priceTag }}</div>
+                            </sc-if>
+                            <sc-if value="{{ s.plusOn }}">
+                              <div onClick="{{ s.plus }}" title="Add a card here" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:color-mix(in srgb, currentColor 6%, transparent);">
+                                <div style="width:36px;height:36px;border-radius:50%;border:1.5px dashed color-mix(in srgb, currentColor 30%, transparent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;opacity:0.5;">+</div>
+                              </div>
+                            </sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <div style="width:44px;flex:none;background:linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38));"></div>
+                  <sc-if value="{{ bRightOn }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;position:relative;border-radius:8px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ bCols }},minmax(0,1fr));grid-template-rows:repeat({{ bRows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ bRightSlots }}" as="s" hint-placeholder-count="9">
+                          <div draggable="{{ s.has }}" onDragStart="{{ s.dragStart }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" style="position:relative;border-radius:7px;overflow:hidden;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), inset 0 -12px 16px -14px rgba(0,0,0,0.4);{{ s.dragOv }}">
+                            <sc-if value="{{ s.img }}"><div onClick="{{ s.zoomClick }}" style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;cursor:grab;"></div></sc-if>
+                            <sc-if value="{{ s.noImg }}"><div style="position:absolute;inset:8%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:600;opacity:0.5;">{{ s.name }}</div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;top:6%;left:50%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;background:rgba(20,20,24,0.75);color:#ffffff;padding:3px 5px;border-radius:4px;pointer-events:none;">REV</div></sc-if>
+                            <sc-if value="{{ s.has }}">
+                              <div onClick="{{ s.remove }}" title="Remove from sell binder" style="position:absolute;top:4%;left:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;background:rgba(20,20,24,0.68);color:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,0.35);">✕</div>
+                              <div onClick="{{ s.change }}" title="Change which card goes here" style="position:absolute;top:4%;right:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;background:rgba(20,20,24,0.68);color:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,0.35);">⇄</div>
+                              <div onClick="{{ s.editListing }}" title="Edit price &amp; condition" style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:700;background:rgba(20,20,24,0.78);color:#ffffff;padding:3px 8px;border-radius:5px;white-space:nowrap;cursor:pointer;">{{ s.priceTag }}</div>
+                            </sc-if>
+                            <sc-if value="{{ s.plusOn }}">
+                              <div onClick="{{ s.plus }}" title="Add a card here" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:color-mix(in srgb, currentColor 6%, transparent);">
+                                <div style="width:36px;height:36px;border-radius:50%;border:1.5px dashed color-mix(in srgb, currentColor 30%, transparent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;opacity:0.5;">+</div>
+                              </div>
+                            </sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bRightIsEnd }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;display:flex;align-items:center;justify-content:center;">
+                      <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;font-weight:600;letter-spacing:0.22em;padding:8px 14px;border-radius:6px;{{ bEndInkOv }}">END OF BINDER</div>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+              <button onClick="{{ bPrev }}" style="position:absolute;left:-62px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};color:inherit;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(0,0,0,0.3);{{ bCanPrevOv }}">←</button>
+              <button onClick="{{ bNext }}" style="position:absolute;right:-62px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};color:inherit;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(0,0,0,0.3);{{ bCanNextOv }}">→</button>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="font-size:11px;opacity:0.5;">Binder</div>
+              <sc-for list="{{ sellColorOpts }}" as="lc" hint-placeholder-count="6">
+                <div onClick="{{ lc.pick }}" style="width:22px;height:22px;border-radius:50%;cursor:pointer;background:{{ lc.bg }};{{ lc.ringOv }}"></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;">
+              <div style="display:flex;gap:2px;padding:3px;border-radius:10px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);">
+                <sc-for list="{{ sellSizeOpts }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.pick }}" style="appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:7px;background:transparent;color:inherit;white-space:nowrap;{{ o.ov }}">{{ o.label }}</button>
+                </sc-for>
+              </div>
+              <select value="{{ bJumpVal }}" onChange="{{ bJumpChange }}" style="appearance:none;font-family:inherit;font-size:12px;font-weight:600;padding:7px 28px 7px 12px;border-radius:8px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);color:inherit;cursor:pointer;{{ surfOv }};background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%226%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%23888%22 stroke-width=%221.5%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;">
+                <sc-for list="{{ bJumpOpts }}" as="j" hint-placeholder-count="3"><option value="{{ j.v }}">{{ j.label }}</option></sc-for>
+              </select>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;opacity:0.55;">{{ bPagesLabel }}</div>
+            </div>
+            <div style="font-size:11px;opacity:0.4;">Use ← → arrow keys to turn pages · drag cards to reorder · tap a price tag to edit</div>
+          </div>
+          </sc-if>
+
+          <div style="margin-top:26px;border-radius:12px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};padding:18px 20px;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="font-size:14px;font-weight:800;letter-spacing:-0.01em;">Analytics</div>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;padding:3px 7px;border-radius:5px;color:#ffffff;{{ accentBg }};">MASTER</div>
+              <div style="flex:1;"></div>
+              <div style="font-size:11px;opacity:0.45;">Last 14 days</div>
+            </div>
+            <sc-if value="{{ anNotShared }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:12px;font-size:12.5px;opacity:0.55;line-height:1.55;">Share your binder to start tracking — you'll see how many people view it and how many arrived by scanning your QR code.</div>
+            </sc-if>
+            <sc-if value="{{ anShared }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:14px;display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;">
+                <div style="display:flex;gap:26px;">
+                  <div>
+                    <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:22px;font-weight:700;">{{ anViews }}</div>
+                    <div style="font-size:10.5px;opacity:0.5;margin-top:2px;">Binder views</div>
+                  </div>
+                  <div>
+                    <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:22px;font-weight:700;">{{ anScans }}</div>
+                    <div style="font-size:10.5px;opacity:0.5;margin-top:2px;">QR scans</div>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:220px;display:flex;align-items:flex-end;gap:4px;height:52px;">
+                  <sc-for list="{{ anBars }}" as="b" hint-placeholder-count="14">
+                    <div style="flex:1;height:{{ b.hPct }};border-radius:3px 3px 0 0;position:relative;background:color-mix(in srgb, currentColor 14%, transparent);overflow:hidden;">
+                      <div style="position:absolute;left:0;right:0;bottom:0;height:{{ b.sPct }};{{ accentBg }};"></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="margin-top:10px;display:flex;gap:14px;font-size:10px;opacity:0.45;">
+                <div style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:color-mix(in srgb, currentColor 25%, transparent);display:inline-block;"></span>Views</div>
+                <div style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;display:inline-block;{{ accentBg }};"></span>From QR scans</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ sellPreviewOn }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:260px;">
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.18em;opacity:0.45;">FOR SALE · BINDER SYNC</div>
+              <h1 style="margin:6px 0 0;font-size:30px;font-weight:800;letter-spacing:-0.02em;">{{ sellTitle }}</h1>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;opacity:0.55;margin-top:8px;">{{ sellTotalLabel }}</div>
+              <sc-if value="{{ sellNoteOn }}"><div style="font-size:12.5px;opacity:0.7;line-height:1.55;margin-top:10px;max-width:460px;text-wrap:pretty;">{{ sellNote }}</div></sc-if>
+            </div>
+            <button onClick="{{ togglePreview }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer;white-space:nowrap;">{{ previewLabel }}</button>
+          </div>
+          <div style="height:{{ bStageH }}px;overflow:visible;margin-top:28px;">
+            <div style="transform:scale({{ bStageScale }});transform-origin:top center;width:{{ bCoverW }}px;position:relative;left:50%;margin-left:-{{ bCoverHalf }}px;">
+              <div style="position:relative;width:{{ bCoverW }}px;height:{{ bCoverH }}px;border-radius:18px;{{ bLeatherBg }};box-shadow:0 30px 70px -24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);">
+                <div style="position:absolute;inset:7px;border:1.5px dashed {{ bStitchCol }};border-radius:12px;pointer-events:none;"></div>
+                <div style="position:absolute;inset:16px;display:flex;">
+                  <sc-if value="{{ bLeftIsCover }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;display:flex;align-items:center;justify-content:center;">
+                      <div style="width:76%;border-radius:12px;padding:28px 26px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.32);display:flex;flex-direction:column;gap:15px;align-items:center;text-align:center;box-sizing:border-box;">
+                        <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.18em;opacity:0.45;">FOR SALE</div>
+                        <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;">{{ sellTitle }}</div>
+                        <div style="width:100%;height:1px;background:color-mix(in srgb, currentColor 12%, transparent);"></div>
+                        <div style="width:100%;display:flex;flex-direction:column;gap:7px;">
+                          <sc-for list="{{ bCoverStats }}" as="row" hint-placeholder-count="3">
+                            <div style="display:flex;justify-content:space-between;gap:12px;font-size:12px;">
+                              <span style="opacity:0.55;white-space:nowrap;">{{ row.k }}</span>
+                              <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-weight:600;white-space:nowrap;">{{ row.v }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <div style="font-size:11px;opacity:0.5;text-wrap:pretty;">Flip through to see every card, price, and condition</div>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bLeftOn }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;position:relative;border-radius:8px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ bCols }},minmax(0,1fr));grid-template-rows:repeat({{ bRows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ bLeftSlots }}" as="s" hint-placeholder-count="9">
+                          <div onClick="{{ s.zoomClick }}" style="position:relative;border-radius:7px;overflow:hidden;cursor:zoom-in;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), inset 0 -12px 16px -14px rgba(0,0,0,0.4);">
+                            <sc-if value="{{ s.img }}"><div style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div></sc-if>
+                            <sc-if value="{{ s.noImg }}"><div style="position:absolute;inset:8%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:600;opacity:0.5;">{{ s.name }}</div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;top:6%;right:6%;font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;background:rgba(20,20,24,0.75);color:#ffffff;padding:3px 5px;border-radius:4px;">REV</div></sc-if>
+                            <sc-if value="{{ s.has }}"><div style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:700;background:rgba(20,20,24,0.78);color:#ffffff;padding:3px 8px;border-radius:5px;white-space:nowrap;">{{ s.priceTag }}</div></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <div style="width:44px;flex:none;background:linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38));"></div>
+                  <sc-if value="{{ bRightOn }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;position:relative;border-radius:8px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ bCols }},minmax(0,1fr));grid-template-rows:repeat({{ bRows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ bRightSlots }}" as="s" hint-placeholder-count="9">
+                          <div onClick="{{ s.zoomClick }}" style="position:relative;border-radius:7px;overflow:hidden;cursor:zoom-in;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), inset 0 -12px 16px -14px rgba(0,0,0,0.4);">
+                            <sc-if value="{{ s.img }}"><div style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div></sc-if>
+                            <sc-if value="{{ s.noImg }}"><div style="position:absolute;inset:8%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:600;opacity:0.5;">{{ s.name }}</div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;top:6%;right:6%;font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;background:rgba(20,20,24,0.75);color:#ffffff;padding:3px 5px;border-radius:4px;">REV</div></sc-if>
+                            <sc-if value="{{ s.has }}"><div style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:700;background:rgba(20,20,24,0.78);color:#ffffff;padding:3px 8px;border-radius:5px;white-space:nowrap;">{{ s.priceTag }}</div></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bRightIsEnd }}">
+                    <div style="width:{{ bPageW }}px;height:{{ bPageH }}px;display:flex;align-items:center;justify-content:center;">
+                      <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;font-weight:600;letter-spacing:0.22em;padding:8px 14px;border-radius:6px;{{ bEndInkOv }}">END OF BINDER</div>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+              <button onClick="{{ bPrev }}" style="position:absolute;left:-62px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};color:inherit;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(0,0,0,0.3);{{ bCanPrevOv }}">←</button>
+              <button onClick="{{ bNext }}" style="position:absolute;right:-62px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};color:inherit;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(0,0,0,0.3);{{ bCanNextOv }}">→</button>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <select value="{{ bJumpVal }}" onChange="{{ bJumpChange }}" style="appearance:none;font-family:inherit;font-size:12px;font-weight:600;padding:7px 28px 7px 12px;border-radius:8px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);color:inherit;cursor:pointer;{{ surfOv }};background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%226%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%23888%22 stroke-width=%221.5%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;">
+                <sc-for list="{{ bJumpOpts }}" as="j" hint-placeholder-count="3"><option value="{{ j.v }}">{{ j.label }}</option></sc-for>
+              </select>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;opacity:0.55;">{{ bPagesLabel }}</div>
+            </div>
+            <div style="font-size:11px;opacity:0.4;">Use ← → arrow keys or the buttons to turn pages</div>
+          </div>
+          <div style="margin-top:28px;border-radius:12px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);{{ surfOv }};padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:220px;font-size:12.5px;opacity:0.65;line-height:1.5;text-wrap:pretty;">This is what buyers see when they scan your QR code — read-only, with a way to reach you.</div>
+            <button style="appearance:none;border:0;border-radius:9px;padding:10px 16px;font-family:inherit;font-size:12.5px;font-weight:700;color:#ffffff;cursor:pointer;opacity:0.9;{{ accentBg }};">Message seller</button>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSet }}">
+    <div data-screen-label="Binder view">
+
+      <sc-if value="{{ setLoading }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:18px;padding:130px 24px;">
+          <div style="width:220px;height:10px;border-radius:5px;background:linear-gradient(90deg, color-mix(in srgb, currentColor 8%, transparent) 25%, color-mix(in srgb, currentColor 16%, transparent) 50%, color-mix(in srgb, currentColor 8%, transparent) 75%);background-size:200% 100%;animation:bdxsh 1.2s linear infinite;"></div>
+          <div style="font-size:13px;opacity:0.55;">Loading {{ setName }}…</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ setError }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:120px 24px;">
+          <div style="font-size:14px;opacity:0.6;">Couldn't load this set ({{ setError }}).</div>
+          <button onClick="{{ retrySet }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 20%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:9px;cursor:pointer;">Try again</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ binderOn }}">
+        <div style="padding:30px 0 10px;">
+          <sc-if value="{{ lockBannerOn }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:720px;margin:0 auto 18px;padding:11px 16px;border-radius:11px;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-sizing:border-box;">
+              <div style="font-size:12.5px;opacity:0.75;flex:1;min-width:220px;line-height:1.5;text-wrap:pretty;">{{ lockBannerText }}</div>
+              <button onClick="{{ openPlans }}" style="appearance:none;border:0;border-radius:8px;padding:8px 14px;font-family:inherit;font-size:12px;font-weight:700;color:#ffffff;cursor:pointer;white-space:nowrap;{{ accentBg }};">See Pro</button>
+            </div>
+          </sc-if>
+          <div style="height:{{ stageH }}px;overflow:visible;">
+            <div style="transform:scale({{ stageScale }});transform-origin:top center;width:{{ coverW }}px;position:relative;left:50%;margin-left:-{{ coverHalf }}px;">
+
+              <div style="position:relative;width:{{ coverW }}px;height:{{ coverH }}px;border-radius:18px;{{ leatherBg }};box-shadow:0 30px 70px -24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);perspective:2600px;">
+                <div style="position:absolute;inset:7px;border:1.5px dashed {{ stitchCol }};border-radius:12px;pointer-events:none;"></div>
+
+                <div style="position:absolute;inset:16px;display:flex;">
+                  <sc-if value="{{ leftIsCover }}">
+                    <div style="width:{{ pageW }}px;height:{{ pageH }}px;display:flex;align-items:center;justify-content:center;">
+                      <div style="width:76%;border-radius:12px;padding:28px 26px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.32);display:flex;flex-direction:column;gap:15px;align-items:center;text-align:center;box-sizing:border-box;">
+                        <sc-if value="{{ hasSetLogo }}" hint-placeholder-val="{{ false }}"><div style="width:82%;height:82px;background-image:url('{{ setLogoUrl }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div></sc-if>
+                        <div>
+                          <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;">{{ setName }}</div>
+                          <div style="font-size:12px;opacity:0.55;margin-top:4px;">{{ setSerie }}</div>
+                        </div>
+                        <div style="width:100%;height:1px;background:color-mix(in srgb, currentColor 12%, transparent);"></div>
+                        <div style="width:100%;display:flex;flex-direction:column;gap:7px;">
+                          <sc-for list="{{ coverStats }}" as="row" hint-placeholder-count="4">
+                            <div style="display:flex;justify-content:space-between;gap:12px;font-size:12px;">
+                              <span style="opacity:0.55;white-space:nowrap;">{{ row.k }}</span>
+                              <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-weight:600;white-space:nowrap;">{{ row.v }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <div style="width:100%;height:5px;border-radius:3px;background:color-mix(in srgb, currentColor 10%, transparent);overflow:hidden;">
+                          <div style="height:100%;border-radius:3px;width:{{ progressPct }};{{ accentBg }};"></div>
+                        </div>
+                        <div style="font-size:11px;opacity:0.5;text-wrap:pretty;">{{ coverHint }}</div>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ leftPageOn }}">
+                    <div style="width:{{ pageW }}px;height:{{ pageH }}px;position:relative;border-radius:8px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ cols }},minmax(0,1fr));grid-template-rows:repeat({{ rows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ leftSlots }}" as="s" hint-placeholder-count="9">
+                          <div onClick="{{ s.toggle }}" style="position:relative;border-radius:7px;overflow:hidden;cursor:pointer;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), inset 0 -12px 16px -14px rgba(0,0,0,0.4);{{ s.hlOv }}">
+                            <sc-if value="{{ s.img }}"><div style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;{{ s.dimOv }}"></div></sc-if>
+                            <sc-if value="{{ s.noImg }}"><div style="position:absolute;inset:8%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;font-size:11px;font-weight:600;opacity:0.5;">{{ s.name }}</div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;inset:3.5%;border-radius:6px;pointer-events:none;background:linear-gradient(115deg, rgba(255,80,180,0) 30%, rgba(160,220,255,0.3) 46%, rgba(255,255,255,0.2) 52%, rgba(120,255,190,0) 68%);mix-blend-mode:screen;"></div><div style="position:absolute;top:6%;right:6%;font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;background:rgba(20,20,24,0.75);color:#ffffff;padding:3px 5px;border-radius:4px;pointer-events:none;">REV</div></sc-if>
+                            <sc-if value="{{ s.missing }}"><div style="position:absolute;left:50%;bottom:7%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;opacity:0.7;background:color-mix(in srgb, currentColor 10%, transparent);padding:2px 6px;border-radius:4px;pointer-events:none;white-space:nowrap;">{{ s.num }}</div></sc-if>
+                            <sc-if value="{{ s.checkOn }}"><div onClick="{{ s.check }}" style="position:absolute;top:4%;left:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.35);box-sizing:border-box;{{ s.checkOv }}">✓</div></sc-if>
+                            <sc-if value="{{ s.zoomOn }}"><div onClick="{{ s.zoom }}" style="position:absolute;bottom:4%;right:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:zoom-in;background:rgba(20,20,24,0.68);box-shadow:0 1px 4px rgba(0,0,0,0.35);"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="5" cy="5" r="3.5" fill="none" stroke="white" stroke-width="1.4"></circle><line x1="7.7" y1="7.7" x2="10.8" y2="10.8" stroke="white" stroke-width="1.4" stroke-linecap="round"></line></svg></div></sc-if><sc-if value="{{ s.mktOn }}"><div style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:700;background:rgba(20,20,24,0.78);color:#ffffff;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;">{{ s.mkt }}</div></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <div style="width:44px;flex:none;background:linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38));"></div>
+
+                  <sc-if value="{{ rightPageOn }}">
+                    <div style="width:{{ pageW }}px;height:{{ pageH }}px;position:relative;border-radius:8px;{{ paperOv }};box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ cols }},minmax(0,1fr));grid-template-rows:repeat({{ rows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ rightSlots }}" as="s" hint-placeholder-count="9">
+                          <div onClick="{{ s.toggle }}" style="position:relative;border-radius:7px;overflow:hidden;cursor:pointer;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), inset 0 -12px 16px -14px rgba(0,0,0,0.4);{{ s.hlOv }}">
+                            <sc-if value="{{ s.img }}"><div style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;{{ s.dimOv }}"></div></sc-if>
+                            <sc-if value="{{ s.noImg }}"><div style="position:absolute;inset:8%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;font-size:11px;font-weight:600;opacity:0.5;">{{ s.name }}</div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;inset:3.5%;border-radius:6px;pointer-events:none;background:linear-gradient(115deg, rgba(255,80,180,0) 30%, rgba(160,220,255,0.3) 46%, rgba(255,255,255,0.2) 52%, rgba(120,255,190,0) 68%);mix-blend-mode:screen;"></div><div style="position:absolute;top:6%;right:6%;font-family:ui-monospace,SFMono-Regular,monospace;font-size:9px;font-weight:600;letter-spacing:0.08em;background:rgba(20,20,24,0.75);color:#ffffff;padding:3px 5px;border-radius:4px;pointer-events:none;">REV</div></sc-if>
+                            <sc-if value="{{ s.missing }}"><div style="position:absolute;left:50%;bottom:7%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;opacity:0.7;background:color-mix(in srgb, currentColor 10%, transparent);padding:2px 6px;border-radius:4px;pointer-events:none;white-space:nowrap;">{{ s.num }}</div></sc-if>
+                            <sc-if value="{{ s.checkOn }}"><div onClick="{{ s.check }}" style="position:absolute;top:4%;left:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.35);box-sizing:border-box;{{ s.checkOv }}">✓</div></sc-if>
+                            <sc-if value="{{ s.zoomOn }}"><div onClick="{{ s.zoom }}" style="position:absolute;bottom:4%;right:4%;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:zoom-in;background:rgba(20,20,24,0.68);box-shadow:0 1px 4px rgba(0,0,0,0.35);"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="5" cy="5" r="3.5" fill="none" stroke="white" stroke-width="1.4"></circle><line x1="7.7" y1="7.7" x2="10.8" y2="10.8" stroke="white" stroke-width="1.4" stroke-linecap="round"></line></svg></div></sc-if><sc-if value="{{ s.mktOn }}"><div style="position:absolute;left:50%;bottom:5%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:700;background:rgba(20,20,24,0.78);color:#ffffff;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;">{{ s.mkt }}</div></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ rightIsEnd }}">
+                    <div style="width:{{ pageW }}px;height:{{ pageH }}px;display:flex;align-items:center;justify-content:center;">
+                      <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;font-weight:600;letter-spacing:0.22em;padding:8px 14px;border-radius:6px;{{ endInkOv }}">END OF SET</div>
+                    </div>
+                  </sc-if>
+                </div>
+
+                <sc-if value="{{ flipOn }}">
+                  <div onTransitionEnd="{{ onFlipEnd }}" style="position:absolute;top:16px;left:{{ flipLeft }}px;width:{{ pageW }}px;height:{{ pageH }}px;transform-style:preserve-3d;transform-origin:-22px center;z-index:5;transform:{{ flipTransform }};transition:{{ flipTransition }};">
+                    <div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;{{ paperOv }};box-shadow:0 10px 30px rgba(0,0,0,0.35);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ cols }},minmax(0,1fr));grid-template-rows:repeat({{ rows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ flipFrontSlots }}" as="s" hint-placeholder-count="9">
+                          <div style="position:relative;border-radius:7px;overflow:hidden;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent);">
+                            <sc-if value="{{ s.img }}"><div style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;{{ s.dimOv }}"></div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;inset:3.5%;border-radius:6px;pointer-events:none;background:linear-gradient(115deg, rgba(255,80,180,0) 30%, rgba(160,220,255,0.3) 46%, rgba(255,255,255,0.2) 52%, rgba(120,255,190,0) 68%);mix-blend-mode:screen;"></div></sc-if>
+                            <sc-if value="{{ s.missing }}"><div style="position:absolute;left:50%;bottom:7%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;opacity:0.7;background:color-mix(in srgb, currentColor 10%, transparent);padding:2px 6px;border-radius:4px;white-space:nowrap;">{{ s.num }}</div></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:8px;{{ paperOv }};box-shadow:0 10px 30px rgba(0,0,0,0.35);">
+                      <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat({{ cols }},minmax(0,1fr));grid-template-rows:repeat({{ rows }},minmax(0,1fr));gap:10px;padding:18px;">
+                        <sc-for list="{{ flipBackSlots }}" as="s" hint-placeholder-count="9">
+                          <div style="position:relative;border-radius:7px;overflow:hidden;{{ pocketBg }};box-shadow:inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent);">
+                            <sc-if value="{{ s.img }}"><div style="position:absolute;inset:3.5%;background-image:url('{{ s.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;{{ s.dimOv }}"></div></sc-if>
+                            <sc-if value="{{ s.rev }}"><div style="position:absolute;inset:3.5%;border-radius:6px;pointer-events:none;background:linear-gradient(115deg, rgba(255,80,180,0) 30%, rgba(160,220,255,0.3) 46%, rgba(255,255,255,0.2) 52%, rgba(120,255,190,0) 68%);mix-blend-mode:screen;"></div></sc-if>
+                            <sc-if value="{{ s.missing }}"><div style="position:absolute;left:50%;bottom:7%;transform:translateX(-50%);font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;opacity:0.7;background:color-mix(in srgb, currentColor 10%, transparent);padding:2px 6px;border-radius:4px;white-space:nowrap;">{{ s.num }}</div></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+
+              </div>
+
+              <button onClick="{{ prev }}" style="position:absolute;left:-62px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};color:inherit;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(0,0,0,0.3);{{ canPrevOv }}">←</button>
+              <button onClick="{{ next }}" style="position:absolute;right:-62px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 14%, transparent);{{ surfOv }};color:inherit;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(0,0,0,0.3);{{ canNextOv }}">→</button>
+            </div>
+          </div>
+
+          <div style="padding:18px 24px 40px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="font-size:11px;opacity:0.5;">Binder</div>
+              <sc-for list="{{ leatherOpts }}" as="lc" hint-placeholder-count="6">
+                <div onClick="{{ lc.pick }}" style="width:22px;height:22px;border-radius:50%;cursor:pointer;background:{{ lc.bg }};{{ lc.ringOv }}"></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <select value="{{ jumpVal }}" onChange="{{ jumpChange }}" style="appearance:none;font-family:inherit;font-size:12px;font-weight:600;padding:7px 28px 7px 12px;border-radius:8px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);color:inherit;cursor:pointer;{{ surfOv }};background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%226%22><path d=%22M1 1l4 4 4-4%22 stroke=%22%23888%22 stroke-width=%221.5%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;">
+                <sc-for list="{{ jumpOpts }}" as="j" hint-placeholder-count="3">
+                  <option value="{{ j.v }}">{{ j.label }}</option>
+                </sc-for>
+              </select>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11px;opacity:0.55;">{{ pagesLabel }}</div>
+            </div>
+            <sc-if value="{{ variantNote }}">
+              <div style="font-size:11.5px;font-weight:600;opacity:0.6;">{{ variantNote }}</div>
+            </sc-if>
+            <div style="font-size:11px;opacity:0.4;">Use ← → arrow keys or the buttons to turn pages</div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ paywallOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePaywall }}" style="position:fixed;inset:0;z-index:70;background:rgba(10,10,14,0.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:26px;box-sizing:border-box;">
+      <div onClick="{{ eatClick }}" style="width:860px;max-width:100%;max-height:92vh;overflow:auto;border-radius:18px;padding:30px;box-sizing:border-box;box-shadow:0 40px 90px -30px rgba(0,0,0,0.6);{{ surfOv }};">
+
+        <sc-if value="{{ pwPlansOn }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <div style="flex:1;">
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.02em;">{{ pwTitle }}</div>
+              <div style="font-size:13px;opacity:0.55;margin-top:6px;line-height:1.5;text-wrap:pretty;max-width:420px;">{{ pwSub }}</div>
+            </div>
+            <button onClick="{{ closePaywall }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:16px;cursor:pointer;opacity:0.45;padding:4px;line-height:1;">✕</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:22px;">
+            <div style="border-radius:14px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);padding:20px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;">
+              <div>
+                <div style="font-size:14px;font-weight:700;">Free</div>
+                <div style="font-size:24px;font-weight:800;margin-top:6px;">$0<span style="font-size:12px;font-weight:600;opacity:0.5;"> forever</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <sc-for list="{{ freeFeats }}" as="ft" hint-placeholder-count="4">
+                  <div style="display:flex;gap:8px;font-size:12.5px;align-items:baseline;"><span style="opacity:0.45;">✓</span><span style="opacity:0.75;">{{ ft.t }}</span></div>
+                </sc-for>
+              </div>
+              <div style="margin-top:auto;font-size:11.5px;font-weight:600;opacity:0.45;text-align:center;padding:9px 0 0;">{{ freePlanNote }}</div>
+            </div>
+            <div style="border-radius:14px;border:2px solid transparent;position:relative;padding:20px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;{{ proCardOv }}">
+              <div>
+                <div style="font-size:14px;font-weight:700;">Pro</div>
+                <div style="font-size:24px;font-weight:800;margin-top:6px;">$3<span style="font-size:12px;font-weight:600;opacity:0.5;"> / month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <sc-for list="{{ proFeats }}" as="ft" hint-placeholder-count="3">
+                  <div style="display:flex;gap:8px;font-size:12.5px;align-items:baseline;"><span style="opacity:0.45;">✓</span><span style="opacity:0.75;">{{ ft.t }}</span></div>
+                </sc-for>
+              </div>
+              <button onClick="{{ goCheckout }}" style="margin-top:auto;appearance:none;border:0;border-radius:9px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};{{ proBtnOv }}">{{ proBtnLabel }}</button>
+            </div>
+            <div style="border-radius:14px;border:2px solid transparent;position:relative;padding:20px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;{{ masterCardOv }}">
+              <div style="position:absolute;top:-9px;right:14px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:8.5px;font-weight:600;letter-spacing:0.14em;padding:3px 8px;border-radius:5px;color:#ffffff;{{ accentBg }};">SELL BINDER</div>
+              <div>
+                <div style="font-size:14px;font-weight:700;">Master</div>
+                <div style="font-size:24px;font-weight:800;margin-top:6px;">$6<span style="font-size:12px;font-weight:600;opacity:0.5;"> / month</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <sc-for list="{{ masterFeats }}" as="ft" hint-placeholder-count="5">
+                  <div style="display:flex;gap:8px;font-size:12.5px;align-items:baseline;"><span style="opacity:0.45;">✓</span><span style="opacity:0.75;">{{ ft.t }}</span></div>
+                </sc-for>
+              </div>
+              <button onClick="{{ goCheckoutMaster }}" style="margin-top:auto;appearance:none;border:0;border-radius:9px;padding:11px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};{{ masterBtnOv }}">{{ masterBtnLabel }}</button>
+            </div>
+          </div>
+          <div style="margin-top:16px;text-align:center;font-size:11px;opacity:0.4;line-height:1.5;">Cancel anytime · Your binders are never deleted, even if you downgrade</div>
+        </sc-if>
+
+        <sc-if value="{{ pwCheckoutOn }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button onClick="{{ backToPlans }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:16px;cursor:pointer;opacity:0.55;padding:4px;line-height:1;">←</button>
+            <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;">Checkout</div>
+          </div>
+          <div style="margin-top:18px;border-radius:12px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;">{{ pwPlanName }}</div>
+              <div style="font-size:11px;opacity:0.5;margin-top:2px;">{{ pwPlanDesc }}</div>
+            </div>
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:14px;font-weight:700;white-space:nowrap;">{{ pwPrice }}<span style="font-size:10px;opacity:0.5;"> /mo</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="font-size:10px;font-weight:600;opacity:0.5;letter-spacing:0.08em;">EMAIL</div>
+              <div style="border:1px solid color-mix(in srgb, currentColor 14%, transparent);border-radius:8px;padding:10px 12px;font-size:13px;">collector@example.com</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="font-size:10px;font-weight:600;opacity:0.5;letter-spacing:0.08em;">CARD</div>
+              <div style="display:grid;grid-template-columns:1fr 76px 62px;gap:8px;">
+                <div style="border:1px solid color-mix(in srgb, currentColor 14%, transparent);border-radius:8px;padding:10px 12px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:12.5px;white-space:nowrap;overflow:hidden;">4242 4242 4242 4242</div>
+                <div style="border:1px solid color-mix(in srgb, currentColor 14%, transparent);border-radius:8px;padding:10px 12px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:12.5px;">12/28</div>
+                <div style="border:1px solid color-mix(in srgb, currentColor 14%, transparent);border-radius:8px;padding:10px 12px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:12.5px;">424</div>
+              </div>
+            </div>
+          </div>
+          <button onClick="{{ confirmPay }}" style="width:100%;margin-top:18px;appearance:none;border:0;border-radius:10px;padding:13px;font-family:inherit;font-size:13.5px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">{{ payLabel }}</button>
+          <div style="margin-top:12px;text-align:center;font-size:10.5px;opacity:0.4;line-height:1.5;">Mock checkout — the real site would hand this step to Stripe. Nothing is charged.</div>
+        </sc-if>
+
+        <sc-if value="{{ pwDoneOn }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:14px 6px;">
+            <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:26px;font-weight:700;{{ accentBg }};">✓</div>
+            <div style="font-size:21px;font-weight:800;letter-spacing:-0.02em;">{{ pwDoneTitle }}</div>
+            <div style="font-size:13px;opacity:0.55;line-height:1.55;max-width:340px;text-wrap:pretty;">{{ pwDoneText }}</div>
+            <button onClick="{{ pwDoneGo }}" style="appearance:none;border:0;border-radius:10px;padding:12px 22px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">{{ pwDoneBtn }}</button>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ needOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;top:78px;right:18px;bottom:18px;width:302px;z-index:40;border-radius:14px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);box-shadow:0 24px 60px -20px rgba(0,0,0,0.4);display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;{{ surfOv }};">
+      <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid color-mix(in srgb, currentColor 10%, transparent);">
+        <div style="font-size:14px;font-weight:800;letter-spacing:-0.01em;flex:1;">Need list</div>
+        <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.55;white-space:nowrap;">{{ needCountLabel }}</div>
+        <button onClick="{{ needToggle }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:14px;line-height:1;cursor:pointer;opacity:0.45;padding:4px;">✕</button>
+      </div>
+      <sc-if value="{{ needEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:24px 18px;font-size:12.5px;opacity:0.55;line-height:1.6;text-wrap:pretty;">Nothing missing — this set is complete. 🎉</div>
+      </sc-if>
+      <div style="flex:1;overflow-y:auto;padding:6px;">
+        <sc-for list="{{ needRows }}" as="n" hint-placeholder-count="6">
+          <div onClick="{{ n.jump }}" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;" style-hover="background:color-mix(in srgb, currentColor 7%, transparent);">
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.5;width:34px;flex:none;">{{ n.num }}</div>
+            <div style="flex:1;min-width:0;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ n.name }}</div>
+            <sc-if value="{{ n.rev }}"><div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:8.5px;font-weight:600;letter-spacing:0.06em;background:color-mix(in srgb, currentColor 12%, transparent);padding:2px 5px;border-radius:4px;flex:none;">REV</div></sc-if>
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.55;white-space:nowrap;flex:none;">{{ n.loc }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="padding:10px 16px;border-top:1px solid color-mix(in srgb, currentColor 10%, transparent);font-size:10.5px;opacity:0.45;">Click a card to flip to its page</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ undoOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:6px;padding:10px 10px 10px 18px;border-radius:12px;border:1px solid color-mix(in srgb, currentColor 12%, transparent);box-shadow:0 18px 44px -14px rgba(0,0,0,0.45);{{ surfOv }};">
+      <div style="font-size:12.5px;font-weight:600;white-space:nowrap;">{{ undoMsg }}</div>
+      <button onClick="{{ undoDo }}" style="appearance:none;border:0;background:transparent;font-family:inherit;font-size:12.5px;font-weight:700;color:#c0392b;cursor:pointer;padding:6px 10px;border-radius:8px;" style-hover="background:color-mix(in srgb, #c0392b 10%, transparent);">Undo</button>
+      <button onClick="{{ undoDismiss }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;opacity:0.4;padding:6px 8px;">✕</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ clearConfirmOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeClearConfirm }}" style="position:fixed;inset:0;z-index:75;background:rgba(10,10,14,0.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:26px;box-sizing:border-box;">
+      <div onClick="{{ eatClick }}" style="width:420px;max-width:100%;border-radius:18px;padding:28px;box-sizing:border-box;box-shadow:0 40px 90px -30px rgba(0,0,0,0.6);{{ surfOv }};">
+        <div style="font-size:19px;font-weight:800;letter-spacing:-0.02em;">{{ clearTitle }}</div>
+        <div style="font-size:13px;opacity:0.6;margin-top:10px;line-height:1.55;text-wrap:pretty;">{{ clearConfirmText }}</div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px;">
+          <button onClick="{{ closeClearConfirm }}" style="appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:13px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer;">Cancel</button>
+          <button onClick="{{ doClearAll }}" style="appearance:none;border:0;border-radius:9px;padding:10px 18px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;background:#c0392b;">{{ clearBtnLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sellEditModalOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSellEdit }}" style="position:fixed;inset:0;z-index:69;background:rgba(10,10,14,0.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:26px;box-sizing:border-box;">
+      <div onClick="{{ eatClick }}" style="width:380px;max-width:100%;border-radius:18px;padding:24px;box-sizing:border-box;box-shadow:0 40px 90px -30px rgba(0,0,0,0.6);display:flex;flex-direction:column;gap:16px;{{ surfOv }};">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="width:74px;height:103px;border-radius:6px;flex:none;position:relative;overflow:hidden;{{ pocketBg }};">
+            <sc-if value="{{ esImg }}"><div style="position:absolute;inset:3%;background-image:url('{{ esImg }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div></sc-if>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:800;letter-spacing:-0.01em;">{{ esName }}</div>
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;opacity:0.5;margin-top:3px;">{{ esNum }} · {{ esMarket }}</div>
+          </div>
+          <button onClick="{{ closeSellEdit }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:16px;cursor:pointer;opacity:0.45;padding:4px;line-height:1;">✕</button>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:10px;font-weight:600;opacity:0.5;letter-spacing:0.08em;">ASKING PRICE</div>
+            <div style="display:flex;align-items:center;border:1px solid color-mix(in srgb, currentColor 15%, transparent);border-radius:8px;padding:0 10px;">
+              <span style="font-size:12px;opacity:0.45;">$</span>
+              <input value="{{ esPrice }}" onInput="{{ esSetPrice }}" placeholder="0.00" inputmode="decimal" style="width:100%;min-width:0;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;font-weight:600;border:0;background:transparent;color:inherit;outline:none;padding:9px 5px;box-sizing:border-box;" />
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:10px;font-weight:600;opacity:0.5;letter-spacing:0.08em;">CONDITION</div>
+            <select value="{{ esCond }}" onChange="{{ esSetCond }}" style="appearance:none;font-family:inherit;font-size:12px;font-weight:600;padding:10px 12px;border-radius:8px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);color:inherit;cursor:pointer;{{ surfOv }};">
+              <sc-for list="{{ condOpts }}" as="co" hint-placeholder-count="5"><option value="{{ co }}">{{ co }}</option></sc-for>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onClick="{{ esChange }}" style="flex:1;appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px;border-radius:9px;cursor:pointer;">⇄ Change card</button>
+          <button onClick="{{ esRemove }}" style="appearance:none;border:1px solid color-mix(in srgb, #c0392b 45%, transparent);background:transparent;color:#c0392b;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:9px;cursor:pointer;" style-hover="background:color-mix(in srgb, #c0392b 8%, transparent);">Remove</button>
+        </div>
+        <button onClick="{{ closeSellEdit }}" style="appearance:none;border:0;border-radius:10px;padding:12px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">Done</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sellPickerOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSellPicker }}" style="position:fixed;inset:0;z-index:70;background:rgba(10,10,14,0.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:26px;box-sizing:border-box;">
+      <div onClick="{{ eatClick }}" style="width:560px;max-width:100%;height:86vh;border-radius:18px;padding:24px;box-sizing:border-box;box-shadow:0 40px 90px -30px rgba(0,0,0,0.6);display:flex;flex-direction:column;gap:14px;{{ surfOv }};">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="flex:1;">
+            <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;">{{ sellPickTitle }}</div>
+            <div style="font-size:12px;opacity:0.55;margin-top:4px;">From your collection — click to add or remove.</div>
+          </div>
+          <button onClick="{{ closeSellPicker }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:16px;cursor:pointer;opacity:0.45;padding:4px;line-height:1;">✕</button>
+        </div>
+        <input value="{{ sellQuery }}" onInput="{{ setSellQuery }}" placeholder="Search your cards or sets…" style="font-family:inherit;font-size:13px;padding:9px 14px;border-radius:9px;border:1px solid color-mix(in srgb, currentColor 15%, transparent);background:transparent;color:inherit;outline:none;width:100%;box-sizing:border-box;" />
+        <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;">
+          <sc-if value="{{ sellPickEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;font-size:12.5px;opacity:0.55;line-height:1.6;">No owned cards found. Open a set and mark cards as owned first — they'll show up here.</div></sc-if>
+          <sc-for list="{{ sellPickRows }}" as="pr" hint-placeholder-count="6">
+            <div onClick="{{ pr.add }}" style="display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:9px;cursor:pointer;" style-hover="background:color-mix(in srgb, currentColor 7%, transparent);">
+              <div style="width:34px;height:47px;border-radius:4px;flex:none;position:relative;overflow:hidden;{{ pocketBg }};">
+                <sc-if value="{{ pr.img }}"><div style="position:absolute;inset:2%;background-image:url('{{ pr.img }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div></sc-if>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ pr.name }}</div>
+                <div style="font-size:10.5px;opacity:0.5;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ pr.meta }}</div>
+              </div>
+              <sc-if value="{{ pr.rev }}"><div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:8.5px;font-weight:600;letter-spacing:0.06em;background:color-mix(in srgb, currentColor 12%, transparent);padding:2px 5px;border-radius:4px;flex:none;">REV</div></sc-if>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;padding:5px 9px;border-radius:99px;white-space:nowrap;flex:none;{{ pr.markOv }}">{{ pr.markLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ closeSellPicker }}" style="appearance:none;border:0;border-radius:10px;padding:12px;font-family:inherit;font-size:13px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">Done</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sellShareOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSellShare }}" style="position:fixed;inset:0;z-index:72;background:rgba(10,10,14,0.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:26px;box-sizing:border-box;">
+      <div onClick="{{ eatClick }}" style="width:400px;max-width:100%;border-radius:18px;padding:28px;box-sizing:border-box;box-shadow:0 40px 90px -30px rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;gap:16px;{{ surfOv }};">
+        <div style="width:100%;display:flex;align-items:flex-start;gap:10px;">
+          <div style="flex:1;">
+            <div style="font-size:19px;font-weight:800;letter-spacing:-0.02em;">Share your Sell Binder</div>
+            <div style="font-size:12px;opacity:0.55;margin-top:4px;line-height:1.5;">Anyone who scans sees the read-only buyer view.</div>
+          </div>
+          <button onClick="{{ closeSellShare }}" style="appearance:none;border:0;background:transparent;color:inherit;font-size:16px;cursor:pointer;opacity:0.45;padding:4px;line-height:1;">✕</button>
+        </div>
+        <div style="background:#ffffff;border-radius:14px;padding:14px;box-shadow:0 8px 24px -12px rgba(0,0,0,0.3);">
+          <div role="img" aria-label="QR code for sell binder" style="width:200px;height:200px;background-image:url('{{ qrSrc }}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div>
+        </div>
+        <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:11.5px;opacity:0.65;">{{ shareUrl }}</div>
+        <div style="width:100%;display:flex;gap:10px;">
+          <button onClick="{{ copyLink }}" style="flex:1;appearance:none;border:1px solid color-mix(in srgb, currentColor 18%, transparent);background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;padding:11px;border-radius:9px;cursor:pointer;">{{ copyLabel }}</button>
+          <button onClick="{{ printInsert }}" style="flex:1;appearance:none;border:0;border-radius:9px;padding:11px;font-family:inherit;font-size:12.5px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">Print QR insert</button>
+        </div>
+        <div style="font-size:10.5px;opacity:0.4;text-align:center;line-height:1.5;">The insert is sized 3.5″ × 2.5″ — fits a standard card sleeve or binder pocket.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ zoomOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeZoom }}" style="position:fixed;inset:0;z-index:60;background:rgba(10,10,14,0.74);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;gap:34px;cursor:zoom-out;padding:30px;box-sizing:border-box;flex-wrap:wrap;overflow-y:auto;">
+      <div style="height:82vh;max-height:82vh;aspect-ratio:63/88;max-width:56vw;background-image:url('{{ zoomImg }}');background-size:contain;background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 30px 60px rgba(0,0,0,0.55));"></div>
+      <div onClick="{{ eatClick }}" style="width:330px;max-width:92vw;color:#ffffff;cursor:default;display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+            <div style="font-size:19px;font-weight:800;letter-spacing:-0.01em;">{{ zoomName }}</div>
+            <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:12px;opacity:0.6;">{{ zoomNum }}</div>
+          </div>
+          <sc-if value="{{ zoomRev }}"><div style="display:inline-block;margin-top:7px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;background:rgba(255,255,255,0.16);padding:3px 7px;border-radius:4px;">REVERSE HOLO</div></sc-if>
+        </div>
+
+        <sc-if value="{{ zoomInsightsOn }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);padding:16px 18px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:12px;font-weight:800;letter-spacing:0.04em;">MARKET INSIGHTS</div>
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:8.5px;font-weight:600;letter-spacing:0.14em;padding:2px 6px;border-radius:4px;color:#ffffff;{{ accentBg }};">MASTER</div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:10px;">
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:26px;font-weight:700;">{{ zoomMkt }}</div>
+            </div>
+            <div style="font-size:9.5px;opacity:0.45;line-height:1.5;">{{ zoomMktNote }}</div>
+            <div style="display:flex;gap:14px;border-top:1px solid rgba(255,255,255,0.12);padding-top:12px;">
+              <a href="{{ zoomTcgUrl }}" target="_blank" rel="noopener" style="font-size:11px;font-weight:600;color:#8ec9ff;text-decoration:none;display:flex;align-items:center;gap:5px;" style-hover="text-decoration:underline">TCGplayer prices <span style="font-size:9px;">↗</span></a>
+              <a href="{{ zoomEbayUrl }}" target="_blank" rel="noopener" style="font-size:11px;font-weight:600;color:#8ec9ff;text-decoration:none;display:flex;align-items:center;gap:5px;" style-hover="text-decoration:underline">eBay sold listings <span style="font-size:9px;">↗</span></a>
+            </div>
+            <sc-if value="{{ zoomApplyOn }}" hint-placeholder-val="{{ false }}">
+              <div style="border-top:1px solid rgba(255,255,255,0.12);padding-top:13px;display:flex;flex-direction:column;gap:9px;">
+                <div style="font-size:10px;font-weight:600;letter-spacing:0.06em;opacity:0.55;">YOUR ASKING PRICE</div>
+                <div style="display:flex;gap:8px;">
+                  <div style="position:relative;flex:1;display:flex;align-items:center;">
+                    <span style="position:absolute;left:11px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;opacity:0.55;">$</span>
+                    <input value="{{ zoomAskVal }}" onInput="{{ zoomAskInput }}" onKeyDown="{{ zoomAskKey }}" placeholder="0.00" inputMode="decimal" style="width:100%;font-family:ui-monospace,SFMono-Regular,monospace;font-size:14px;font-weight:600;padding:9px 11px 9px 24px;border-radius:9px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.06);color:#ffffff;outline:none;box-sizing:border-box;" />
+                  </div>
+                  <button onClick="{{ zoomApply }}" style="appearance:none;border:0;border-radius:9px;padding:9px 15px;font-family:inherit;font-size:12px;font-weight:700;color:#ffffff;cursor:pointer;white-space:nowrap;{{ accentBg }};">Set price</button>
+                </div>
+                <sc-if value="{{ zoomUseMktOn }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ zoomUseMkt }}" style="appearance:none;border:0;background:transparent;color:#8ec9ff;font-family:inherit;font-size:11px;font-weight:600;padding:0;cursor:pointer;text-align:left;" style-hover="text-decoration:underline">Use market price ({{ zoomMkt }})</button>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ zoomLockedOn }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);padding:16px 18px;display:flex;flex-direction:column;gap:12px;">
+            <div style="font-size:12px;font-weight:800;letter-spacing:0.04em;">MARKET INSIGHTS</div>
+            <div style="filter:blur(6px);pointer-events:none;display:flex;flex-direction:column;gap:10px;" aria-hidden="true">
+              <div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:24px;font-weight:700;">$24.50 <span style="font-size:12px;color:#7ee2a8;">+12%</span></div>
+              <svg viewBox="0 0 280 60" style="width:100%;height:54px;display:block;"><polyline points="0,44 28,38 56,46 84,30 112,34 140,22 168,28 196,18 224,24 252,12 280,16" fill="none" stroke="#7ee2a8" stroke-width="2"></polyline></svg>
+            </div>
+            <div style="font-size:12px;opacity:0.7;line-height:1.55;">Live market prices and direct TCGplayer &amp; eBay links are part of the Master plan.</div>
+            <button onClick="{{ unlockPrices }}" style="appearance:none;border:0;border-radius:9px;padding:11px;font-family:inherit;font-size:12.5px;font-weight:700;color:#ffffff;cursor:pointer;{{ accentBg }};">Unlock with Master</button>
+          </div>
+        </sc-if>
+
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);">Click outside the card or press Esc to close</div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;look&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Gallery&quot;,&quot;Linen&quot;,&quot;Night&quot;],&quot;default&quot;:&quot;Gallery&quot;,&quot;tsType&quot;:&quot;\&quot;Gallery\&quot;|\&quot;Linen\&quot;|\&quot;Night\&quot;&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;flipSpeed&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:300,&quot;max&quot;:1400,&quot;step&quot;:50,&quot;default&quot;:700,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;binderLimit&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:50,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Tiers mockup&quot;},&quot;pokemonTcgApiKey&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;4ee80de6-a88a-484e-86b2-6c120c2b3722&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'home', series: null, homeError: null, homeQuery: '', dashMsg: null,
+    set: null, setData: null, setError: null,
+    size: 9, mode: 'base', spread: 0, flip: null,
+    viewMode: 'collect', binderColor: null, zoom: null,
+    cardQuery: '', globalHits: null, cardSearching: false, highlight: null,
+    plan: 'free', paywall: null, paying: false, clearConfirm: false, undo: null, needOpen: false, currency: 'USD',
+    sellAll: { cur: 'sb1', binders: [{ id: 'sb1', title: 'My Sell Binder', note: '', shareId: null, cards: [] }] }, showPrices: false, sellDrag: null, sellPicker: false, sellShare: false, sellPreview: false, sellQuery: '',
+    owned: {}, vw: 1280, vh: 800
+  };
+
+  leathers = [
+    { id: 'charcoal', l1: '#33343a', l2: '#1e1f24' },
+    { id: 'red', l1: '#e8362c', l2: '#ab1d18' },
+    { id: 'orange', l1: '#f5821e', l2: '#c85e06' },
+    { id: 'yellow', l1: '#f6c513', l2: '#cc9c02' },
+    { id: 'green', l1: '#2fb14e', l2: '#1e8234' },
+    { id: 'teal', l1: '#0fb3ac', l2: '#0a827e' },
+    { id: 'blue', l1: '#2172e8', l2: '#134bb0' },
+    { id: 'purple', l1: '#8140dd', l2: '#5a28a8' },
+    { id: 'pink', l1: '#f5619f', l2: '#cc3a78' },
+    { id: 'white', l1: '#f4f5f7', l2: '#ced3da' }
+  ];
+
+  themes = {
+    Gallery: { bg:'#f7f6f4', ink:'#17181a', surf:'#ffffff', paper:'#fbfaf8', pocket:'rgba(0,0,0,0.055)', l1:'#33343a', l2:'#1e1f24', stitch:'rgba(255,255,255,0.16)', accent:'oklch(0.60 0.16 27)', dim:'filter:grayscale(1);opacity:0.3' },
+    Linen:   { bg:'#f2ede2', ink:'#221c14', surf:'#fdfaf2', paper:'#fdfbf4', pocket:'rgba(70,50,20,0.07)', l1:'#7a5334', l2:'#57381e', stitch:'rgba(255,240,220,0.22)', accent:'oklch(0.60 0.16 60)', dim:'filter:grayscale(1);opacity:0.3' },
+    Night:   { bg:'#121316', ink:'#e8e7e3', surf:'#1c1e23', paper:'#212329', pocket:'rgba(255,255,255,0.055)', l1:'#2a2c34', l2:'#191a20', stitch:'rgba(255,255,255,0.10)', accent:'oklch(0.72 0.14 27)', dim:'filter:grayscale(1) brightness(0.8);opacity:0.35' }
+  };
+
+  componentDidMount() {
+    this.setCache = {};
+    this.varCache = {};
+    this.priceMap = {};
+    this._ownedFetch = null;
+    this._searchToken = 0;
+    this._pendingJump = null;
+    try {
+      const o = JSON.parse(localStorage.getItem('bdx-owned') || '{}');
+      const p = JSON.parse(localStorage.getItem('bdx-prefs') || '{}');
+      const pl = localStorage.getItem('bdx-plan');
+      const sv = JSON.parse(localStorage.getItem('bdx-sell') || 'null');
+      let sellAll = null;
+      if (sv && Array.isArray(sv.binders) && sv.binders.length) sellAll = sv;
+      else if (sv && Array.isArray(sv.cards)) sellAll = { cur: 'sb1', binders: [Object.assign({ id: 'sb1', title: 'My Sell Binder', note: '', shareId: null }, sv)] };
+      this.setState({ owned: o, size: p.size || 9, mode: p.mode || 'base', viewMode: p.viewMode || 'collect', binderColor: p.binderColor || null, currency: p.currency === 'EUR' ? 'EUR' : 'USD', showPrices: !!p.showPrices, plan: (pl === 'pro' || pl === 'master') ? pl : 'free', sellAll: sellAll || this.state.sellAll });
+    } catch (e) {}
+    this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    this._onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    window.addEventListener('resize', this._onResize);
+    this._onKey = (e) => {
+      if (e.key === 'Escape' && this.state.zoom) { this.setState({ zoom: null }); return; }
+      if (e.key === 'Escape' && this.state.paywall && !this.state.paying) { this.setState({ paywall: null }); return; }
+      if (e.key === 'Escape' && this.state.cardQuery) { this.setState({ cardQuery: '' }); return; }
+      if (e.key === 'Escape' && (this.state.sellPicker || this.state.sellShare || this.state.sellEditSlot != null)) { this.setState({ sellPicker: false, sellShare: false, sellEditSlot: null, sellPickFor: null }); return; }
+      if (this.state.view === 'sell') {
+        if (this.state.sellPicker || this.state.sellShare || this.state.paywall || this.state.sellEditSlot != null) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); this.setState({ sellSpread: Math.min(this._sellMax || 0, (this._sellCur || 0) + 1) }); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); this.setState({ sellSpread: Math.max(0, (this._sellCur || 0) - 1) }); }
+        return;
+      }
+      if (this.state.view !== 'set' || !this.state.setData || this.state.zoom) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); this.nav(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); this.nav(-1); }
+    };
+    window.addEventListener('keydown', this._onKey);
+    this.loadSeries();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKey);
+    clearTimeout(this._flipTimer);
+    clearTimeout(this._hlTimer);
+    clearTimeout(this._searchTimer);
+  }
+
+  seqFor(setId, cards) {
+    const vc = this.state.mode === 'master' ? this.varCache[setId] : null;
+    const seq = [];
+    for (const c of cards) {
+      seq.push(c);
+      if (this.state.mode === 'master' && vc && !vc.loading && vc.map[c.id]) seq.push(Object.assign({}, c, { rev: true }));
+    }
+    return seq;
+  }
+
+  flashCard(key) {
+    clearTimeout(this._hlTimer);
+    this.setState({ highlight: key });
+    this._hlTimer = setTimeout(() => this.setState({ highlight: null }), 2800);
+  }
+
+  jumpToSeqIndex(i, key) {
+    const page = Math.floor(i / this.state.size) + 1;
+    const target = Math.ceil((page - 1) / 2);
+    this.setState({ spread: target, flip: null });
+    this.flashCard(key);
+  }
+
+  jumpToCard(cardId) {
+    const S = this.state;
+    if (!S.set || !S.setData) return;
+    const seq = this.seqFor(S.set.id, S.setData.cards);
+    const i = seq.findIndex(c => !c.rev && c.id === cardId);
+    if (i >= 0) this.jumpToSeqIndex(i, cardId);
+  }
+
+  searchCards(q) {
+    const token = ++this._searchToken;
+    this.setState({ cardSearching: true });
+    fetch('https://api.tcgdex.net/v2/en/cards?name=' + encodeURIComponent(q))
+      .then(r => r.ok ? r.json() : [])
+      .then(list => { if (token === this._searchToken) this.setState({ globalHits: Array.isArray(list) ? list : [], cardSearching: false }); })
+      .catch(() => { if (token === this._searchToken) this.setState({ globalHits: [], cardSearching: false }); });
+  }
+
+  async loadSeries() {
+    this.setState({ homeError: null, series: null });
+    try {
+      const rs = await fetch('https://api.tcgdex.net/v2/en/series');
+      if (!rs.ok) throw new Error('HTTP ' + rs.status);
+      let series = await rs.json();
+      series = series.filter(s => s.id !== 'tcgp');
+      const details = await Promise.all(series.map(s =>
+        fetch('https://api.tcgdex.net/v2/en/series/' + s.id).then(r => r.ok ? r.json() : null).catch(() => null)
+      ));
+      const list = details.filter(Boolean).map(d => ({
+        id: d.id, name: d.name,
+        sets: (d.sets || []).filter(s => s.cardCount && s.cardCount.total > 0)
+      })).filter(d => d.sets.length > 0);
+      list.reverse();
+      this.setState({ series: list });
+    } catch (e) {
+      this.setState({ homeError: (e && e.message) || 'network error' });
+    }
+  }
+
+  openSet(brief) {
+    window.scrollTo(0, 0);
+    const cached = this.setCache[brief.id] || null;
+    this.setState({ view: 'set', set: brief, setData: cached, setError: null, spread: 0, flip: null, cardQuery: '', highlight: null }, () => {
+      if (cached && this._pendingJump) { const id = this._pendingJump; this._pendingJump = null; this.jumpToCard(id); }
+    });
+    if (!cached) this.fetchSet(brief);
+    else this.ensureVariants(brief.id, cached.cards);
+  }
+
+  async fetchSet(brief) {
+    try {
+      const r = await fetch('https://api.tcgdex.net/v2/en/sets/' + brief.id);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      const numOf = (v) => { const m = String(v == null ? '' : v).match(/\d+/); return m ? parseInt(m[0], 10) : 1e9; };
+      const grp = (v) => /^\d+$/.test(String(v == null ? '' : v)) ? 0 : 1;
+      d.cards = (d.cards || []).slice().sort((a, b) =>
+        grp(a.localId) - grp(b.localId) || numOf(a.localId) - numOf(b.localId) || String(a.localId).localeCompare(String(b.localId))
+      );
+      this.setCache[brief.id] = d;
+      if (this.state.set && this.state.set.id === brief.id) {
+        this.setState({ setData: d }, () => {
+          if (this._pendingJump) { const id = this._pendingJump; this._pendingJump = null; this.jumpToCard(id); }
+        });
+        this.ensureVariants(brief.id, d.cards);
+      }
+    } catch (e) {
+      if (this.state.set && this.state.set.id === brief.id) this.setState({ setError: (e && e.message) || 'network error' });
+    }
+  }
+
+  ensureVariants(setId, cards) {
+    if (this.varCache[setId]) return;
+    const list = (cards || []).filter(c => c && c.id);
+    const vc = { loading: true, done: 0, total: list.length, map: {} };
+    this.varCache[setId] = vc;
+    this.ensurePricesFor(setId);
+    const queue = list.slice();
+    let sinceUpdate = 0;
+    const worker = async () => {
+      while (queue.length) {
+        const c = queue.shift();
+        if (!c) break;
+        try {
+          const r = await fetch('https://api.tcgdex.net/v2/en/cards/' + c.id);
+          if (r.ok) {
+            const d = await r.json();
+            vc.map[c.id] = !!(d.variants && d.variants.reverse);
+            if (!this._ptcgPriced || !this._ptcgPriced[c.id]) this.priceMap[c.id] = this.extractPrices(d);
+          } else {
+            vc.map[c.id] = false; if (!this.priceMap[c.id]) this.priceMap[c.id] = { base: null, rev: null };
+          }
+        } catch (e) {
+          vc.map[c.id] = false; if (!this.priceMap[c.id]) this.priceMap[c.id] = { base: null, rev: null };
+        }
+        vc.done++;
+        sinceUpdate++;
+        if (sinceUpdate >= 15) { sinceUpdate = 0; this.forceUpdate(); }
+      }
+    };
+    const workers = [];
+    for (let i = 0; i < 20; i++) workers.push(worker());
+    Promise.all(workers).then(() => {
+      vc.loading = false;
+      this.forceUpdate();
+    });
+  }
+
+  extractPrices(d) {
+    const P = d && d.pricing;
+    const out = { base: null, rev: null };
+    if (!P) return out;
+    const num = (v) => (typeof v === 'number' && isFinite(v) && v > 0) ? v : null;
+    const tp = P.tcgplayer;
+    if (tp) {
+      const pick = (o) => o ? (num(o.marketPrice) || num(o.midPrice) || num(o.lowPrice)) : null;
+      const baseV = pick(tp.normal) || pick(tp.holofoil) || pick(tp['1st-edition']) || pick(tp['1st-edition-holofoil']) || pick(tp.unlimited) || pick(tp['unlimited-holofoil']);
+      const revV = pick(tp['reverse-holofoil']) || pick(tp.reverseHolofoil);
+      if (baseV) out.base = { v: baseV, cur: 'USD' };
+      if (revV) out.rev = { v: revV, cur: 'USD' };
+    }
+    const cm = P.cardmarket;
+    if (cm) {
+      const baseV = num(cm.trend) || num(cm.avg) || num(cm.avg30) || num(cm.avg7) || num(cm.avg1) || num(cm.low);
+      const revV = num(cm['trend-holo']) || num(cm['avg-holo']) || num(cm['avg30-holo']) || num(cm['avg7-holo']) || num(cm['low-holo']);
+      if (!out.base && baseV) out.base = { v: baseV, cur: 'EUR' };
+      if (!out.rev && revV) out.rev = { v: revV, cur: 'EUR' };
+    }
+    if (!out.rev && out.base) out.rev = out.base;
+    return out;
+  }
+
+  ptcgHeaders() {
+    const k = this.props.pokemonTcgApiKey;
+    return (k && String(k).trim()) ? { 'X-Api-Key': String(k).trim() } : {};
+  }
+
+  loadPtcgSets() {
+    if (!this._ptcgSetsP) {
+      this._ptcgSetsP = fetch('https://api.pokemontcg.io/v2/sets?pageSize=250&select=id,name', { headers: this.ptcgHeaders() })
+        .then(r => r.ok ? r.json() : null)
+        .then(j => {
+          const list = (j && j.data) || [];
+          if (!list.length) this._ptcgSetsP = null;
+          return list;
+        })
+        .catch(() => { this._ptcgSetsP = null; return []; });
+    }
+    return this._ptcgSetsP;
+  }
+
+  async ptcgRetryAll() {
+    this._ptcgDone = {};
+    this._ptcgIdCache = {};
+    const ids = Object.keys(this.setCache || {});
+    for (const id of ids) this.ensurePricesFor(id);
+    this.ensureOwnedPrices && this.ensureOwnedPrices();
+  }
+
+  async ptcgResolveSet(setId, setName) {
+    this._ptcgIdCache = this._ptcgIdCache || {};
+    if (setId in this._ptcgIdCache) return this._ptcgIdCache[setId];
+    const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const sets = await this.loadPtcgSets();
+    let hit = sets.find(s => s.id === setId) || null;
+    if (!hit) {
+      const alt = setId.replace(/^(sv|swsh|sm|xy|bw)0(\d)/, '$1$2');
+      if (alt !== setId) hit = sets.find(s => s.id === alt) || null;
+    }
+    if (!hit) {
+      const nm = norm(setName || (this.setCache[setId] && this.setCache[setId].name));
+      if (nm) hit = sets.find(s => norm(s.name) === nm) || null;
+    }
+    if (!hit && !sets.length) return null;
+    return this._ptcgIdCache[setId] = hit ? hit.id : null;
+  }
+
+  async fetchPtcgSetPrices(pid) {
+    this._ptcgSetPrices = this._ptcgSetPrices || {};
+    if (this._ptcgSetPrices[pid]) return this._ptcgSetPrices[pid];
+    const byNum = {};
+    let page = 1;
+    for (;;) {
+      const r = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent('set.id:' + pid) + '&pageSize=250&page=' + page + '&select=number,tcgplayer,cardmarket', { headers: this.ptcgHeaders() });
+      if (!r.ok) return page === 1 ? null : (this._ptcgSetPrices[pid] = byNum);
+      const j = await r.json();
+      const arr = (j && j.data) || [];
+      for (const c of arr) byNum[String(c.number).toLowerCase()] = this.extractPtcgPrices(c);
+      if (arr.length < 250 || page >= 6) break;
+      page++;
+    }
+    return this._ptcgSetPrices[pid] = byNum;
+  }
+
+  extractPtcgPrices(c) {
+    const out = { base: null, rev: null };
+    const num = (v) => (typeof v === 'number' && isFinite(v) && v > 0) ? v : null;
+    out.url = (c && c.tcgplayer && c.tcgplayer.url) || null;
+    const tp = c && c.tcgplayer && c.tcgplayer.prices;
+    if (tp) {
+      const pick = (o) => o ? (num(o.market) || num(o.mid) || num(o.low)) : null;
+      const baseV = pick(tp.normal) || pick(tp.holofoil) || pick(tp['1stEditionNormal']) || pick(tp['1stEditionHolofoil']) || pick(tp.unlimited) || pick(tp.unlimitedHolofoil);
+      const revV = pick(tp.reverseHolofoil);
+      if (baseV) out.base = { v: baseV, cur: 'USD' };
+      if (revV) out.rev = { v: revV, cur: 'USD' };
+    }
+    const cm = c && c.cardmarket && c.cardmarket.prices;
+    if (cm) {
+      const baseV = num(cm.trendPrice) || num(cm.averageSellPrice) || num(cm.avg30) || num(cm.avg7) || num(cm.avg1) || num(cm.lowPrice);
+      const revV = num(cm.reverseHoloTrend) || num(cm.reverseHoloAvg30) || num(cm.reverseHoloAvg7) || num(cm.reverseHoloAvg1) || num(cm.reverseHoloLow) || num(cm.reverseHoloSell);
+      if (!out.base && baseV) out.base = { v: baseV, cur: 'EUR' };
+      if (!out.rev && revV) out.rev = { v: revV, cur: 'EUR' };
+    }
+    if (!out.rev && out.base) out.rev = out.base;
+    return out;
+  }
+
+  async ensurePricesFor(setId, setName) {
+    this._ptcgDone = this._ptcgDone || {};
+    if (this._ptcgDone[setId]) return;
+    this._ptcgDone[setId] = 1;
+    try {
+      const pid = await this.ptcgResolveSet(setId, setName);
+      if (!pid) { delete this._ptcgDone[setId]; return; }
+      const byNum = await this.fetchPtcgSetPrices(pid);
+      if (!byNum) { delete this._ptcgDone[setId]; return; }
+      this._ptcgPriced = this._ptcgPriced || {};
+      this.tcgUrlMap = this.tcgUrlMap || {};
+      const lookup = (n) => {
+        const raw = String(n == null ? '' : n).toLowerCase();
+        return byNum[raw] || byNum[raw.replace(/^0+(?=.)/, '')] || null;
+      };
+      const apply = (id, pr) => {
+        if (!pr) return;
+        if (pr.url) this.tcgUrlMap[id] = pr.url;
+        if (pr.base || pr.rev) { this.priceMap[id] = pr; this._ptcgPriced[id] = 1; }
+      };
+      const data = this.setCache[setId];
+      for (const c of ((data && data.cards) || [])) apply(c.id, lookup(c.localId));
+      for (const key of Object.keys(this.state.owned)) {
+        const id = key.split('::')[0];
+        const cut = id.lastIndexOf('-');
+        if (cut > 0 && id.slice(0, cut) === setId) apply(id, lookup(id.slice(cut + 1)));
+      }
+      this.forceUpdate();
+    } catch (e) {}
+  }
+
+  priceFor(key) {
+    const id = key.split('::')[0];
+    const p = this.priceMap[id];
+    if (!p) return null;
+    return key.includes('::r') ? (p.rev || p.base) : p.base;
+  }
+
+  fmtAmt(v, cur) {
+    const sym = cur === 'EUR' ? '\u20ac' : '$';
+    return sym + (v >= 1000 ? Math.round(v).toLocaleString('en-US') : v >= 100 ? v.toFixed(0) : v.toFixed(2));
+  }
+
+  sumKeys(keys) {
+    const t = { usd: 0, eur: 0, priced: 0, pending: 0 };
+    for (const key of keys) {
+      const id = key.split('::')[0];
+      if (!this.priceMap[id]) { t.pending++; continue; }
+      const pr = this.priceFor(key);
+      if (!pr) continue;
+      if (pr.cur === 'EUR') t.eur += pr.v; else t.usd += pr.v;
+      t.priced++;
+    }
+    return t;
+  }
+
+  convert(v, fromCur) {
+    const to = this.state.currency === 'EUR' ? 'EUR' : 'USD';
+    if (fromCur === to) return v;
+    return fromCur === 'EUR' ? v * 1.08 : v / 1.08;
+  }
+
+  fmtTotal(t) {
+    const to = this.state.currency === 'EUR' ? 'EUR' : 'USD';
+    const total = to === 'EUR' ? (t.eur + t.usd / 1.08) : (t.usd + t.eur * 1.08);
+    if (total <= 0) return t.pending ? '\u2026' : '\u2014';
+    return '\u2248 ' + this.fmtAmt(total, to);
+  }
+
+  ensureOwnedPrices() {
+    if (!this._priceInflight) this._priceInflight = {};
+    const ids = [];
+    for (const key of Object.keys(this.state.owned)) {
+      const id = key.split('::')[0];
+      if (!this.priceMap[id] && !this._priceInflight[id]) { this._priceInflight[id] = 1; ids.push(id); }
+    }
+    if (!ids.length) return;
+    const nameOf = {};
+    if (this.state.series) for (const se of this.state.series) for (const st of se.sets) nameOf[st.id] = st.name;
+    const setsInvolved = {};
+    for (const id of ids) { const cut = id.lastIndexOf('-'); if (cut > 0) setsInvolved[id.slice(0, cut)] = 1; }
+    for (const sid of Object.keys(setsInvolved)) this.ensurePricesFor(sid, nameOf[sid]);
+    const queue = ids.slice();
+    let since = 0;
+    const worker = async () => {
+      while (queue.length) {
+        const id = queue.shift();
+        if (!id) break;
+        try {
+          const r = await fetch('https://api.tcgdex.net/v2/en/cards/' + id);
+          const res = r.ok ? this.extractPrices(await r.json()) : { base: null, rev: null };
+          if (!this._ptcgPriced || !this._ptcgPriced[id]) this.priceMap[id] = res;
+        } catch (e) { if (!this._ptcgPriced || !this._ptcgPriced[id]) this.priceMap[id] = { base: null, rev: null }; }
+        delete this._priceInflight[id];
+        since++;
+        if (since >= 12) { since = 0; this.forceUpdate(); }
+      }
+    };
+    const ws = [];
+    for (let i = 0; i < 12; i++) ws.push(worker());
+    Promise.all(ws).then(() => this.forceUpdate());
+  }
+
+  savePrefs() {
+    try { localStorage.setItem('bdx-prefs', JSON.stringify({ size: this.state.size, mode: this.state.mode, showPrices: this.state.showPrices, viewMode: this.state.viewMode, binderColor: this.state.binderColor, currency: this.state.currency })); } catch (e) {}
+  }
+
+  exportCollection() {
+    try {
+      const payload = { app: 'binder-sync', exported: new Date().toISOString(), owned: this.state.owned };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'binder-sync-collection.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      this.setState({ dashMsg: 'Exported ' + Object.keys(this.state.owned).length + ' cards.' });
+    } catch (e) {
+      this.setState({ dashMsg: 'Export failed.' });
+    }
+  }
+
+  async exportExcel() {
+    const owned = this.state.owned;
+    const keys = Object.keys(owned);
+    if (!keys.length) { this.setState({ dashMsg: 'Nothing to export yet.' }); return; }
+    this.setState({ dashMsg: 'Preparing spreadsheet…' });
+    const bySet = {};
+    for (const key of keys) {
+      const cardId = key.split('::')[0];
+      const cut = cardId.lastIndexOf('-');
+      if (cut <= 0) continue;
+      const setId = cardId.slice(0, cut);
+      (bySet[setId] = bySet[setId] || []).push(key);
+    }
+    const setIndex = {};
+    if (this.state.series) {
+      for (const se of this.state.series) for (const st of se.sets) setIndex[st.id] = { name: st.name, serie: se.name };
+    }
+    const esc = (v) => {
+      const s = String(v == null ? '' : v);
+      return /[",\n\r]/.test(s) ? '"' + s.split('"').join('""') + '"' : s;
+    };
+    const rows = [['Set', 'Series', 'Card #', 'Card Name', 'Variant', 'Card ID']];
+    for (const setId of Object.keys(bySet).sort()) {
+      let data = this.setCache[setId] || null;
+      if (!data) {
+        try {
+          const r = await fetch('https://api.tcgdex.net/v2/en/sets/' + setId);
+          if (r.ok) { data = await r.json(); this.setCache[setId] = data; }
+        } catch (e) {}
+      }
+      const cardMap = {};
+      if (data && data.cards) for (const c of data.cards) cardMap[c.id] = c;
+      const info = setIndex[setId];
+      const numOf = (k) => { const m = String(k).match(/(\d+)/); return m ? parseInt(m[1], 10) : 1e9; };
+      const sorted = bySet[setId].slice().sort((a, b) => numOf(a.split('-').pop()) - numOf(b.split('-').pop()) || a.localeCompare(b));
+      for (const key of sorted) {
+        const cardId = key.split('::')[0];
+        const c = cardMap[cardId];
+        rows.push([
+          (data && data.name) || (info && info.name) || setId,
+          (info && info.serie) || (data && data.serie && data.serie.name) || '',
+          c ? c.localId : cardId.slice(cardId.lastIndexOf('-') + 1),
+          c ? c.name : '',
+          key.includes('::r') ? 'Reverse Holo' : 'Base',
+          cardId
+        ]);
+      }
+    }
+    const csv = '\uFEFF' + rows.map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'binder-sync-collection.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    this.setState({ dashMsg: 'Exported ' + (rows.length - 1) + ' cards to CSV.' });
+  }
+
+  importCollection(e) {
+    const file = e && e.target && e.target.files && e.target.files[0];
+    if (!file) return;
+    const input = e.target;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        const map = (parsed && parsed.owned && typeof parsed.owned === 'object') ? parsed.owned
+          : (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : null;
+        if (!map) throw new Error('bad format');
+        let added = 0, total = 0;
+        const merged = Object.assign({}, this.state.owned);
+        for (const k of Object.keys(map)) {
+          if (!map[k] || typeof k !== 'string' || k.length > 60) continue;
+          total++;
+          if (!merged[k]) { merged[k] = 1; added++; }
+        }
+        try { localStorage.setItem('bdx-owned', JSON.stringify(merged)); } catch (err) {}
+        this.setState({ owned: merged, dashMsg: 'Imported ' + total + ' cards (' + added + ' new).' });
+      } catch (err) {
+        this.setState({ dashMsg: 'Import failed — not a valid collection file.' });
+      }
+      input.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  jumpEra(domId) {
+    const el = document.getElementById(domId);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 64;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }
+
+  openZoom(c, sellSlot) {
+    if (!c || !c.image) return;
+    const key = c.id + (c.rev ? '::r' : '');
+    const pr = this.priceFor(key);
+    const cut = c.id.lastIndexOf('-');
+    const setId = cut > 0 ? c.id.slice(0, cut) : '';
+    let setName = '', setTotal = '';
+    if (this.setCache[setId]) {
+      setName = this.setCache[setId].name || '';
+      const cc = this.setCache[setId].cardCount;
+      setTotal = cc ? String(cc.official || cc.total || '') : '';
+    } else if (this.state.series) {
+      for (const se of this.state.series) { const st = se.sets.find(x => x.id === setId); if (st) { setName = st.name; break; } }
+    }
+    this.setState({ zoomAsk: null, zoom: { key, setName, setTotal, localId: String(c.localId || ''), sellSlot: sellSlot == null ? null : sellSlot, img: c.image + '/high.webp', name: c.name, num: '#' + c.localId, rev: !!c.rev, price: pr ? '\u2248 ' + this.fmtAmt(this.convert(pr.v, pr.cur), this.state.currency === 'EUR' ? 'EUR' : 'USD') + ' market' : null } });
+  }
+
+  binderLimit() {
+    const v = Number(this.props.binderLimit);
+    return isFinite(v) && v > 0 ? Math.round(v) : 5;
+  }
+
+  ownedSetIds() {
+    const ids = new Set();
+    for (const key of Object.keys(this.state.owned)) {
+      const cardId = key.split('::')[0];
+      const cut = cardId.lastIndexOf('-');
+      if (cut > 0) ids.add(cardId.slice(0, cut));
+    }
+    return ids;
+  }
+
+  setPlan(p) {
+    try { localStorage.setItem('bdx-plan', p); } catch (e) {}
+    this.setState({ plan: p });
+  }
+
+  ensureSellSets(ids) {
+    this._sellFetching = this._sellFetching || {};
+    for (const id of ids) {
+      if (this._sellFetching[id]) continue;
+      this._sellFetching[id] = 1;
+      fetch('https://api.tcgdex.net/v2/en/sets/' + id)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) { this.setCache[id] = d; this.forceUpdate(); } })
+        .catch(() => {});
+    }
+  }
+
+  curSell() {
+    const sa = this.state.sellAll;
+    return sa.binders.find(b => b.id === sa.cur) || sa.binders[0];
+  }
+
+  saveSellAll(sellAll) {
+    try { localStorage.setItem('bdx-sell', JSON.stringify(sellAll)); } catch (e) {}
+    this.setState({ sellAll });
+  }
+
+  newSellBinder() {
+    const sa = this.state.sellAll;
+    const id = 'sb' + Math.random().toString(36).slice(2, 7);
+    this.saveSellAll({ cur: id, binders: sa.binders.concat([{ id, title: 'Sell Binder ' + (sa.binders.length + 1), note: '', shareId: null, cards: [] }]) });
+  }
+
+  saveSell(next) {
+    this.setState(s => {
+      const sa = s.sellAll;
+      let idx = sa.binders.findIndex(b => b.id === sa.cur);
+      if (idx < 0) idx = 0;
+      const cur = sa.binders[idx];
+      const upd = Object.assign({}, cur, typeof next === 'function' ? next(cur) : next);
+      if (Array.isArray(upd.cards)) { const arr = upd.cards.slice(); while (arr.length && !arr[arr.length - 1]) arr.pop(); upd.cards = arr; }
+      const binders = sa.binders.slice(); binders[idx] = upd;
+      const sellAll = { cur: sa.cur, binders };
+      try { localStorage.setItem('bdx-sell', JSON.stringify(sellAll)); } catch (e) {}
+      return { sellAll };
+    });
+  }
+
+  toggleOwned(key) {
+    if (!this.state.owned[key] && this.state.plan === 'free') {
+      const cardId = key.split('::')[0];
+      const cut = cardId.lastIndexOf('-');
+      const setId = cut > 0 ? cardId.slice(0, cut) : null;
+      const sets = this.ownedSetIds();
+      if (setId && !sets.has(setId) && sets.size >= this.binderLimit()) {
+        this.setState({ paywall: { step: 'plans', reason: 'limit' } });
+        return;
+      }
+    }
+    this.setState(s => {
+      const o = Object.assign({}, s.owned);
+      if (o[key]) delete o[key]; else o[key] = 1;
+      try { localStorage.setItem('bdx-owned', JSON.stringify(o)); } catch (e) {}
+      return { owned: o };
+    });
+  }
+
+  flipMs() {
+    const v = Number(this.props.flipSpeed);
+    return isFinite(v) && v > 0 ? Math.round(v) : 700;
+  }
+
+  nav(dir) {
+    if (this.state.flip) return;
+    const k = this._curSpread || 0, max = this._spreadMax || 0;
+    if (dir > 0 && k >= max) return;
+    if (dir < 0 && k <= 0) return;
+    const startA = dir > 0 ? 0 : -180;
+    const endA = dir > 0 ? -180 : 0;
+    this.setState({ flip: { dir, angle: startA, go: false } });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (this.state.flip) this.setState({ flip: { dir, angle: endA, go: true } });
+    }));
+    clearTimeout(this._flipTimer);
+    this._flipTimer = setTimeout(() => this.finishFlip(), this.flipMs() + 200);
+  }
+
+  finishFlip() {
+    clearTimeout(this._flipTimer);
+    const f = this.state.flip;
+    if (!f) return;
+    const k = this._curSpread || 0;
+    this.setState({ spread: k + (f.dir > 0 ? 1 : -1), flip: null });
+  }
+
+  renderVals() {
+    const S = this.state, P = this.props;
+    const T = this.themes[P.look] || this.themes.Gallery;
+    const flipMs = this.flipMs();
+
+    const vals = {
+      isHome: S.view === 'home',
+      isSet: S.view === 'set',
+      isDash: S.view === 'dash',
+      homeQuery: S.homeQuery,
+      homeClearOn: !!S.homeQuery,
+      clearHomeQuery: () => {
+        clearTimeout(this._searchTimer);
+        this._searchToken = (this._searchToken || 0) + 1;
+        this.setState({ homeQuery: '', globalHits: null, cardSearching: false });
+      },
+      setQuery: (e) => {
+        const v = e.target.value;
+        this.setState({ homeQuery: v });
+        clearTimeout(this._searchTimer);
+        const qq = v.trim();
+        if (qq.length >= 3) {
+          this._searchTimer = setTimeout(() => this.searchCards(qq), 450);
+        } else {
+          this._searchToken = (this._searchToken || 0) + 1;
+          this.setState({ globalHits: null, cardSearching: false });
+        }
+      },
+      goDash: () => { window.scrollTo(0, 0); this.ensureOwnedPrices(); this.setState({ view: 'dash', set: null, flip: null, zoom: null, dashMsg: null }); },
+      rootOv: 'background:' + T.bg + ';color:' + T.ink,
+      headerOv: 'background:' + T.bg + 'd9',
+      surfOv: 'background:' + T.surf,
+      paperOv: 'background:' + T.paper,
+      pocketBg: 'background:' + T.pocket,
+      leatherBg: (() => {
+        const lc = this.leathers.find(l => l.id === S.binderColor) || this.leathers[0];
+        return 'background:linear-gradient(145deg,' + lc.l1 + ',' + lc.l2 + ')';
+      })(),
+      stitchCol: S.binderColor === 'white' ? 'rgba(0,0,0,0.18)' : T.stitch,
+      endInkOv: S.binderColor === 'white' ? 'color:rgba(0,0,0,0.45);border:1px solid rgba(0,0,0,0.2);' : 'color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.22);',
+      accentBg: 'background:' + T.accent,
+      backHome: () => this.setState({ view: 'home', set: null, flip: null, zoom: null }),
+      zoomOn: !!S.zoom,
+      closeZoom: () => this.setState({ zoom: null }),
+      zoomImg: S.zoom ? S.zoom.img : null,
+      zoomName: S.zoom ? S.zoom.name : '',
+      zoomNum: S.zoom ? S.zoom.num : '',
+      zoomRev: !!(S.zoom && S.zoom.rev),
+      zoomPrice: (S.zoom && S.zoom.price) || null,
+      homeLoading: S.view === 'home' && !S.series && !S.homeError,
+      homeError: S.homeError,
+      retryHome: () => this.loadSeries(),
+      shimmers: [1, 2, 3, 4, 5, 6, 7, 8],
+      hasSetSymbol: false, hasSetLogo: false,
+      progressPct: '0%', progressLabel: ''
+    };
+
+    const limit = this.binderLimit();
+    const ownedSets = this.ownedSetIds();
+    const isMaster = S.plan === 'master';
+    const isPro = S.plan === 'pro' || isMaster;
+    vals.isFreePlan = !isPro;
+    vals.isProPlan = isPro;
+    vals.isMasterPlan = isMaster;
+    vals.planChipLabel = isMaster ? '★ MASTER' : isPro ? '✦ PRO' : 'FREE · ' + ownedSets.size + '/' + limit;
+    vals.planChipOv = isPro
+      ? ('border:1px solid transparent;color:#ffffff;background:' + T.accent)
+      : 'border:1px solid color-mix(in srgb, currentColor 18%, transparent);opacity:0.75';
+    vals.openPlans = () => this.setState({ paywall: { step: 'plans', reason: 'browse' } });
+    const pw = S.paywall;
+    vals.paywallOn = !!pw;
+    vals.closePaywall = () => { if (!this.state.paying) this.setState({ paywall: null }); };
+    vals.eatClick = (e) => { if (e) e.stopPropagation(); };
+    vals.undoOn = !!S.undo;
+    vals.undoMsg = S.undo ? S.undo.msg : '';
+    vals.undoDo = () => {
+      const u = this.state.undo;
+      if (!u) return;
+      if (this._undoTimer) clearTimeout(this._undoTimer);
+      try { localStorage.setItem('bdx-owned', JSON.stringify(u.owned)); } catch (e) {}
+      this.setState({ owned: u.owned, undo: null, dashMsg: 'Restored.' });
+    };
+    vals.undoDismiss = () => {
+      if (this._undoTimer) clearTimeout(this._undoTimer);
+      this.setState({ undo: null });
+    };
+    if (pw) {
+      vals.pwPlansOn = pw.step === 'plans';
+      vals.pwCheckoutOn = pw.step === 'checkout';
+      vals.pwDoneOn = pw.step === 'done';
+      vals.pwTitle = pw.reason === 'limit' ? 'Your free binders are full' : pw.reason === 'sell' ? 'Sell Binder is a Master feature' : pw.reason === 'prices' ? 'Market pricing is a Master feature' : 'Plans';
+      vals.pwSub = pw.reason === 'limit'
+        ? ('Free includes ' + limit + ' saved binders and you\'re using all of them. Go Pro to track every set — your existing binders stay exactly as they are.')
+        : pw.reason === 'sell'
+        ? 'Build a binder of exactly the cards you\u2019re selling — your order, your prices — and share it with a QR code.'
+        : pw.reason === 'prices'
+        ? 'See live market values on every card, right in your binder pages.'
+        : ('Track up to ' + limit + ' binders free, go unlimited with Pro, or sell with Master.');
+      vals.freeFeats = [
+        { t: 'Browse every set & era' },
+        { t: limit + ' saved binders' },
+        { t: 'Master sets & reverse holos' },
+        { t: 'JSON & CSV export' }
+      ];
+      vals.proFeats = [
+        { t: 'Unlimited binders' },
+        { t: 'Sync across devices' },
+        { t: 'Everything in Free' }
+      ];
+      vals.masterFeats = [
+        { t: 'Sell Binders — any cards, your order & prices' },
+        { t: 'QR share pages for buyers' },
+        { t: 'Market prices in every binder' },
+        { t: 'Printable QR insert card' },
+        { t: 'Sell analytics — views & scans' },
+        { t: 'Everything in Pro' }
+      ];
+      vals.freePlanNote = isPro ? 'Included in your plan' : 'Your current plan';
+      vals.proCardOv = 'border-color:color-mix(in srgb, currentColor 22%, transparent)';
+      vals.masterCardOv = 'border-color:' + T.accent;
+      vals.proBtnLabel = isMaster ? 'Included in Master' : isPro ? 'Current plan' : 'Upgrade to Pro';
+      vals.proBtnOv = isPro ? 'opacity:0.45;cursor:default' : '';
+      vals.masterBtnLabel = isMaster ? 'Current plan' : 'Upgrade to Master';
+      vals.masterBtnOv = isMaster ? 'opacity:0.45;cursor:default' : '';
+      vals.goCheckout = () => { if (!isPro) this.setState({ paywall: { step: 'checkout', reason: pw.reason, plan: 'pro' } }); };
+      vals.goCheckoutMaster = () => { if (!isMaster) this.setState({ paywall: { step: 'checkout', reason: pw.reason, plan: 'master' } }); };
+      vals.backToPlans = () => this.setState({ paywall: { step: 'plans', reason: pw.reason } });
+      const buyMaster = pw.plan === 'master';
+      vals.pwPlanName = buyMaster ? 'Binder Sync Master' : 'Binder Sync Pro';
+      vals.pwPlanDesc = buyMaster ? 'Sell Binder + QR sharing · cancel anytime' : 'Unlimited binders · cancel anytime';
+      vals.pwPrice = buyMaster ? '$6.00' : '$3.00';
+      vals.payLabel = S.paying ? 'Processing…' : 'Subscribe · ' + (buyMaster ? '$6.00' : '$3.00') + ' / month';
+      vals.confirmPay = () => {
+        if (this.state.paying) return;
+        this.setState({ paying: true });
+        setTimeout(() => {
+          this.setPlan(buyMaster ? 'master' : 'pro');
+          this.setState({ paying: false, paywall: { step: 'done', reason: pw.reason, plan: pw.plan } });
+        }, 1100);
+      };
+      vals.pwDoneTitle = buyMaster ? 'Welcome to Master' : 'Welcome to Pro';
+      vals.pwDoneText = buyMaster
+        ? 'Your Sell Binder is unlocked — add the cards you\u2019re selling, set prices, and share it with a QR code. Find it in My collection.'
+        : 'The binder limit is gone — track as many sets as you like. Manage or cancel any time from My collection.';
+      vals.pwDoneBtn = buyMaster ? 'Open My collection' : 'Start collecting';
+      vals.pwDoneGo = () => {
+        if (buyMaster) { window.scrollTo(0, 0); this.setState({ paywall: null, view: 'dash', set: null, dashMsg: null }); }
+        else this.setState({ paywall: null });
+      };
+    }
+
+    const q = (S.homeQuery || '').trim().toLowerCase();
+    if (S.series) {
+      const filtered = S.series.map(se => ({
+        id: se.id, name: se.name,
+        matchSets: q ? se.sets.filter(st => st.name.toLowerCase().includes(q) || se.name.toLowerCase().includes(q)) : se.sets
+      })).filter(se => se.matchSets.length > 0);
+      vals.railOn = S.vw >= 880;
+      vals.chipsOn = S.vw < 880;
+      vals.eraNav = filtered.map(se => ({
+        name: se.name,
+        pick: () => this.jumpEra('era-' + se.id)
+      }));
+      vals.seriesList = filtered.map(se => ({
+        eid: se.id, name: se.name,
+        countLabel: se.matchSets.length + (se.matchSets.length === 1 ? ' set' : ' sets'),
+        sets: se.matchSets.map(st => ({
+          name: st.name,
+          logoUrl: st.logo ? st.logo + '.webp' : null,
+          noLogo: !st.logo,
+          symbolUrl: st.symbol ? st.symbol + '.webp' : null,
+          countLabel: (st.cardCount.official || st.cardCount.total) + ' cards',
+          open: () => this.openSet({ id: st.id, name: st.name, serieName: se.name, logo: st.logo, symbol: st.symbol })
+        }))
+      }));
+    }
+
+    vals.homeNoMatch = S.view === 'home' && !!q && S.series && (!vals.seriesList || vals.seriesList.length === 0);
+
+    if (S.view === 'home' && q.length >= 3) {
+      vals.cardResultsOn = true;
+      vals.cardSearching = S.cardSearching;
+      const setIdx = {};
+      if (S.series) for (const se of S.series) for (const st of se.sets) setIdx[st.id] = { st, serie: se.name };
+      const out = [];
+      const seen = {};
+      for (const c of (S.globalHits || [])) {
+        if (!c || !c.id || !c.image || seen[c.id]) continue;
+        seen[c.id] = 1;
+        const cut = c.id.lastIndexOf('-');
+        if (cut <= 0) continue;
+        const sid = c.id.slice(0, cut);
+        const info = setIdx[sid];
+        if (!info) continue;
+        out.push({
+          name: c.name,
+          img: c.image + '/low.webp',
+          meta: info.st.name + ' · #' + c.localId,
+          open: () => {
+            this._pendingJump = c.id;
+            this.openSet({ id: info.st.id, name: info.st.name, serieName: info.serie, logo: info.st.logo, symbol: info.st.symbol });
+          }
+        });
+      }
+      const CAP = 60;
+      vals.cardResults = out.slice(0, CAP);
+      vals.cardNoResults = !S.cardSearching && S.globalHits !== null && out.length === 0;
+      vals.cardResultsLabel = S.cardSearching ? 'searching…' : (out.length > CAP ? CAP + ' of ' + out.length + ' cards' : out.length + (out.length === 1 ? ' card' : ' cards'));
+      vals.cardMoreNote = (!S.cardSearching && out.length > CAP) ? ('Showing the first ' + CAP + ' — type more of the name to narrow it down.') : null;
+    }
+
+    if (S.view === 'dash') {
+      const entries = Object.keys(S.owned);
+      const bySet = {};
+      let revCount = 0;
+      for (const key of entries) {
+        const cardId = key.split('::')[0];
+        if (key.includes('::r')) revCount++;
+        const cut = cardId.lastIndexOf('-');
+        if (cut <= 0) continue;
+        const setId = cardId.slice(0, cut);
+        (bySet[setId] = bySet[setId] || []).push(key);
+      }
+      const setIndex = {};
+      if (S.series) {
+        for (const se of S.series) for (const st of se.sets) setIndex[st.id] = { st, serie: se.name };
+      }
+      const collTot = this.sumKeys(entries);
+      vals.dashStats = [
+        { k: 'Cards collected', v: String(entries.length) },
+        { k: 'Sets started', v: String(Object.keys(bySet).length) },
+        { k: 'Reverse holos', v: String(revCount) },
+        { k: collTot.pending ? 'Est. value \u00b7 pricing ' + (entries.length - collTot.pending) + '/' + entries.length + '\u2026' : 'Est. value (market)', v: this.fmtTotal(collTot) }
+      ];
+      vals.planTitle = isMaster ? 'Binder Sync Master' : isPro ? 'Binder Sync Pro' : 'Free plan';
+      vals.planBadge = isMaster ? 'MASTER' : 'PRO';
+      vals.planDesc = isMaster
+        ? 'Sell Binder, QR sharing, and unlimited binders. Billed $6.00 monthly — cancel anytime.'
+        : isPro
+        ? 'Unlimited binders, synced everywhere. Billed $3.00 monthly — cancel anytime.'
+        : ('Saving ' + ownedSets.size + ' of ' + limit + ' free binders. Pro removes the limit.');
+      vals.meterOn = !isPro;
+      vals.binderUsePct = Math.min(100, Math.round(100 * ownedSets.size / limit)) + '%';
+      vals.binderUseLabel = ownedSets.size + ' / ' + limit + ' binders';
+      vals.cancelPro = () => {
+        this.setPlan('free');
+        const n = this.ownedSetIds().size;
+        this.setState({ dashMsg: n > this.binderLimit()
+          ? ('Downgraded to Free — your ' + n + ' binders stay saved, but adding cards to new binders needs Pro.')
+          : 'Downgraded to Free.' });
+      };
+      const openSellView = (id) => {
+        window.scrollTo(0, 0);
+        this.ensureOwnedPrices();
+        this.saveSellAll({ cur: id, binders: this.state.sellAll.binders });
+        this.setState({ view: 'sell', set: null, flip: null, zoom: null, sellPreview: false, sellSpread: 0 });
+      };
+      vals.sellListOn = isMaster;
+      vals.sellLocked = !isMaster;
+      vals.unlockSell = () => this.setState({ paywall: { step: 'plans', reason: 'sell' } });
+      vals.newSellDash = () => { this.newSellBinder(); setTimeout(() => openSellView(this.state.sellAll.cur), 0); };
+      vals.sellBinderRows = S.sellAll.binders.map(b => {
+        const cs = (b.cards || []).filter(Boolean);
+        let a = 0;
+        for (const c of cs) { const n = Number(c.price); if (isFinite(n) && n > 0) a += n; }
+        return {
+          id: b.id,
+          title: b.title || 'Untitled binder',
+          meta: cs.length ? (cs.length + ' card' + (cs.length === 1 ? '' : 's') + (a > 0 ? ' · asking ' + this.fmtAmt(a, 'USD') : '')) : 'No cards listed yet',
+          open: () => { if (this.state.sellRenameId !== b.id) openSellView(b.id); },
+          renaming: S.sellRenameId === b.id,
+          notRenaming: S.sellRenameId !== b.id,
+          renameVal: b.title || '',
+          startRename: (e) => { if (e) e.stopPropagation(); this.setState({ sellRenameId: b.id }); },
+          renameInput: (e) => { const v = e.target.value; this.saveSellAll({ cur: this.state.sellAll.cur, binders: this.state.sellAll.binders.map(x => x.id === b.id ? Object.assign({}, x, { title: v }) : x) }); },
+          renameDone: () => this.setState({ sellRenameId: null }),
+          renameKey: (e) => { if (e.key === 'Enter') e.target.blur(); },
+          eatRow: (e) => { if (e) e.stopPropagation(); }
+        };
+      });
+      vals.dashHasBinders = entries.length > 0;
+      vals.clearConfirmOn = !!S.clearConfirm;
+      const cc = S.clearConfirm;
+      const ccSet = cc && cc.id ? cc : null;
+      vals.clearTitle = ccSet ? ('Clear \u201c' + ccSet.name + '\u201d?') : 'Clear all binders?';
+      vals.clearBtnLabel = ccSet ? 'Clear binder' : 'Clear everything';
+      vals.clearConfirmText = ccSet
+        ? ('This removes the ' + ccSet.count + ' tracked card' + (ccSet.count === 1 ? '' : 's') + ' in this binder from this device. Consider exporting a backup first — this can\u2019t be undone.')
+        : ('This removes all ' + entries.length + ' tracked cards across ' + ownedSets.size + ' binder' + (ownedSets.size === 1 ? '' : 's') + ' from this device. Consider exporting a backup first — this can\u2019t be undone.');
+      vals.openClearConfirm = () => this.setState({ clearConfirm: { all: true } });
+      vals.closeClearConfirm = () => this.setState({ clearConfirm: false });
+      vals.doClearAll = () => {
+        const t = this.state.clearConfirm;
+        const prev = Object.assign({}, this.state.owned);
+        if (this._undoTimer) clearTimeout(this._undoTimer);
+        this._undoTimer = setTimeout(() => this.setState({ undo: null }), 10000);
+        if (t && t.id) {
+          const o = {};
+          for (const key of Object.keys(this.state.owned)) {
+            const cardId = key.split('::')[0];
+            const cut = cardId.lastIndexOf('-');
+            if (cut > 0 && cardId.slice(0, cut) === t.id) continue;
+            o[key] = this.state.owned[key];
+          }
+          try { localStorage.setItem('bdx-owned', JSON.stringify(o)); } catch (e) {}
+          this.setState({ owned: o, clearConfirm: false, dashMsg: 'Cleared \u201c' + t.name + '\u201d.', undo: { owned: prev, msg: 'Cleared \u201c' + t.name + '\u201d' } });
+        } else {
+          try { localStorage.setItem('bdx-owned', '{}'); } catch (e) {}
+          this.setState({ owned: {}, clearConfirm: false, dashMsg: 'All binders cleared.', undo: { owned: prev, msg: 'All binders cleared' } });
+        }
+      };
+      const dashActive = 'background:' + T.ink + ';color:' + T.bg;
+      vals.curOpts = ['USD', 'EUR'].map(c => ({
+        label: c === 'USD' ? '$ USD' : '\u20ac EUR',
+        ov: (S.currency === 'EUR' ? 'EUR' : 'USD') === c ? dashActive : 'opacity:0.55',
+        pick: () => this.setState({ currency: c }, () => this.savePrefs())
+      }));
+      vals.exportColl = () => this.exportCollection();
+      vals.exportExcel = () => this.exportExcel();
+      vals.importColl = (e) => this.importCollection(e);
+      vals.dashMsg = S.dashMsg;
+      vals.dashEmpty = entries.length === 0;
+      vals.dashRows = Object.keys(bySet).map(id => {
+        const info = setIndex[id];
+        const keys = bySet[id];
+        const baseOwned = new Set(keys.map(k => k.split('::')[0])).size;
+        const total = info ? (info.st.cardCount.total || info.st.cardCount.official || 0) : 0;
+        const pct = total ? Math.min(100, Math.round(100 * baseOwned / total)) : 0;
+        const rowVal = this.fmtTotal(this.sumKeys(keys));
+        const valSuffix = rowVal === '\u2014' ? '' : ' \u00b7 ' + rowVal;
+        return {
+          id,
+          name: info ? info.st.name : id,
+          serie: info ? info.serie : '',
+          symbolUrl: info && info.st.symbol ? info.st.symbol + '.webp' : null,
+          pct: pct + '%',
+          sortPct: pct,
+          label: (total ? (baseOwned + '/' + total + ' unique · ' + keys.length + ' total') : (keys.length + ' cards')) + valSuffix,
+          open: info ? (() => this.openSet({ id: info.st.id, name: info.st.name, serieName: info.serie, logo: info.st.logo, symbol: info.st.symbol })) : (() => {}),
+          clear: (e) => { if (e) e.stopPropagation(); this.setState({ clearConfirm: { id, name: info ? info.st.name : id, count: keys.length } }); }
+        };
+      }).sort((a, b) => b.sortPct - a.sortPct || a.name.localeCompare(b.name));
+      return vals;
+    }
+
+    const zm = S.zoom;
+    const zMaster = S.plan === 'master';
+    const zBuyerView = S.view === 'sell' && !!S.sellPreview;
+    vals.zoomInsightsOn = !!zm && zMaster && !zBuyerView;
+    vals.zoomLockedOn = !!zm && !zMaster && !zBuyerView;
+    vals.unlockPrices = () => this.setState({ zoom: null, paywall: { step: 'plans', reason: 'prices' } });
+    if (zm && zMaster) {
+      const zcur = S.currency === 'EUR' ? 'EUR' : 'USD';
+      const zmp = this.priceFor(zm.key);
+      const zbase = zmp ? this.convert(zmp.v, zmp.cur) : null;
+      vals.zoomMkt = zbase != null ? this.fmtAmt(zbase, zcur) : '\u2014';
+      vals.zoomMktNote = zbase != null ? 'TCGplayer market price' : 'No market price found for this card \u2014 check the links below.';
+      const znum = zm.localId ? (zm.localId + (zm.setTotal ? '/' + zm.setTotal : '')) : '';
+      const zId = zm.key.split('::')[0];
+      const zPm = this.priceMap[zId];
+      const zUrl = (this.tcgUrlMap && this.tcgUrlMap[zId]) || (zPm && zPm.url) || null;
+      vals.zoomTcgUrl = zUrl ? zUrl : 'https://www.tcgplayer.com/search/pokemon/product?q=' + encodeURIComponent(((zm.name || '') + ' ' + znum).trim()) + (zm.setName ? '&setName=' + encodeURIComponent(zm.setName) : '');
+      vals.zoomEbayUrl = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(((zm.name || '') + ' ' + (zm.setName || '') + ' ' + znum + ' pokemon card' + (zm.rev ? ' reverse holo' : '')).replace(/\s+/g, ' ').trim()) + '&LH_Sold=1&LH_Complete=1';
+      vals.zoomApplyOn = zm.sellSlot != null;
+      if (zm.sellSlot != null) {
+        const sellCur = this.curSell();
+        const slotCard = sellCur && sellCur.cards ? sellCur.cards[zm.sellSlot] : null;
+        const existing = slotCard && slotCard.price != null && slotCard.price !== '' ? String(slotCard.price) : '';
+        vals.zoomAskVal = S.zoomAsk != null ? S.zoomAsk : existing;
+        vals.zoomAskInput = (e) => this.setState({ zoomAsk: e.target.value });
+        const applyPrice = (p) => {
+          const slot = zm.sellSlot;
+          this.saveSell(sl => ({ cards: sl.cards.map((x, j) => (j === slot && x) ? Object.assign({}, x, { price: p }) : x) }));
+          this.setState({ zoom: null, zoomAsk: null });
+        };
+        vals.zoomApply = () => {
+          const raw = S.zoomAsk != null ? S.zoomAsk : existing;
+          const n = Number(String(raw).replace(/[^0-9.]/g, ''));
+          if (isFinite(n) && n > 0) applyPrice(Math.round(n * 100) / 100);
+        };
+        vals.zoomAskKey = (e) => { if (e.key === 'Enter') vals.zoomApply(); };
+        vals.zoomUseMktOn = zbase != null;
+        vals.zoomUseMkt = () => applyPrice(Math.round(zbase * 100) / 100);
+      }
+    }
+    vals.isSell = S.view === 'sell';
+    if (S.view === 'sell') {
+      const sell = this.curSell() || { id: 'sb1', title: 'My Sell Binder', note: '', shareId: null, cards: [] };
+      const cards = sell.cards || [];
+      const bdimsMap = { 4: [2, 2], 9: [3, 3], 12: [4, 3] };
+      const bsize = bdimsMap[sell.size] ? sell.size : 9;
+      const editMode = !S.sellPreview;
+      const usedPages = Math.ceil(cards.length / bsize);
+      const totalSlots = editMode ? (usedPages + 1) * bsize : usedPages * bsize;
+      const needSets = new Set();
+      const setIndexS = {};
+      if (S.series) for (const se of S.series) for (const st of se.sets) setIndexS[st.id] = { st, serie: se.name };
+      const lookup = (key) => {
+        const cardId = key.split('::')[0];
+        const cut = cardId.lastIndexOf('-');
+        const setId = cut > 0 ? cardId.slice(0, cut) : '';
+        const data = this.setCache[setId];
+        let card = null;
+        if (data && data.cards) card = data.cards.find(x => x.id === cardId) || null;
+        else if (setId) needSets.add(setId);
+        return { cardId, setId, card };
+      };
+      const curCode = S.currency === 'EUR' ? 'EUR' : 'USD';
+      const moveCard = (from, to) => this.saveSell(sl => {
+        const arr = sl.cards.slice();
+        while (arr.length <= Math.max(from, to)) arr.push(null);
+        const t = arr[to];
+        arr[to] = arr[from];
+        arr[from] = t || null;
+        return { cards: arr };
+      });
+      vals.sellRows = [];
+      for (let i = 0; i < totalSlots; i++) {
+        const c = cards[i];
+        if (!c) {
+          vals.sellRows.push({
+            key: 'g' + i,
+            plusOn: editMode,
+            plus: () => { this.ensureOwnedPrices(); this.setState({ sellPicker: true, sellQuery: '', sellPickFor: i }); },
+            dragOver: (e) => { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'; },
+            drop: (e) => { e.preventDefault(); const from = this.state.sellDrag; this.setState({ sellDrag: null }); if (from == null || from === i) return; moveCard(from, i); }
+          });
+          continue;
+        }
+        const { cardId, card } = lookup(c.key);
+        const mp = this.priceFor(c.key);
+        const pn = Number(c.price);
+        const cond0 = c.cond || 'NM';
+        const askL = (isFinite(pn) && pn > 0) ? this.fmtAmt(pn, 'USD') : 'Make offer';
+        vals.sellRows.push({
+          has: true,
+          priceTag: askL + ' · ' + cond0,
+          key: c.key,
+          name: card ? card.name : cardId,
+          num: card ? '#' + card.localId : '',
+          img: card && card.image ? card.image + '/low.webp' : null,
+          noImg: !(card && card.image),
+          rev: c.key.includes('::r'),
+          cond: cond0,
+          price: c.price == null ? '' : String(c.price),
+          market: mp ? '\u2248 ' + this.fmtAmt(this.convert(mp.v, mp.cur), curCode) + ' mkt' : '',
+          askLabel: askL,
+          zoomClick: (e) => { if (e) e.stopPropagation(); if (card && card.image) this.openZoom(Object.assign({}, card, { rev: c.key.includes('::r') }), editMode ? i : null); },
+          setPrice: (e) => { const v = e.target.value; this.saveSell(sl => ({ cards: sl.cards.map((x, j) => (j === i && x) ? Object.assign({}, x, { price: v }) : x) })); },
+          setCond: (e) => { const v = e.target.value; this.saveSell(sl => ({ cards: sl.cards.map((x, j) => (j === i && x) ? Object.assign({}, x, { cond: v }) : x) })); },
+          remove: () => this.saveSell(sl => { const arr = sl.cards.slice(); arr[i] = null; return { cards: arr }; }),
+          change: (e) => { if (e) e.stopPropagation(); this.ensureOwnedPrices(); this.setState({ sellPicker: true, sellQuery: '', sellPickFor: i }); },
+          editListing: (e) => { if (e) e.stopPropagation(); this.setState({ sellEditSlot: i }); },
+          dragStart: (e) => { this.setState({ sellDrag: i }); if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'; },
+          dragOver: (e) => { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'; },
+          drop: (e) => { e.preventDefault(); const from = this.state.sellDrag; this.setState({ sellDrag: null }); if (from == null || from === i) return; moveCard(from, i); },
+          dragOv: S.sellDrag === i ? 'opacity:0.35;outline:2px dashed color-mix(in srgb, currentColor 30%, transparent);' : ''
+        });
+      }
+      const nCards = cards.filter(Boolean).length;
+      vals.sellEmpty = nCards === 0;
+      vals.sellRowsOn = true;
+      vals.sellTitle = sell.title || 'My Sell Binder';
+      vals.setSellTitle = (e) => this.saveSell({ title: e.target.value });
+      vals.sellNote = sell.note || '';
+      vals.setSellNote = (e) => this.saveSell({ note: e.target.value });
+      vals.sellNoteOn = !!(sell.note && sell.note.trim());
+      vals.sellSwitchVal = sell.id;
+      vals.sellSwitchChange = (e) => { const v = e.target.value; this.saveSellAll({ cur: v, binders: this.state.sellAll.binders }); this.setState({ sellSpread: 0, sellEditSlot: null }); };
+      vals.sellSwitchOpts = S.sellAll.binders.map(b => ({ v: b.id, label: b.title || 'Untitled binder' }));
+      vals.newSell = () => { this.newSellBinder(); this.setState({ sellSpread: 0 }); };
+      vals.sellCanDelete = S.sellAll.binders.length > 1;
+      vals.deleteSellBinder = () => {
+        const sa = this.state.sellAll;
+        if (sa.binders.length <= 1) return;
+        if (!window.confirm('Delete \u201c' + (sell.title || 'this binder') + '\u201d? Your cards stay in your collection.')) return;
+        const binders = sa.binders.filter(b => b.id !== sell.id);
+        this.saveSellAll({ cur: binders[0].id, binders });
+        this.setState({ sellSpread: 0 });
+      };
+      let ask = 0, priced = 0;
+      for (const c of cards) { if (!c) continue; const n = Number(c.price); if (isFinite(n) && n > 0) { ask += n; priced++; } }
+      vals.sellTotalLabel = nCards + ' card' + (nCards === 1 ? '' : 's')
+        + (ask > 0 ? ' · asking ' + this.fmtAmt(ask, 'USD') : '')
+        + (priced < nCards && nCards ? ' · ' + (nCards - priced) + ' unpriced' : '');
+      vals.condOpts = ['NM', 'LP', 'MP', 'HP', 'DMG'];
+      vals.sellPreviewOn = !!S.sellPreview;
+      vals.sellEditOn = !S.sellPreview;
+      vals.togglePreview = () => this.setState(s => ({ sellPreview: !s.sellPreview, sellSpread: 0 }));
+      vals.previewLabel = S.sellPreview ? 'Back to editing' : 'Buyer view';
+      vals.openSellPicker = () => { this.ensureOwnedPrices(); this.setState({ sellPicker: true, sellQuery: '', sellPickFor: null }); };
+      vals.sellPickTitle = S.sellPickFor != null ? 'Pick a card for this pocket' : 'Add cards to sell';
+      vals.openShare = () => {
+        if (!this.curSell().shareId) this.saveSell({ shareId: Math.random().toString(36).slice(2, 8) });
+        this.setState({ sellShare: true });
+      };
+      vals.sellPickerOn = !!S.sellPicker;
+      vals.closeSellPicker = () => this.setState({ sellPicker: false, sellPickFor: null });
+      vals.sellQuery = S.sellQuery;
+      vals.setSellQuery = (e) => this.setState({ sellQuery: e.target.value });
+      const inSell = new Set(cards.filter(Boolean).map(c => c.key));
+      const pq = (S.sellQuery || '').trim().toLowerCase();
+      const pickRows = [];
+      for (const key of Object.keys(S.owned)) {
+        if (pickRows.length >= 200) break;
+        const { cardId, setId, card } = lookup(key);
+        const name = card ? card.name : cardId;
+        const info = setIndexS[setId];
+        if (pq && !(name.toLowerCase().includes(pq) || (info && info.st.name.toLowerCase().includes(pq)))) continue;
+        const added = inSell.has(key);
+        pickRows.push({
+          key, name, added,
+          img: card && card.image ? card.image + '/low.webp' : null,
+          rev: key.includes('::r'),
+          meta: (info ? info.st.name : setId) + (card ? ' · #' + card.localId : ''),
+          markLabel: S.sellPickFor != null ? 'Use this' : (added ? '✓ Added' : '+ Add'),
+          markOv: added ? ('border:1px solid transparent;color:#ffffff;background:' + T.accent) : 'border:1px solid color-mix(in srgb, currentColor 18%, transparent);opacity:0.7',
+          add: () => {
+            const pf = this.state.sellPickFor;
+            const mp = this.priceFor(key);
+            const def = mp ? Math.round(this.convert(mp.v, mp.cur) * 100) / 100 : '';
+            if (pf != null) {
+              this.saveSell(sl => { const arr = sl.cards.slice(); while (arr.length <= pf) arr.push(null); arr[pf] = { key, price: def, cond: 'NM' }; return { cards: arr }; });
+              this.setState({ sellPicker: false, sellPickFor: null });
+            } else if ((this.curSell().cards || []).some(x => x && x.key === key)) {
+              this.saveSell(sl => ({ cards: sl.cards.map(x => (x && x.key === key) ? null : x) }));
+            } else {
+              this.saveSell(sl => ({ cards: sl.cards.concat([{ key, price: def, cond: 'NM' }]) }));
+            }
+          }
+        });
+      }
+      this.ensureSellSets(needSets);
+      vals.sellPickRows = pickRows;
+      vals.sellPickEmpty = pickRows.length === 0;
+      const bcols = bdimsMap[bsize][0], brows = bdimsMap[bsize][1];
+      const bpad = 18, bgap = 10, bpageH = 560;
+      const bslotH = (bpageH - 2 * bpad - (brows - 1) * bgap) / brows;
+      const bslotW = bslotH * 63 / 88;
+      const bpageW = Math.round(bcols * bslotW + (bcols - 1) * bgap + 2 * bpad);
+      const bpages = [];
+      for (let i = 0; i < vals.sellRows.length; i += bsize) bpages.push(vals.sellRows.slice(i, i + bsize));
+      const bPageCount = bpages.length;
+      const bMax = bPageCount > 0 ? Math.ceil((bPageCount - 1) / 2) : 0;
+      const bk = Math.min(S.sellSpread || 0, bMax);
+      vals.bCols = bcols; vals.bRows = brows;
+      vals.bPageW = bpageW; vals.bPageH = bpageH;
+      vals.bLeftIsCover = bk === 0;
+      const bLeft = bk === 0 ? null : bpages[2 * bk - 1] || null;
+      const bRight = bpages[2 * bk] || null;
+      vals.bLeftOn = !!bLeft;
+      vals.bLeftSlots = bLeft;
+      vals.bRightOn = !!bRight;
+      vals.bRightSlots = bRight;
+      vals.bRightIsEnd = !bRight;
+      const bspine = 44, bcoverPad = 16;
+      const bCoverW = 2 * bpageW + bspine + 2 * bcoverPad;
+      const bCoverH = bpageH + 2 * bcoverPad;
+      vals.bCoverW = bCoverW; vals.bCoverH = bCoverH;
+      vals.bCoverHalf = Math.round(bCoverW / 2);
+      const bScale = Math.max(0.2, Math.min(1, (S.vw - 60) / (bCoverW + 130), (S.vh - 280) / bCoverH));
+      vals.bStageScale = Math.round(bScale * 1000) / 1000;
+      vals.bStageH = Math.round(bCoverH * bScale);
+      vals.bPrev = () => this.setState({ sellSpread: Math.max(0, bk - 1) });
+      vals.bNext = () => this.setState({ sellSpread: Math.min(bMax, bk + 1) });
+      vals.bCanPrevOv = bk > 0 ? '' : 'opacity:0.3;pointer-events:none';
+      vals.bCanNextOv = bk < bMax ? '' : 'opacity:0.3;pointer-events:none';
+      vals.bPagesLabel = bPageCount
+        ? (bk === 0 ? 'Cover · Page 1 of ' + bPageCount : 'Pages ' + (2 * bk) + (2 * bk + 1 <= bPageCount ? '–' + (2 * bk + 1) : '') + ' of ' + bPageCount)
+        : 'Empty binder';
+      vals.bCoverStats = [{ k: 'Cards for sale', v: String(nCards) }];
+      if (ask > 0) vals.bCoverStats.push({ k: 'Asking total', v: this.fmtAmt(ask, 'USD') });
+      if (priced < nCards && nCards) vals.bCoverStats.push({ k: 'Open to offers', v: String(nCards - priced) });
+      if (bPageCount) vals.bCoverStats.push({ k: 'Pages', v: bPageCount + ' × ' + bsize + '-pocket' });
+      this._sellMax = bMax; this._sellCur = bk;
+      const bLc = this.leathers.find(l => l.id === (sell.color || S.binderColor)) || this.leathers[0];
+      vals.bLeatherBg = 'background:linear-gradient(145deg,' + bLc.l1 + ',' + bLc.l2 + ')';
+      vals.bStitchCol = bLc.id === 'white' ? 'rgba(0,0,0,0.18)' : T.stitch;
+      vals.bEndInkOv = bLc.id === 'white' ? 'color:rgba(0,0,0,0.45);border:1px solid rgba(0,0,0,0.2);' : 'color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.22);';
+      const bActive = 'background:' + T.ink + ';color:' + T.bg;
+      vals.sellSizeOpts = [4, 9, 12].map(n => ({
+        label: n + '-pocket',
+        ov: bsize === n ? bActive : 'opacity:0.55',
+        pick: () => this.saveSell({ size: n })
+      }));
+      vals.sellColorOpts = this.leathers.map(lc => ({
+        bg: 'linear-gradient(145deg,' + lc.l1 + ',' + lc.l2 + ')',
+        ringOv: bLc.id === lc.id ? ('box-shadow:0 0 0 2px ' + T.bg + ', 0 0 0 4px ' + T.ink) : 'box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25)',
+        pick: () => this.saveSell({ color: lc.id })
+      }));
+      vals.bJumpVal = String(bk);
+      vals.bJumpChange = (e) => { const v = parseInt(e.target.value, 10); if (isFinite(v)) this.setState({ sellSpread: v }); };
+      const bJumps = [];
+      for (let j = 0; j <= bMax; j++) bJumps.push({ v: String(j), label: j === 0 ? 'Cover · Page 1' : 'Pages ' + (2 * j) + (2 * j + 1 <= bPageCount ? '–' + (2 * j + 1) : '') });
+      vals.bJumpOpts = bJumps;
+      const es = S.sellEditSlot;
+      const esRow = (es != null && vals.sellRows[es] && vals.sellRows[es].has) ? vals.sellRows[es] : null;
+      vals.sellEditModalOn = !!esRow;
+      vals.closeSellEdit = () => this.setState({ sellEditSlot: null });
+      vals.esName = esRow ? esRow.name : '';
+      vals.esNum = esRow ? esRow.num : '';
+      vals.esImg = esRow ? esRow.img : null;
+      vals.esMarket = esRow ? esRow.market : '';
+      vals.esPrice = esRow ? esRow.price : '';
+      vals.esCond = esRow ? esRow.cond : 'NM';
+      vals.esSetPrice = esRow ? esRow.setPrice : (() => {});
+      vals.esSetCond = esRow ? esRow.setCond : (() => {});
+      vals.esRemove = () => { const r = esRow; this.setState({ sellEditSlot: null }); if (r) r.remove(); };
+      vals.esChange = () => { if (es == null) return; this.ensureOwnedPrices(); this.setState({ sellEditSlot: null, sellPicker: true, sellQuery: '', sellPickFor: es }); };
+      const sid = sell.shareId;
+      vals.anShared = !!sid;
+      vals.anNotShared = !sid;
+      if (sid) {
+        const hsh = (n) => { let x = 0; const s = sid + ':' + n; for (let i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; };
+        let tv = 0, ts = 0, mx = 1;
+        const days = [];
+        for (let d = 13; d >= 0; d--) {
+          const v = hsh(d) % 13 + (d < 4 ? hsh(d + 100) % 7 : 0);
+          const sc = Math.min(v, hsh(d + 50) % 5);
+          tv += v; ts += sc; if (v > mx) mx = v;
+          days.push({ v, sc });
+        }
+        vals.anViews = String(tv);
+        vals.anScans = String(ts);
+        vals.anBars = days.map(x => ({
+          hPct: Math.max(4, Math.round(x.v / mx * 100)) + '%',
+          sPct: Math.round((x.v ? x.sc / x.v : 0) * 100) + '%'
+        }));
+      }
+      const shareUrl = 'https://bindersync.app/s/' + (sell.shareId || 'xxxxxx');
+      const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=10&data=' + encodeURIComponent(shareUrl);
+      vals.sellShareOn = !!S.sellShare;
+      vals.closeSellShare = () => this.setState({ sellShare: false });
+      vals.shareUrl = shareUrl;
+      vals.qrSrc = qrSrc;
+      vals.copyLabel = S.sellCopied ? 'Copied!' : 'Copy link';
+      vals.copyLink = () => {
+        try { navigator.clipboard.writeText(shareUrl); } catch (e) {}
+        clearTimeout(this._copyTimer);
+        this.setState({ sellCopied: true });
+        this._copyTimer = setTimeout(() => this.setState({ sellCopied: false }), 1800);
+      };
+      vals.printInsert = () => {
+        const w = window.open('', '_blank');
+        if (!w) return;
+        const safeTitle = String(sell.title || 'My Sell Binder').replace(/</g, '&lt;');
+        w.document.write('<!DOCTYPE html><html><head><title>QR insert</title></head><body style="margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Helvetica,Arial,sans-serif;">'
+          + '<div style="width:3.5in;height:2.5in;border:1px dashed #bbb;border-radius:12px;display:flex;align-items:center;gap:0.16in;padding:0.2in;box-sizing:border-box;">'
+          + '<img src="' + qrSrc + '" style="width:1.85in;height:1.85in;flex:none;" />'
+          + '<div><div style="font-size:14px;font-weight:800;">' + safeTitle + '</div>'
+          + '<div style="font-size:9.5px;color:#666;margin-top:6px;line-height:1.5;">Scan to browse the cards I\u2019m selling \u2014 prices &amp; conditions included.</div>'
+          + '<div style="font-family:monospace;font-size:8.5px;color:#999;margin-top:8px;">' + shareUrl + '</div></div></div>'
+          + '<' + 'script>window.onload=function(){setTimeout(function(){window.print()},500)}<' + '/script></body></html>');
+        w.document.close();
+      };
+      return vals;
+    }
+
+    if (S.view !== 'set' || !S.set) return vals;
+
+    const brief = S.set, data = S.setData;
+    vals.setName = brief.name;
+    vals.setSerie = brief.serieName || (data && data.serie && data.serie.name) || '';
+    vals.hasSetLogo = !!brief.logo;
+    vals.setLogoUrl = brief.logo ? brief.logo + '.webp' : null;
+    vals.hasSetSymbol = !!brief.symbol;
+    vals.setSymbolUrl = brief.symbol ? brief.symbol + '.webp' : null;
+    vals.setLoading = !data && !S.setError;
+    vals.setError = S.setError;
+    vals.retrySet = () => { this.setState({ setError: null }); this.fetchSet(brief); };
+    vals.binderOn = !!data;
+    if (!data) return vals;
+
+    const official = (data.cardCount && (data.cardCount.official || data.cardCount.total)) || data.cards.length;
+    const total = (data.cardCount && data.cardCount.total) || data.cards.length;
+    const isNum = (v) => /^\d+$/.test(String(v == null ? '' : v));
+
+    const seq = this.seqFor(brief.id, data.cards);
+    const pvc = this.varCache[brief.id];
+    vals.variantNote = (pvc && pvc.loading)
+      ? ((S.mode === 'master' ? 'Checking reverse holos & market prices… ' : 'Fetching market prices… ') + pvc.done + '/' + pvc.total)
+      : null;
+
+    const size = S.size;
+    const dims = { 4: [2, 2], 9: [3, 3], 12: [4, 3] };
+    const [cols, rows] = dims[size] || dims[9];
+    const pad = 18, gap = 10, pageH = 620;
+    const slotH = (pageH - 2 * pad - (rows - 1) * gap) / rows;
+    const slotW = slotH * 63 / 88;
+    const pageW = Math.round(cols * slotW + (cols - 1) * gap + 2 * pad);
+
+    const pages = [];
+    for (let i = 0; i < seq.length; i += size) {
+      const pg = seq.slice(i, i + size);
+      while (pg.length < size) pg.push(null);
+      pages.push(pg);
+    }
+    const pageCount = pages.length;
+    const spreadMax = pageCount > 0 ? Math.ceil((pageCount - 1) / 2) : 0;
+    const k = Math.min(S.spread, spreadMax);
+    this._spreadMax = spreadMax;
+    this._curSpread = k;
+
+    const collect = S.viewMode !== 'view';
+    vals.lockBannerOn = !isPro && collect && !ownedSets.has(brief.id) && ownedSets.size >= limit;
+    vals.lockBannerText = 'This set would be binder #' + (ownedSets.size + 1) + ' — Free saves ' + limit + '. Browse freely; tracking cards here needs Pro.';
+    const mkSlots = (page, live) => page ? page.map((c, i) => {
+      if (!c) return { key: 'e' + i };
+      const key = c.id + (c.rev ? '::r' : '');
+      const own = !!S.owned[key];
+      const slot = {
+        key, name: c.name, num: '#' + c.localId,
+        img: c.image ? c.image + '/low.webp' : null,
+        noImg: !c.image,
+        rev: !!c.rev, missing: collect && !own,
+        dimOv: (collect && !own) ? T.dim : '',
+        hlOv: S.highlight === key ? ('outline:3px solid ' + T.accent + ';outline-offset:2px;box-shadow:0 0 0 6px color-mix(in srgb, ' + T.accent + ' 30%, transparent);z-index:2;') : '',
+        toggle: () => { if (collect) this.toggleOwned(key); else this.openZoom(c); }
+      };
+      if (live) {
+        slot.checkOn = collect;
+        slot.checkOv = own
+          ? ('background:' + T.accent + ';color:#ffffff')
+          : 'background:rgba(255,255,255,0.82);color:transparent;border:1.5px solid rgba(0,0,0,0.28)';
+        slot.check = (e) => { if (e) e.stopPropagation(); this.toggleOwned(key); };
+        slot.zoomOn = !!c.image;
+        slot.zoom = (e) => { if (e) e.stopPropagation(); this.openZoom(c); };
+        if (isMaster && S.showPrices && !slot.missing) {
+          const mpp = this.priceFor(key);
+          if (mpp) { slot.mktOn = true; slot.mkt = this.fmtAmt(this.convert(mpp.v, mpp.cur), S.currency === 'EUR' ? 'EUR' : 'USD'); }
+        }
+      }
+      return slot;
+    }) : null;
+
+    const pageAt = (i) => (i >= 0 && i < pageCount) ? pages[i] : null;
+    const f = S.flip;
+
+    let leftPage, rightPage, leftIsCover;
+    if (f && f.dir > 0) {
+      leftIsCover = k === 0;
+      leftPage = k === 0 ? null : pageAt(2 * k - 1);
+      rightPage = pageAt(2 * k + 2);
+    } else if (f && f.dir < 0) {
+      leftIsCover = (k - 1) === 0;
+      leftPage = (k - 1) === 0 ? null : pageAt(2 * k - 3);
+      rightPage = pageAt(2 * k);
+    } else {
+      leftIsCover = k === 0;
+      leftPage = k === 0 ? null : pageAt(2 * k - 1);
+      rightPage = pageAt(2 * k);
+    }
+
+    vals.cols = cols; vals.rows = rows;
+    vals.pageW = pageW; vals.pageH = pageH;
+    vals.leftIsCover = leftIsCover;
+    vals.leftPageOn = !!leftPage;
+    vals.leftSlots = mkSlots(leftPage, true);
+    vals.rightPageOn = !!rightPage;
+    vals.rightSlots = mkSlots(rightPage, true);
+    vals.rightIsEnd = !rightPage;
+
+    if (f) {
+      const front = f.dir > 0 ? pageAt(2 * k) : pageAt(2 * k - 2);
+      const back = f.dir > 0 ? pageAt(2 * k + 1) : pageAt(2 * k - 1);
+      vals.flipOn = true;
+      vals.flipFrontSlots = mkSlots(front) || [];
+      vals.flipBackSlots = mkSlots(back) || [];
+      vals.flipTransform = 'rotateY(' + f.angle + 'deg)';
+      vals.flipTransition = f.go ? 'transform ' + flipMs + 'ms cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none';
+      vals.onFlipEnd = (e) => {
+        if (e && e.propertyName && e.propertyName !== 'transform') return;
+        this.finishFlip();
+      };
+    } else {
+      vals.flipOn = false;
+    }
+    vals.flipLeft = 16 + pageW + 44;
+
+    const coverPad = 16, spine = 44;
+    const coverW = 2 * pageW + spine + 2 * coverPad;
+    const coverH = pageH + 2 * coverPad;
+    vals.coverW = coverW; vals.coverH = coverH;
+    vals.coverHalf = Math.round(coverW / 2);
+    const scale = Math.max(0.2, Math.min(1, (S.vw - 60) / (coverW + 130), (S.vh - 240) / coverH));
+    vals.stageScale = Math.round(scale * 1000) / 1000;
+    vals.stageH = Math.round(coverH * scale);
+
+    let ownedN = 0;
+    const ownedKeys = [];
+    for (const c of seq) { const kk = c.id + (c.rev ? '::r' : ''); if (S.owned[kk]) { ownedN++; ownedKeys.push(kk); } }
+    const pct = seq.length ? Math.round(100 * ownedN / seq.length) : 0;
+    vals.progressPct = pct + '%';
+    vals.progressLabel = ownedN + '/' + seq.length + ' · ' + pct + '%';
+
+    const secret = Math.max(0, total - official);
+    const stats = [
+      { k: 'Official cards', v: String(official) }
+    ];
+    if (secret > 0) stats.push({ k: 'Secret rares', v: '+' + secret });
+    stats.push({ k: S.mode === 'master' ? 'Master set size' : 'Cards in view', v: String(seq.length) });
+    stats.push({ k: 'Binder pages', v: pageCount + ' × ' + size + '-pocket' });
+    if (data.releaseDate) stats.push({ k: 'Released', v: data.releaseDate });
+    stats.push({ k: 'Collected', v: ownedN + ' / ' + seq.length });
+    const setTot = this.sumKeys(seq.map(c => c.id + (c.rev ? '::r' : '')));
+    const ownTot = this.sumKeys(ownedKeys);
+    stats.push({ k: 'Set value (market)', v: this.fmtTotal(setTot) });
+    if (ownedN > 0) stats.push({ k: 'Your cards\u2019 value', v: this.fmtTotal(ownTot) });
+    vals.coverStats = stats;
+    vals.coverHint = collect
+      ? 'Click a card or its ✓ to mark it as owned'
+      : 'Viewing mode — click a card to enlarge it';
+
+    vals.jumpVal = String(k);
+    vals.jumpChange = (e) => {
+      const v = parseInt(e.target.value, 10);
+      if (isFinite(v)) this.setState({ spread: v, flip: null });
+    };
+    const jumps = [];
+    for (let j = 0; j <= spreadMax; j++) {
+      jumps.push({
+        v: String(j),
+        label: j === 0
+          ? 'Cover · Page 1'
+          : 'Pages ' + (2 * j) + (2 * j + 1 <= pageCount ? '–' + (2 * j + 1) : '')
+      });
+    }
+    vals.jumpOpts = jumps;
+
+    vals.pagesLabel = k === 0
+      ? (pageCount ? 'Cover · Page 1 of ' + pageCount : 'Empty set')
+      : 'Pages ' + (2 * k) + (2 * k + 1 <= pageCount ? '–' + (2 * k + 1) : '') + ' of ' + pageCount;
+
+    const canPrev = !f && k > 0;
+    const canNext = !f && k < spreadMax;
+    vals.prev = () => this.nav(-1);
+    vals.next = () => this.nav(1);
+    vals.canPrevOv = canPrev ? '' : 'opacity:0.3;pointer-events:none';
+    vals.canNextOv = canNext ? '' : 'opacity:0.3;pointer-events:none';
+
+    const activeOv = 'background:' + T.ink + ';color:' + T.bg;
+    vals.needToggle = () => this.setState(s => ({ needOpen: !s.needOpen }));
+    vals.needOn = !!S.needOpen;
+    vals.needOv = S.needOpen ? activeOv : 'opacity:0.55';
+    const needRows = [];
+    seq.forEach((c, i) => {
+      const key = c.id + (c.rev ? '::r' : '');
+      if (S.owned[key]) return;
+      const p = Math.floor(i / size) + 1;
+      const pk = (i % size) + 1;
+      const target = Math.ceil((p - 1) / 2);
+      needRows.push({
+        key,
+        num: '#' + c.localId,
+        name: c.name,
+        rev: !!c.rev,
+        loc: 'Pg ' + p + ' · Pk ' + pk,
+        jump: () => this.setState({ spread: target, flip: null })
+      });
+    });
+    vals.needRows = needRows;
+    vals.needEmpty = needRows.length === 0;
+    vals.cardQuery = S.cardQuery;
+    vals.setCardQuery = (e) => this.setState({ cardQuery: e.target.value });
+    vals.cardClearOn = !!S.cardQuery;
+    vals.clearCardQuery = () => this.setState({ cardQuery: '' });
+    const cq = (S.cardQuery || '').trim().toLowerCase();
+    if (cq) {
+      const hits = [];
+      seq.forEach((c, i) => {
+        if (hits.length >= 40 || !c.name || !c.name.toLowerCase().includes(cq)) return;
+        const key = c.id + (c.rev ? '::r' : '');
+        hits.push({
+          key,
+          num: '#' + c.localId,
+          name: c.name,
+          rev: !!c.rev,
+          loc: 'Pg ' + (Math.floor(i / size) + 1) + ' · Pk ' + ((i % size) + 1),
+          jump: () => this.jumpToSeqIndex(i, key)
+        });
+      });
+      vals.cardDropOn = true;
+      vals.cardDropRows = hits;
+      vals.cardDropEmpty = hits.length === 0;
+    } else {
+      vals.cardDropOn = false;
+    }
+    vals.needCount = String(needRows.length);
+    const needTot = this.fmtTotal(this.sumKeys(needRows.map(n => n.key)));
+    vals.needCountLabel = needRows.length + ' missing' + (needTot === '\u2014' ? '' : ' \u00b7 ' + needTot);
+    vals.sizeOpts = [4, 9, 12].map(n => ({
+      label: n + '-pocket',
+      ov: S.size === n ? activeOv : 'opacity:0.55',
+      pick: () => this.setState({ size: n, flip: null }, () => this.savePrefs())
+    }));
+    vals.modeOpts = [
+      { label: 'Set', m: 'base' },
+      { label: 'Master set', m: 'master' }
+    ].map(o => ({
+      label: o.label,
+      ov: S.mode === o.m ? activeOv : 'opacity:0.55',
+      pick: () => this.setState({ mode: o.m, flip: null }, () => {
+        this.savePrefs();
+        if (o.m === 'master' && this.state.setData && this.state.set) {
+          this.ensureVariants(this.state.set.id, this.state.setData.cards);
+        }
+      })
+    }));
+
+    vals.viewOpts = [
+      { label: 'Collect', m: 'collect' },
+      { label: 'View', m: 'view' }
+    ].map(o => ({
+      label: o.label,
+      ov: S.viewMode === o.m ? activeOv : 'opacity:0.55',
+      pick: () => this.setState({ viewMode: o.m }, () => this.savePrefs())
+    }));
+
+    vals.priceToggle = () => {
+      if (!isMaster) { this.setState({ paywall: { step: 'plans', reason: 'prices' } }); return; }
+      this.setState(s => ({ showPrices: !s.showPrices }), () => this.savePrefs());
+    };
+    vals.priceOv = (S.showPrices && isMaster) ? activeOv : 'opacity:0.55';
+    vals.priceLockOn = !isMaster;
+
+    vals.leatherOpts = this.leathers.map(lc => ({
+      bg: 'linear-gradient(145deg,' + lc.l1 + ',' + lc.l2 + ')',
+      ringOv: (S.binderColor || 'charcoal') === lc.id
+        ? 'box-shadow:0 0 0 2px ' + T.bg + ', 0 0 0 4px ' + T.ink
+        : 'box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25)',
+      pick: () => this.setState({ binderColor: lc.id }, () => this.savePrefs())
+    }));
+
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
