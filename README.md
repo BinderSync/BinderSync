@@ -65,15 +65,19 @@ Next.js 16 (App Router) · TypeScript · Prisma 7 + PostgreSQL · Auth.js v5 (cr
 - `scripts/ingest.ts` — card data ingestion job (see step 3 above)
 - `design_handoff_binder_app/` — the original design spec and interactive HTML prototype this app is built from
 
-## Deployment (Vercel + Neon + Cloudflare DNS)
+## Deployment (Vercel + Supabase + Cloudflare DNS)
 
 1. **GitHub**: push this repo. The generated Prisma client is gitignored; `npm run build` runs
    `prisma generate` first, so CI/Vercel builds work from a clean checkout.
-2. **Neon** (or any managed Postgres): create a database, then from your machine run
-   `DATABASE_URL=<neon-url> npm run migrate:deploy` and seed it with
-   `DATABASE_URL=<neon-url> npm run ingest -- --details` (30–45 min for the full catalog).
-3. **Vercel**: import the GitHub repo. Env vars: `DATABASE_URL`, `AUTH_SECRET`
-   (fresh: `openssl rand -base64 32`), `POKEMONTCG_API_KEY`, and the four `STRIPE_*` values.
+2. **Supabase**: create a project, then grab both connection strings from Connect → ORMs:
+   the **transaction pooler** URL (port 6543) for the app on Vercel, and the **direct/session**
+   URL (port 5432) for migrations and ingestion. From your machine run
+   `DATABASE_URL=<direct-url> npm run migrate:deploy` and seed with
+   `DATABASE_URL=<direct-url> npm run ingest -- --details` (30–45 min for the full catalog).
+   Use the direct URL for the GitHub Actions ingest secret too.
+3. **Vercel**: import the GitHub repo. Env vars: `DATABASE_URL` (the pooled 6543 URL),
+   `AUTH_SECRET` (fresh: `openssl rand -base64 32`), `POKEMONTCG_API_KEY`, and the four
+   `STRIPE_*` values.
 4. **Cloudflare DNS** for `bindersync.com`: add the records Vercel's "Domains" tab shows
    (A `76.76.21.21` for the apex, CNAME `cname.vercel-dns.com` for `www`). Set them to
    **DNS-only (grey cloud)** — Vercel terminates TLS itself; proxying through Cloudflare
