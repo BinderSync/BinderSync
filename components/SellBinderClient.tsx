@@ -929,7 +929,7 @@ export function SellBinderClient({
       {/* --- Card picker modal --- */}
       {pickerFor !== false ? (
         <div onClick={() => setPickerFor(false)} style={overlayStyle(70)}>
-          <div onClick={(e) => e.stopPropagation()} style={{ ...modalStyle, width: 560, height: "86vh", gap: 14 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ ...modalStyle, width: 700, height: "88vh", gap: 14 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em" }}>
@@ -1138,9 +1138,9 @@ function PickerRow({
   return (
     <div
       onClick={onPick}
-      style={{ display: "flex", alignItems: "center", gap: 11, padding: "7px 9px", borderRadius: 9, cursor: "pointer" }}
+      style={{ display: "flex", alignItems: "center", gap: 14, padding: "9px 11px", borderRadius: 10, cursor: "pointer" }}
     >
-      <div style={{ width: 34, height: 47, borderRadius: 4, flex: "none", position: "relative", overflow: "hidden", background: "rgba(0,0,0,0.055)" }}>
+      <div style={{ width: 68, height: 95, borderRadius: 6, flex: "none", position: "relative", overflow: "hidden", background: "rgba(0,0,0,0.055)" }}>
         {img ? (
           <div
             style={{
@@ -1155,10 +1155,10 @@ function PickerRow({
         ) : null}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ fontSize: 14.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {name}
         </div>
-        <div style={{ fontSize: 10.5, opacity: 0.5, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ fontSize: 12, opacity: 0.5, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {meta}
         </div>
       </div>
@@ -1166,11 +1166,11 @@ function PickerRow({
         <div
           style={{
             fontFamily: "ui-monospace,SFMono-Regular,monospace",
-            fontSize: 8.5,
+            fontSize: 9.5,
             fontWeight: 600,
             letterSpacing: "0.06em",
             background: mix(12),
-            padding: "2px 5px",
+            padding: "3px 6px",
             borderRadius: 4,
             flex: "none",
           }}
@@ -1181,9 +1181,9 @@ function PickerRow({
       <div
         style={{
           fontFamily: "ui-monospace,SFMono-Regular,monospace",
-          fontSize: 10,
+          fontSize: 11.5,
           fontWeight: 600,
-          padding: "5px 9px",
+          padding: "7px 12px",
           borderRadius: 99,
           whiteSpace: "nowrap",
           flex: "none",
