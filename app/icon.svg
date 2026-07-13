@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#33343a"/>
+      <stop offset="1" stop-color="#1e1f24"/>
+    </linearGradient>
+    <linearGradient id="spine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8362c"/>
+      <stop offset="1" stop-color="#ab1d18"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="4" width="60" height="56" rx="10" fill="url(#leather)"/>
+  <rect x="2" y="4" width="14" height="56" rx="7" fill="url(#spine)"/>
+  <rect x="12" y="4" width="4" height="56" fill="#ab1d18" opacity="0.55"/>
+  <circle cx="9" cy="18" r="3.2" fill="none" stroke="#f7f6f4" stroke-width="2.2"/>
+  <circle cx="9" cy="32" r="3.2" fill="none" stroke="#f7f6f4" stroke-width="2.2"/>
+  <circle cx="9" cy="46" r="3.2" fill="none" stroke="#f7f6f4" stroke-width="2.2"/>
+  <rect x="24" y="14" width="14" height="19" rx="2" fill="#fbfaf8" opacity="0.92"/>
+  <rect x="42" y="14" width="14" height="19" rx="2" fill="#fbfaf8" opacity="0.65"/>
+  <rect x="24" y="37" width="14" height="19" rx="2" fill="#fbfaf8" opacity="0.65"/>
+  <rect x="42" y="37" width="14" height="19" rx="2" fill="#fbfaf8" opacity="0.4"/>
+</svg>

@@ -93,6 +93,8 @@ export function BinderClient({
   const [cardQuery, setCardQuery] = useState("");
   const [needOpen, setNeedOpen] = useState(false);
   const [paywall, setPaywall] = useState<import("@/components/PaywallModal").PaywallReason | null>(null);
+  const [showNudge, setShowNudge] = useState(false);
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
   const [highlight, setHighlight] = useState<string | null>(null);
   const flipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -318,7 +320,8 @@ export function BinderClient({
   function toggleOwned(card: SeqCard) {
     const key = card.key;
     const isOwned = !!owned[key];
-    if (!isOwned && plan === "free" && !ownedSetIds.has(set.id) && ownedSetIds.size >= BINDER_LIMIT) {
+    if (!isSignedIn && !nudgeDismissed) setShowNudge(true);
+    if (isSignedIn && !isOwned && plan === "free" && !ownedSetIds.has(set.id) && ownedSetIds.size >= BINDER_LIMIT) {
       setPaywall("limit");
       return;
     }
@@ -988,6 +991,83 @@ export function BinderClient({
             setPaywall("prices");
           }}
         />
+      ) : null}
+
+      {showNudge && !nudgeDismissed ? (
+        <div
+          style={{
+            position: "fixed",
+            left: "50%",
+            bottom: 26,
+            transform: "translateX(-50%)",
+            zIndex: 55,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "10px 10px 10px 18px",
+            borderRadius: 12,
+            border: `1px solid ${mix(12)}`,
+            boxShadow: "0 18px 44px -14px rgba(0,0,0,0.45)",
+            background: theme.surf,
+            maxWidth: "92vw",
+          }}
+        >
+          <div style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>
+            You&rsquo;re not signed in — cards you mark won&rsquo;t be saved.
+          </div>
+          <button
+            onClick={() => router.push("/register")}
+            style={{
+              appearance: "none",
+              border: 0,
+              borderRadius: 8,
+              padding: "7px 12px",
+              fontFamily: "inherit",
+              fontSize: 12,
+              fontWeight: 700,
+              color: "#ffffff",
+              background: "oklch(0.60 0.16 27)",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Create free account
+          </button>
+          <button
+            onClick={() => router.push("/login")}
+            style={{
+              appearance: "none",
+              border: `1px solid ${mix(18)}`,
+              background: "transparent",
+              color: "inherit",
+              fontFamily: "inherit",
+              fontSize: 12,
+              fontWeight: 600,
+              padding: "7px 12px",
+              borderRadius: 8,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Log in
+          </button>
+          <button
+            onClick={() => setNudgeDismissed(true)}
+            style={{
+              appearance: "none",
+              border: 0,
+              background: "transparent",
+              color: "inherit",
+              fontSize: 13,
+              lineHeight: 1,
+              cursor: "pointer",
+              opacity: 0.4,
+              padding: "6px 8px",
+            }}
+          >
+            ✕
+          </button>
+        </div>
       ) : null}
 
       <PaywallModal open={paywall !== null} reason={paywall ?? "browse"} onClose={() => setPaywall(null)} />

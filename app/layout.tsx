@@ -3,9 +3,24 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Binder Sync — Pokémon TCG binders",
+  metadataBase: new URL("https://bindersync.com"),
+  title: {
+    default: "Binder Sync — Pokémon TCG binders",
+    template: "%s · Binder Sync",
+  },
   description:
-    "Browse every Pokémon TCG set, flip through a virtual binder, and track your collection.",
+    "Browse every Pokémon TCG set, flip through a virtual binder, track your collection, and share sell binders with a QR code.",
+  openGraph: {
+    siteName: "Binder Sync",
+    type: "website",
+    url: "https://bindersync.com",
+    title: "Binder Sync — Pokémon TCG binders",
+    description:
+      "Every set. In your binder. Flip through master sets with reverse holos, track what you own, and sell with a shareable QR binder.",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

@@ -1,6 +1,31 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { PublicSellBinder } from "@/components/PublicSellBinder";
+import { fmtAmt } from "@/lib/binder";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/s/[shareId]">): Promise<Metadata> {
+  const { shareId } = await params;
+  const binder = await prisma.sellBinder.findUnique({
+    where: { shareId },
+    include: { cards: { select: { price: true } } },
+  });
+  if (!binder || !binder.isPublished) return { title: "Binder not found" };
+
+  const n = binder.cards.length;
+  const ask = binder.cards.reduce((sum, c) => sum + Number(c.price), 0);
+  const description = `${n} card${n === 1 ? "" : "s"} for sale${
+    binder.showPrices && ask > 0 ? ` · asking ${fmtAmt(ask, "USD")}` : ""
+  } — browse the binder page by page.`;
+
+  return {
+    title: binder.title,
+    description,
+    openGraph: { title: `${binder.title} · For sale on Binder Sync`, description },
+  };
+}
 
 export default async function PublicSellBinderPage({
   params,
