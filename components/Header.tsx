@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { mix } from "@/lib/theme";
 import { PlanChip } from "@/components/PlanChip";
 
@@ -101,6 +102,27 @@ const divider: React.CSSProperties = {
   height: 22,
   background: mix(15),
 };
+
+function SessionButton() {
+  const { status } = useSession();
+  const router = useRouter();
+  if (status === "loading") return null;
+  if (status === "authenticated") {
+    return (
+      <button
+        onClick={() => signOut({ callbackUrl: "/" })}
+        style={{ ...collectionBtn, opacity: 0.65 }}
+      >
+        Sign out
+      </button>
+    );
+  }
+  return (
+    <button onClick={() => router.push("/login")} style={collectionBtn}>
+      Log in
+    </button>
+  );
+}
 
 function Logo({ onClick }: { onClick: () => void }) {
   return (
@@ -223,6 +245,7 @@ export function Header(props: HeaderProps) {
             <div style={{ fontSize: 14, fontWeight: 700 }}>My collection</div>
             <div style={{ flex: 1 }} />
             <PlanChip onClick={props.onOpenPlans} />
+            <SessionButton />
           </>
         ) : null}
 
