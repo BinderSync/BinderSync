@@ -27,6 +27,7 @@ export default async function SetPage({
       imageUrl: c.imageUrl,
       rarity: c.rarity,
       hasReverse: c.hasReverse,
+      tcgplayerUrl: c.tcgplayerUrl,
       priceBase: base ? Number(base.price) : null,
       priceReverse: reverse ? Number(reverse.price) : null,
       priceCurrency: chosen ? chosen.currency : null,

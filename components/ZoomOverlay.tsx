@@ -15,6 +15,8 @@ export interface ZoomState {
   setTotal?: number;
   /** Market price in USD, if known. */
   marketPrice: number | null;
+  /** Direct TCGplayer product page; falls back to a search link when absent. */
+  tcgplayerUrl?: string | null;
 }
 
 /**
@@ -47,9 +49,11 @@ export function ZoomOverlay({
   }, [onClose]);
 
   const znum = zoom.localId ? `${zoom.localId}${zoom.setTotal ? `/${zoom.setTotal}` : ""}` : "";
-  const tcgUrl = `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(
-    `${zoom.name} ${znum}`.trim()
-  )}${zoom.setName ? `&setName=${encodeURIComponent(zoom.setName)}` : ""}`;
+  const tcgUrl =
+    zoom.tcgplayerUrl ||
+    `https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(
+      `${zoom.name} ${znum}`.trim()
+    )}${zoom.setName ? `&setName=${encodeURIComponent(zoom.setName)}` : ""}`;
   const ebayUrl = `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(
     `${zoom.name} ${zoom.setName ?? ""} ${znum} pokemon card${zoom.rev ? " reverse holo" : ""}`
       .replace(/\s+/g, " ")

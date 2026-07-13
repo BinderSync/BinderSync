@@ -50,7 +50,10 @@ export async function searchCards(query: string, limit = 40) {
   if (query.trim().length < 3) return [];
   return prisma.card.findMany({
     where: { name: { contains: query, mode: "insensitive" } },
-    include: { set: { include: { series: true } } },
+    include: {
+      set: { include: { series: true } },
+      priceSnapshots: { orderBy: { fetchedAt: "desc" }, take: 8 },
+    },
     take: limit,
     orderBy: { name: "asc" },
   });
@@ -96,6 +99,7 @@ export async function getOwnedCollection(userId: string) {
         number: string;
         variant: string;
         imageUrl: string | null;
+        tcgplayerUrl: string | null;
         priceValue: number | null;
         priceCurrency: "USD" | "EUR" | null;
       }[];
@@ -122,6 +126,7 @@ export async function getOwnedCollection(userId: string) {
       number: row.card.number,
       variant: row.variant,
       imageUrl: row.card.imageUrl,
+      tcgplayerUrl: row.card.tcgplayerUrl,
       priceValue: snapshot ? Number(snapshot.price) : null,
       priceCurrency: snapshot ? snapshot.currency : null,
     });

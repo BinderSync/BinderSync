@@ -50,16 +50,23 @@ export interface PtcgPrice {
   reverse: { value: number; currency: "USD" | "EUR" } | null;
   /** True only when a genuine reverse-holo price exists (not the base-price fallback) — proof the variant is printed. */
   hasReverseVariant: boolean;
+  /** Direct TCGplayer product page for this card, when pokemontcg.io provides one. */
+  url: string | null;
 }
 
 interface PtcgCard {
   number: string;
-  tcgplayer?: { prices?: Record<string, { market?: number; mid?: number; low?: number }> };
+  tcgplayer?: { url?: string; prices?: Record<string, { market?: number; mid?: number; low?: number }> };
   cardmarket?: { prices?: Record<string, number> };
 }
 
 function extractPtcgPrices(card: PtcgCard): PtcgPrice {
-  const out: PtcgPrice = { base: null, reverse: null, hasReverseVariant: false };
+  const out: PtcgPrice = {
+    base: null,
+    reverse: null,
+    hasReverseVariant: false,
+    url: card.tcgplayer?.url ?? null,
+  };
   const num = (v: unknown): number | null =>
     typeof v === "number" && isFinite(v) && v > 0 ? v : null;
 

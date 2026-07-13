@@ -422,6 +422,7 @@ export function BinderClient({
         setName: set.name,
         localId: zoomCard.number,
         setTotal: set.officialCount,
+        tcgplayerUrl: zoomCard.tcgplayerUrl,
         marketPrice: (() => {
           const pr = priceFor(zoomCard, zoomCard.rev);
           return pr ? convertPrice(pr.value, pr.currency, "USD") : null;

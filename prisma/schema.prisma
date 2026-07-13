@@ -162,13 +162,14 @@ model Set {
 }
 
 model Card {
-  id          String  @id
-  setId       String
-  name        String
-  number      String
-  imageUrl    String?
-  rarity      String?
-  hasReverse  Boolean @default(false)
+  id           String  @id
+  setId        String
+  name         String
+  number       String
+  imageUrl     String?
+  rarity       String?
+  hasReverse   Boolean @default(false)
+  tcgplayerUrl String?
 
   set             Set              @relation(fields: [setId], references: [id], onDelete: Cascade)
   ownedBy         OwnedCard[]

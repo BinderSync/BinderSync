@@ -137,10 +137,13 @@ async function main() {
           const cardDetail = await fetchCardDetail(card.id);
           const overlay = ptcgPrices?.get(card.localId.toLowerCase());
           const hasReverse = !!cardDetail?.variants?.reverse || !!overlay?.hasReverseVariant;
-          if (cardDetail) {
+          if (cardDetail || overlay) {
             await prisma.card.update({
               where: { id: card.id },
-              data: { rarity: cardDetail.rarity, hasReverse },
+              data: {
+                ...(cardDetail ? { rarity: cardDetail.rarity, hasReverse } : {}),
+                ...(overlay?.url ? { tcgplayerUrl: overlay.url } : {}),
+              },
             });
           }
 

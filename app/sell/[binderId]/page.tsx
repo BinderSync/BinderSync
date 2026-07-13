@@ -56,6 +56,7 @@ export default async function SellBinderPage({
             name: c.card.name,
             number: c.card.number,
             imageUrl: c.card.imageUrl,
+            tcgplayerUrl: c.card.tcgplayerUrl,
             marketPrice: snapshot ? Number(snapshot.price) : null,
             marketCurrency: snapshot ? snapshot.currency : null,
           };

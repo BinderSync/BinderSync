@@ -20,6 +20,7 @@ interface SlotCard {
   name: string;
   number: string;
   imageUrl: string | null;
+  tcgplayerUrl: string | null;
   /** Latest market price in USD, if known. */
   marketPrice: number | null;
 }
@@ -30,7 +31,21 @@ interface OwnedCard {
   number: string;
   variant: string;
   imageUrl: string | null;
+  tcgplayerUrl: string | null;
   priceValue: number | null;
+  priceCurrency: "USD" | "EUR" | null;
+}
+
+interface CatalogHit {
+  id: string;
+  name: string;
+  number: string;
+  img: string | null;
+  meta: string;
+  hasReverse: boolean;
+  tcgplayerUrl: string | null;
+  priceBase: number | null;
+  priceReverse: number | null;
   priceCurrency: "USD" | "EUR" | null;
 }
 
@@ -58,6 +73,7 @@ interface Binder {
     name: string;
     number: string;
     imageUrl: string | null;
+    tcgplayerUrl: string | null;
     marketPrice: number | null;
     marketCurrency: "USD" | "EUR" | null;
   }[];
@@ -90,6 +106,7 @@ export function SellBinderClient({
         name: c.name,
         number: c.number,
         imageUrl: c.imageUrl,
+        tcgplayerUrl: c.tcgplayerUrl,
         marketPrice:
           c.marketPrice != null && c.marketCurrency
             ? Math.round(convertPrice(c.marketPrice, c.marketCurrency, "USD") * 100) / 100
@@ -102,6 +119,9 @@ export function SellBinderClient({
   const [preview, setPreview] = useState(false);
   const [pickerFor, setPickerFor] = useState<number | null | false>(false); // false=closed, null=append, number=slot
   const [pickerQuery, setPickerQuery] = useState("");
+  const [catalogHits, setCatalogHits] = useState<CatalogHit[] | null>(null);
+  const [catalogSearching, setCatalogSearching] = useState(false);
+  const searchToken = useRef(0);
   const [editSlot, setEditSlot] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -246,6 +266,34 @@ export function SellBinderClient({
     return rows;
   }, [ownedGroups, pickerQuery]);
 
+  // Any card can be sold, not just owned ones — a 3+ character query also
+  // searches the full catalog.
+  const catalogQuery = pickerQuery.trim();
+  useEffect(() => {
+    if (pickerFor === false || catalogQuery.length < 3) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing stale results when the query drops below the search threshold
+      setCatalogHits(null);
+      return;
+    }
+    const token = ++searchToken.current;
+    setCatalogSearching(true);
+    const timer = setTimeout(() => {
+      fetch(`/api/cards/search?q=${encodeURIComponent(catalogQuery)}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (token !== searchToken.current) return;
+          setCatalogHits(data.results ?? []);
+          setCatalogSearching(false);
+        })
+        .catch(() => {
+          if (token !== searchToken.current) return;
+          setCatalogHits([]);
+          setCatalogSearching(false);
+        });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [catalogQuery, pickerFor]);
+
   function slotCardFrom(oc: OwnedCard): SlotCard {
     const market =
       oc.priceValue != null && oc.priceCurrency
@@ -259,25 +307,50 @@ export function SellBinderClient({
       name: oc.name,
       number: oc.number,
       imageUrl: oc.imageUrl,
+      tcgplayerUrl: oc.tcgplayerUrl,
       marketPrice: market,
     };
   }
 
-  function pickCard(oc: OwnedCard) {
-    const key = `${oc.cardId}::${oc.variant}`;
+  function slotCardFromCatalog(hit: CatalogHit, variant: "base" | "reverse"): SlotCard {
+    const raw = variant === "reverse" ? (hit.priceReverse ?? hit.priceBase) : hit.priceBase;
+    const market =
+      raw != null && hit.priceCurrency
+        ? Math.round(convertPrice(raw, hit.priceCurrency, "USD") * 100) / 100
+        : null;
+    return {
+      cardId: hit.id,
+      variant,
+      price: market != null ? String(market) : "",
+      condition: "NM",
+      name: hit.name,
+      number: hit.number,
+      imageUrl: hit.img,
+      tcgplayerUrl: hit.tcgplayerUrl,
+      marketPrice: market,
+    };
+  }
+
+  function placeSlotCard(slotCard: SlotCard) {
+    const key = `${slotCard.cardId}::${slotCard.variant}`;
     if (typeof pickerFor === "number") {
+      const target = pickerFor;
       setSlots((prev) => {
         const arr = prev.slice();
-        while (arr.length <= pickerFor) arr.push(null);
-        arr[pickerFor] = slotCardFrom(oc);
+        while (arr.length <= target) arr.push(null);
+        arr[target] = slotCard;
         return arr;
       });
       setPickerFor(false);
     } else if (inBinder.has(key)) {
       setSlots((prev) => prev.map((s) => (s && `${s.cardId}::${s.variant}` === key ? null : s)));
     } else {
-      setSlots((prev) => [...prev, slotCardFrom(oc)]);
+      setSlots((prev) => [...prev, slotCard]);
     }
+  }
+
+  function pickCard(oc: OwnedCard) {
+    placeSlotCard(slotCardFrom(oc));
   }
 
   async function deleteBinder() {
@@ -888,79 +961,62 @@ export function SellBinderClient({
               }}
             />
             <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
-              {pickRows.length === 0 ? (
+              {pickRows.length === 0 && catalogQuery.length < 3 ? (
                 <div style={{ padding: 20, fontSize: 12.5, opacity: 0.55, lineHeight: 1.6 }}>
-                  No owned cards found. Open a set and mark cards as owned first — they&rsquo;ll show up here.
+                  No owned cards yet. Mark cards as owned in a binder — or search above to list any
+                  card from the full catalog.
                 </div>
-              ) : (
-                pickRows.map((pr) => {
-                  const key = `${pr.cardId}::${pr.variant}`;
-                  const added = inBinder.has(key);
-                  const markLabel = typeof pickerFor === "number" ? "Use this" : added ? "✓ Added" : "+ Add";
-                  return (
-                    <div
-                      key={key}
-                      onClick={() => pickCard(pr)}
-                      style={{ display: "flex", alignItems: "center", gap: 11, padding: "7px 9px", borderRadius: 9, cursor: "pointer" }}
-                    >
-                      <div style={{ width: 34, height: 47, borderRadius: 4, flex: "none", position: "relative", overflow: "hidden", background: "rgba(0,0,0,0.055)" }}>
-                        {pr.imageUrl ? (
-                          <div
-                            style={{
-                              position: "absolute",
-                              inset: "2%",
-                              backgroundImage: `url('${pr.imageUrl}')`,
-                              backgroundSize: "contain",
-                              backgroundRepeat: "no-repeat",
-                              backgroundPosition: "center",
-                            }}
-                          />
-                        ) : null}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {pr.name}
-                        </div>
-                        <div style={{ fontSize: 10.5, opacity: 0.5, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {pr.setName} · #{pr.number}
-                        </div>
-                      </div>
-                      {pr.variant === "reverse" ? (
-                        <div
-                          style={{
-                            fontFamily: "ui-monospace,SFMono-Regular,monospace",
-                            fontSize: 8.5,
-                            fontWeight: 600,
-                            letterSpacing: "0.06em",
-                            background: mix(12),
-                            padding: "2px 5px",
-                            borderRadius: 4,
-                            flex: "none",
-                          }}
-                        >
-                          REV
-                        </div>
-                      ) : null}
-                      <div
-                        style={{
-                          fontFamily: "ui-monospace,SFMono-Regular,monospace",
-                          fontSize: 10,
-                          fontWeight: 600,
-                          padding: "5px 9px",
-                          borderRadius: 99,
-                          whiteSpace: "nowrap",
-                          flex: "none",
-                          ...(added
-                            ? { border: "1px solid transparent", color: "#ffffff", background: ACCENT }
-                            : { border: `1px solid ${mix(18)}`, opacity: 0.7 }),
-                        }}
-                      >
-                        {markLabel}
-                      </div>
+              ) : null}
+
+              {pickRows.length > 0 ? (
+                <>
+                  {catalogQuery.length >= 3 ? <PickerSectionLabel text="From your collection" /> : null}
+                  {pickRows.map((pr) => (
+                    <PickerRow
+                      key={`own-${pr.cardId}::${pr.variant}`}
+                      name={pr.name}
+                      meta={`${pr.setName} · #${pr.number}`}
+                      img={pr.imageUrl}
+                      rev={pr.variant === "reverse"}
+                      added={inBinder.has(`${pr.cardId}::${pr.variant}`)}
+                      forSlot={typeof pickerFor === "number"}
+                      onPick={() => pickCard(pr)}
+                    />
+                  ))}
+                </>
+              ) : null}
+
+              {catalogQuery.length >= 3 ? (
+                <>
+                  <PickerSectionLabel text="All cards" />
+                  {catalogSearching && !catalogHits ? (
+                    <div style={{ padding: "10px 9px", fontSize: 12, opacity: 0.5 }}>Searching the catalog…</div>
+                  ) : null}
+                  {catalogHits?.length === 0 ? (
+                    <div style={{ padding: "10px 9px", fontSize: 12, opacity: 0.5 }}>
+                      No cards match &ldquo;{catalogQuery}&rdquo; — try more of the name.
                     </div>
-                  );
-                })
-              )}
+                  ) : null}
+                  {(catalogHits ?? []).flatMap((hit) => {
+                    const ownedKeys = new Set(pickRows.map((pr) => `${pr.cardId}::${pr.variant}`));
+                    const variants: ("base" | "reverse")[] = hit.hasReverse ? ["base", "reverse"] : ["base"];
+                    return variants
+                      .filter((v) => !ownedKeys.has(`${hit.id}::${v}`))
+                      .map((v) => (
+                        <PickerRow
+                          key={`cat-${hit.id}::${v}`}
+                          name={hit.name}
+                          meta={`${hit.meta} · #${hit.number}`}
+                          img={hit.img}
+                          rev={v === "reverse"}
+                          added={inBinder.has(`${hit.id}::${v}`)}
+                          forSlot={typeof pickerFor === "number"}
+                          onPick={() => placeSlotCard(slotCardFromCatalog(hit, v))}
+                        />
+                      ));
+                  })}
+                </>
+              ) : null}
             </div>
             <button onClick={() => setPickerFor(false)} style={accentBtn}>
               Done
@@ -1021,6 +1077,7 @@ export function SellBinderClient({
             rev: slots[zoomIndex]!.variant === "reverse",
             localId: slots[zoomIndex]!.number,
             marketPrice: slots[zoomIndex]!.marketPrice,
+            tcgplayerUrl: slots[zoomIndex]!.tcgplayerUrl,
           }}
           isMaster
           sellAsk={
@@ -1040,6 +1097,103 @@ export function SellBinderClient({
       ) : null}
 
       <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
+    </div>
+  );
+}
+
+function PickerSectionLabel({ text }: { text: string }) {
+  return (
+    <div
+      style={{
+        fontFamily: "ui-monospace,SFMono-Regular,monospace",
+        fontSize: 9.5,
+        letterSpacing: "0.16em",
+        opacity: 0.45,
+        padding: "10px 9px 4px",
+      }}
+    >
+      {text.toUpperCase()}
+    </div>
+  );
+}
+
+function PickerRow({
+  name,
+  meta,
+  img,
+  rev,
+  added,
+  forSlot,
+  onPick,
+}: {
+  name: string;
+  meta: string;
+  img: string | null;
+  rev: boolean;
+  added: boolean;
+  forSlot: boolean;
+  onPick: () => void;
+}) {
+  const markLabel = forSlot ? "Use this" : added ? "✓ Added" : "+ Add";
+  return (
+    <div
+      onClick={onPick}
+      style={{ display: "flex", alignItems: "center", gap: 11, padding: "7px 9px", borderRadius: 9, cursor: "pointer" }}
+    >
+      <div style={{ width: 34, height: 47, borderRadius: 4, flex: "none", position: "relative", overflow: "hidden", background: "rgba(0,0,0,0.055)" }}>
+        {img ? (
+          <div
+            style={{
+              position: "absolute",
+              inset: "2%",
+              backgroundImage: `url('${img}')`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
+        ) : null}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {name}
+        </div>
+        <div style={{ fontSize: 10.5, opacity: 0.5, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {meta}
+        </div>
+      </div>
+      {rev ? (
+        <div
+          style={{
+            fontFamily: "ui-monospace,SFMono-Regular,monospace",
+            fontSize: 8.5,
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            background: mix(12),
+            padding: "2px 5px",
+            borderRadius: 4,
+            flex: "none",
+          }}
+        >
+          REV
+        </div>
+      ) : null}
+      <div
+        style={{
+          fontFamily: "ui-monospace,SFMono-Regular,monospace",
+          fontSize: 10,
+          fontWeight: 600,
+          padding: "5px 9px",
+          borderRadius: 99,
+          whiteSpace: "nowrap",
+          flex: "none",
+          ...(added
+            ? { border: "1px solid transparent", color: "#ffffff", background: "oklch(0.60 0.16 27)" }
+            : { border: `1px solid ${mix(18)}`, opacity: 0.7 }),
+        }}
+      >
+        {markLabel}
+      </div>
     </div>
   );
 }

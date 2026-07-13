@@ -12,6 +12,7 @@ export interface CardBrief {
   imageUrl: string | null;
   rarity: string | null;
   hasReverse: boolean;
+  tcgplayerUrl: string | null;
   priceBase: number | null;
   priceReverse: number | null;
   priceCurrency: "USD" | "EUR" | null;
