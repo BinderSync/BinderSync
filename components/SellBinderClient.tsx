@@ -929,7 +929,7 @@ export function SellBinderClient({
       {/* --- Card picker modal --- */}
       {pickerFor !== false ? (
         <div onClick={() => setPickerFor(false)} style={overlayStyle(70)}>
-          <div onClick={(e) => e.stopPropagation()} style={{ ...modalStyle, width: 700, height: "88vh", gap: 14 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ ...modalStyle, width: 880, height: "90vh", gap: 14 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em" }}>
@@ -960,7 +960,7 @@ export function SellBinderClient({
                 boxSizing: "border-box",
               }}
             />
-            <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+            <div style={{ flex: 1, overflowY: "auto" }}>
               {pickRows.length === 0 && catalogQuery.length < 3 ? (
                 <div style={{ padding: 20, fontSize: 12.5, opacity: 0.55, lineHeight: 1.6 }}>
                   No owned cards yet. Mark cards as owned in a binder — or search above to list any
@@ -971,18 +971,20 @@ export function SellBinderClient({
               {pickRows.length > 0 ? (
                 <>
                   {catalogQuery.length >= 3 ? <PickerSectionLabel text="From your collection" /> : null}
-                  {pickRows.map((pr) => (
-                    <PickerRow
-                      key={`own-${pr.cardId}::${pr.variant}`}
-                      name={pr.name}
-                      meta={`${pr.setName} · #${pr.number}`}
-                      img={pr.imageUrl}
-                      rev={pr.variant === "reverse"}
-                      added={inBinder.has(`${pr.cardId}::${pr.variant}`)}
-                      forSlot={typeof pickerFor === "number"}
-                      onPick={() => pickCard(pr)}
-                    />
-                  ))}
+                  <PickerGrid>
+                    {pickRows.map((pr) => (
+                      <PickerCard
+                        key={`own-${pr.cardId}::${pr.variant}`}
+                        name={pr.name}
+                        meta={`${pr.setName} · #${pr.number}`}
+                        img={pr.imageUrl}
+                        rev={pr.variant === "reverse"}
+                        added={inBinder.has(`${pr.cardId}::${pr.variant}`)}
+                        forSlot={typeof pickerFor === "number"}
+                        onPick={() => pickCard(pr)}
+                      />
+                    ))}
+                  </PickerGrid>
                 </>
               ) : null}
 
@@ -997,24 +999,26 @@ export function SellBinderClient({
                       No cards match &ldquo;{catalogQuery}&rdquo; — try more of the name.
                     </div>
                   ) : null}
-                  {(catalogHits ?? []).flatMap((hit) => {
-                    const ownedKeys = new Set(pickRows.map((pr) => `${pr.cardId}::${pr.variant}`));
-                    const variants: ("base" | "reverse")[] = hit.hasReverse ? ["base", "reverse"] : ["base"];
-                    return variants
-                      .filter((v) => !ownedKeys.has(`${hit.id}::${v}`))
-                      .map((v) => (
-                        <PickerRow
-                          key={`cat-${hit.id}::${v}`}
-                          name={hit.name}
-                          meta={`${hit.meta} · #${hit.number}`}
-                          img={hit.img}
-                          rev={v === "reverse"}
-                          added={inBinder.has(`${hit.id}::${v}`)}
-                          forSlot={typeof pickerFor === "number"}
-                          onPick={() => placeSlotCard(slotCardFromCatalog(hit, v))}
-                        />
-                      ));
-                  })}
+                  <PickerGrid>
+                    {(catalogHits ?? []).flatMap((hit) => {
+                      const ownedKeys = new Set(pickRows.map((pr) => `${pr.cardId}::${pr.variant}`));
+                      const variants: ("base" | "reverse")[] = hit.hasReverse ? ["base", "reverse"] : ["base"];
+                      return variants
+                        .filter((v) => !ownedKeys.has(`${hit.id}::${v}`))
+                        .map((v) => (
+                          <PickerCard
+                            key={`cat-${hit.id}::${v}`}
+                            name={hit.name}
+                            meta={`${hit.meta} · #${hit.number}`}
+                            img={hit.img}
+                            rev={v === "reverse"}
+                            added={inBinder.has(`${hit.id}::${v}`)}
+                            forSlot={typeof pickerFor === "number"}
+                            onPick={() => placeSlotCard(slotCardFromCatalog(hit, v))}
+                          />
+                        ));
+                    })}
+                  </PickerGrid>
                 </>
               ) : null}
             </div>
@@ -1117,7 +1121,22 @@ function PickerSectionLabel({ text }: { text: string }) {
   );
 }
 
-function PickerRow({
+function PickerGrid({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill,minmax(170px,1fr))",
+        gap: 12,
+        padding: "4px 2px 12px",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PickerCard({
   name,
   meta,
   img,
@@ -1138,58 +1157,68 @@ function PickerRow({
   return (
     <div
       onClick={onPick}
-      style={{ display: "flex", alignItems: "center", gap: 14, padding: "9px 11px", borderRadius: 10, cursor: "pointer" }}
+      style={{
+        borderRadius: 12,
+        padding: 10,
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        cursor: "pointer",
+        border: added ? "2px solid oklch(0.60 0.16 27)" : `1px solid ${mix(10)}`,
+        background: "#ffffff",
+      }}
     >
-      <div style={{ width: 68, height: 95, borderRadius: 6, flex: "none", position: "relative", overflow: "hidden", background: "rgba(0,0,0,0.055)" }}>
-        {img ? (
+      <div style={{ position: "relative" }}>
+        <div
+          style={{
+            aspectRatio: "63/88",
+            borderRadius: 7,
+            background: "rgba(0,0,0,0.055)",
+            backgroundImage: img ? `url('${img}')` : undefined,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+          }}
+        />
+        {rev ? (
           <div
             style={{
               position: "absolute",
-              inset: "2%",
-              backgroundImage: `url('${img}')`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
+              top: "5%",
+              right: "5%",
+              fontFamily: "ui-monospace,SFMono-Regular,monospace",
+              fontSize: 9.5,
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              background: "rgba(20,20,24,0.75)",
+              color: "#ffffff",
+              padding: "3px 6px",
+              borderRadius: 4,
             }}
-          />
+          >
+            REV
+          </div>
         ) : null}
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {name}
         </div>
-        <div style={{ fontSize: 12, opacity: 0.5, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {meta}
         </div>
       </div>
-      {rev ? (
-        <div
-          style={{
-            fontFamily: "ui-monospace,SFMono-Regular,monospace",
-            fontSize: 9.5,
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            background: mix(12),
-            padding: "3px 6px",
-            borderRadius: 4,
-            flex: "none",
-          }}
-        >
-          REV
-        </div>
-      ) : null}
       <div
         style={{
           fontFamily: "ui-monospace,SFMono-Regular,monospace",
-          fontSize: 11.5,
+          fontSize: 11,
           fontWeight: 600,
-          padding: "7px 12px",
-          borderRadius: 99,
-          whiteSpace: "nowrap",
-          flex: "none",
+          padding: "7px 0",
+          borderRadius: 8,
+          textAlign: "center",
           ...(added
             ? { border: "1px solid transparent", color: "#ffffff", background: "oklch(0.60 0.16 27)" }
-            : { border: `1px solid ${mix(18)}`, opacity: 0.7 }),
+            : { border: `1px solid ${mix(18)}`, opacity: 0.75 }),
         }}
       >
         {markLabel}
