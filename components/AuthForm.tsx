@@ -52,7 +52,7 @@ export function AuthForm({
         <img
           src="/logo.png"
           alt="Binder Sync"
-          style={{ height: 130, width: "auto", alignSelf: "center", marginBottom: 12 }}
+          style={{ height: 170, width: "auto", alignSelf: "center", marginBottom: 14 }}
         />
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>
           {title}
