@@ -83,10 +83,13 @@ export function SellBinderClient({
   binder: initial,
   siblings,
   ownedGroups,
+  visitDays,
 }: {
   binder: Binder;
   siblings: { id: string; title: string }[];
   ownedGroups: OwnedGroup[];
+  /** Daily view/scan counts for the last 14 days, oldest first. */
+  visitDays: { views: number; scans: number }[];
 }) {
   const router = useRouter();
   const [title, setTitle] = useState(initial.title);
@@ -383,7 +386,7 @@ export function SellBinderClient({
     const w = window.open("", "_blank");
     if (!w) return;
     const safeTitle = (title || "My Sell Binder").replace(/</g, "&lt;");
-    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=10&data=${encodeURIComponent(shareUrl)}`;
+    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=10&data=${encodeURIComponent(`${shareUrl}?src=qr`)}`;
     w.document.write(
       `<!DOCTYPE html><html><head><title>QR insert</title></head><body style="margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Helvetica,Arial,sans-serif;">` +
         `<div style="width:3.5in;height:2.5in;border:1px dashed #bbb;border-radius:12px;display:flex;align-items:center;gap:0.16in;padding:0.2in;box-sizing:border-box;">` +
@@ -395,38 +398,19 @@ export function SellBinderClient({
     w.document.close();
   }
 
-  // Deterministic fake analytics seeded from shareId (prototype parity — real
-  // view tracking is a server-side follow-up).
+  // Real visit data recorded on the public share page (QR scans tagged ?src=qr).
   const analytics = useMemo(() => {
     if (!isPublished) return null;
-    const sid = initial.shareId;
-    const hsh = (n: number) => {
-      let x = 0;
-      const s = `${sid}:${n}`;
-      for (let i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0;
-      return x;
-    };
-    let tv = 0;
-    let ts = 0;
-    let mx = 1;
-    const days: { v: number; sc: number }[] = [];
-    for (let d = 13; d >= 0; d--) {
-      const v = (hsh(d) % 13) + (d < 4 ? hsh(d + 100) % 7 : 0);
-      const sc = Math.min(v, hsh(d + 50) % 5);
-      tv += v;
-      ts += sc;
-      if (v > mx) mx = v;
-      days.push({ v, sc });
-    }
+    const max = Math.max(1, ...visitDays.map((d) => d.views));
     return {
-      views: tv,
-      scans: ts,
-      bars: days.map((x) => ({
-        hPct: Math.max(4, Math.round((x.v / mx) * 100)),
-        sPct: Math.round((x.v ? x.sc / x.v : 0) * 100),
+      views: visitDays.reduce((n, d) => n + d.views, 0),
+      scans: visitDays.reduce((n, d) => n + d.scans, 0),
+      bars: visitDays.map((d) => ({
+        hPct: Math.max(4, Math.round((d.views / max) * 100)),
+        sPct: Math.round((d.views ? d.scans / d.views : 0) * 100),
       })),
     };
-  }, [isPublished, initial.shareId]);
+  }, [isPublished, visitDays]);
 
   const editingSlot = editSlot != null ? slots[editSlot] : null;
 
@@ -1047,7 +1031,7 @@ export function SellBinderClient({
             <div style={{ background: "#ffffff", borderRadius: 14, padding: 14, boxShadow: "0 8px 24px -12px rgba(0,0,0,0.3)" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=10&data=${encodeURIComponent(shareUrl)}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=10&data=${encodeURIComponent(`${shareUrl}?src=qr`)}`}
                 alt="QR code for sell binder"
                 width={200}
                 height={200}

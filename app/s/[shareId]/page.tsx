@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { PublicSellBinder } from "@/components/PublicSellBinder";
 import { fmtAmt } from "@/lib/binder";
 
@@ -29,17 +30,27 @@ export async function generateMetadata({
 
 export default async function PublicSellBinderPage({
   params,
+  searchParams,
 }: PageProps<"/s/[shareId]">) {
   const { shareId } = await params;
+  const { src } = await searchParams;
 
   const binder = await prisma.sellBinder.findUnique({
     where: { shareId },
     include: {
       cards: { include: { card: true }, orderBy: { slotPosition: "asc" } },
-      user: { select: { name: true, email: true } },
+      user: { select: { id: true, name: true, email: true } },
     },
   });
   if (!binder || !binder.isPublished) notFound();
+
+  // Count the visit (QR scans arrive with ?src=qr) — but not the seller's own.
+  const session = await auth();
+  if (session?.user?.id !== binder.user.id) {
+    await prisma.binderVisit
+      .create({ data: { sellBinderId: binder.id, fromQr: src === "qr" } })
+      .catch(() => {});
+  }
 
   return (
     <PublicSellBinder
