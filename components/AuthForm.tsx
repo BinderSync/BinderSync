@@ -48,16 +48,12 @@ export function AuthForm({
           gap: 14,
         }}
       >
-        <div
-          style={{
-            fontSize: 17,
-            fontWeight: 800,
-            letterSpacing: "-0.02em",
-            marginBottom: 8,
-          }}
-        >
-          Binder Sync
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt="Binder Sync"
+          style={{ height: 64, width: "auto", alignSelf: "flex-start", marginBottom: 8 }}
+        />
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>
           {title}
         </h1>

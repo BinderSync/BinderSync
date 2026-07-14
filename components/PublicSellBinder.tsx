@@ -95,8 +95,9 @@ export function PublicSellBinder({
           padding: "14px 28px",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto", fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em" }}>
-          Binder Sync
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Binder Sync" style={{ height: 36, width: "auto", display: "block" }} />
         </div>
       </div>
 

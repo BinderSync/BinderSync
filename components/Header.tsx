@@ -126,18 +126,13 @@ function SessionButton() {
 
 function Logo({ onClick }: { onClick: () => void }) {
   return (
-    <div
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo.png"
+      alt="Binder Sync"
       onClick={onClick}
-      style={{
-        fontSize: 17,
-        fontWeight: 800,
-        letterSpacing: "-0.02em",
-        cursor: "pointer",
-        whiteSpace: "nowrap",
-      }}
-    >
-      Binder Sync
-    </div>
+      style={{ height: 40, width: "auto", cursor: "pointer", flex: "none" }}
+    />
   );
 }
 
