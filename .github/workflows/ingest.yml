@@ -17,6 +17,8 @@ on:
 
 jobs:
   ingest:
+    # No-op until the DATABASE_URL secret is configured
+    if: ${{ vars.INGEST_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
