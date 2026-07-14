@@ -9,20 +9,23 @@ export function AuthForm({
   error,
   onSubmit,
   footer,
+  showRemember = false,
 }: {
   title: string;
   submitLabel: string;
   loading: boolean;
   error: string | null;
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string, password: string, remember: boolean) => void;
   footer: ReactNode;
+  showRemember?: boolean;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSubmit(email, password);
+    onSubmit(email, password, remember);
   }
 
   return (
@@ -78,6 +81,26 @@ export function AuthForm({
             style={inputStyle}
           />
         </label>
+        {showRemember ? (
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              fontSize: 12.5,
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              style={{ width: 15, height: 15, accentColor: "#17181a", cursor: "pointer" }}
+            />
+            Remember me for 30 days
+          </label>
+        ) : null}
         {error ? (
           <div style={{ fontSize: 12.5, color: "#ab1d18" }}>{error}</div>
         ) : null}

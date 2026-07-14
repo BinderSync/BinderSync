@@ -19,5 +19,7 @@ declare module "next-auth/jwt" {
     currency?: string;
     binderColor?: string | null;
     look?: string;
+    remember?: boolean;
+    signedInAt?: number;
   }
 }

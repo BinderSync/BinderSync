@@ -11,12 +11,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(email: string, password: string) {
+  async function handleSubmit(email: string, password: string, remember: boolean) {
     setError(null);
     setLoading(true);
     const result = await signIn("credentials", {
       email,
       password,
+      remember: remember ? "1" : "",
       redirect: false,
     });
     setLoading(false);
@@ -35,6 +36,7 @@ export default function LoginPage() {
       loading={loading}
       error={error}
       onSubmit={handleSubmit}
+      showRemember
       footer={
         <>
           No account?{" "}

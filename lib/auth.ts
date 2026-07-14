@@ -14,6 +14,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        remember: { label: "Remember me", type: "text" },
       },
       authorize: async (credentials, request) => {
         const email = credentials?.email as string | undefined;
@@ -32,13 +33,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
 
-        return { id: user.id, email: user.email, name: user.name };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          remember: credentials?.remember === "1",
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user, trigger }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.remember = (user as { remember?: boolean }).remember ?? true;
+        token.signedInAt = Date.now();
+      }
+
+      // "Remember me" unchecked → session lasts 24h instead of the 30-day default.
+      if (
+        token.remember === false &&
+        typeof token.signedInAt === "number" &&
+        Date.now() - token.signedInAt > 24 * 60 * 60 * 1000
+      ) {
+        return null;
+      }
       if (user || trigger === "update") {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
