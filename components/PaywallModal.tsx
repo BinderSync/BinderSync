@@ -77,12 +77,14 @@ export function PaywallModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: target }),
       });
-      const body = await res.json();
-      if (!res.ok) {
-        setError(body.error ?? "Could not start checkout.");
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.url) {
+        setError(body?.error ?? `Could not start checkout (HTTP ${res.status}).`);
         return;
       }
       window.location.href = body.url;
+    } catch {
+      setError("Could not reach the server — check your connection and try again.");
     } finally {
       setLoadingPlan(null);
     }

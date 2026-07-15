@@ -37,18 +37,26 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? new URL(request.url).origin;
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    customer_email: session.user.email,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${origin}/dashboard?checkout=success`,
-    cancel_url: `${origin}/dashboard?checkout=cancelled`,
-    metadata: { userId: session.user.id, plan: parsed.data.plan },
-  });
+  try {
+    const checkoutSession = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer_email: session.user.email,
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${origin}/dashboard?checkout=success`,
+      cancel_url: `${origin}/dashboard?checkout=cancelled`,
+      metadata: { userId: session.user.id, plan: parsed.data.plan },
+    });
 
-  if (!checkoutSession.url) {
-    return NextResponse.json({ error: "Could not start checkout." }, { status: 500 });
+    if (!checkoutSession.url) {
+      return NextResponse.json({ error: "Could not start checkout." }, { status: 500 });
+    }
+
+    return NextResponse.json({ url: checkoutSession.url });
+  } catch (err) {
+    // Configuration mistakes (wrong price id, key/price mode mismatch) land
+    // here — surface Stripe's message so they're diagnosable from the UI.
+    const message = err instanceof Error ? err.message : "Unknown Stripe error";
+    console.error("Stripe checkout failed:", message);
+    return NextResponse.json({ error: `Stripe rejected the request: ${message}` }, { status: 502 });
   }
-
-  return NextResponse.json({ url: checkoutSession.url });
 }
