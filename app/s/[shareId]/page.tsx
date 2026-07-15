@@ -39,7 +39,7 @@ export default async function PublicSellBinderPage({
     where: { shareId },
     include: {
       cards: { include: { card: true }, orderBy: { slotPosition: "asc" } },
-      user: { select: { id: true, name: true, email: true } },
+      user: { select: { id: true, name: true } },
     },
   });
   if (!binder || !binder.isPublished) notFound();
@@ -69,8 +69,7 @@ export default async function PublicSellBinderPage({
         price: Number(c.price),
         condition: c.condition,
       }))}
-      sellerLabel={binder.user.name ?? binder.user.email}
-      sellerEmail={binder.user.email}
+      sellerLabel={binder.user.name ?? "the seller"}
     />
   );
 }

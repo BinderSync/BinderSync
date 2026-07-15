@@ -5,6 +5,10 @@ body {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Binder spreads scale down visually (transform) but keep their full-width
+     layout box; without this, phones get a horizontally scrollable, cut-off page. */
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 * {

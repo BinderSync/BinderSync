@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { mix } from "@/lib/theme";
+import { lowResCardImage } from "@/lib/binder";
 import { Header } from "@/components/Header";
 import { Shimmer } from "@/components/Shimmer";
 import { PaywallModal } from "@/components/PaywallModal";
@@ -184,7 +185,7 @@ export function HomeClient({ series }: { series: SeriesBrief[] }) {
                     style={{
                       aspectRatio: "63/88",
                       borderRadius: 7,
-                      backgroundImage: c.img ? `url('${c.img}')` : undefined,
+                      backgroundImage: c.img ? `url('${lowResCardImage(c.img)}')` : undefined,
                       backgroundSize: "contain",
                       backgroundRepeat: "no-repeat",
                       backgroundPosition: "center",

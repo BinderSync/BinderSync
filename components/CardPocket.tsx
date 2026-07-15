@@ -1,7 +1,7 @@
 "use client";
 
 import { mix } from "@/lib/theme";
-import type { SeqCard } from "@/lib/binder";
+import { lowResCardImage, type SeqCard } from "@/lib/binder";
 
 export function CardPocket({
   card,
@@ -54,7 +54,7 @@ export function CardPocket({
           style={{
             position: "absolute",
             inset: "3.5%",
-            backgroundImage: `url('${card.imageUrl}')`,
+            backgroundImage: `url('${lowResCardImage(card.imageUrl)}')`,
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",

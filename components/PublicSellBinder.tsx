@@ -2,10 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { SellSpread, type SellSlot } from "@/components/SellSpread";
-import { fmtAmt, type PageSize } from "@/lib/binder";
+import { fmtAmt, lowResCardImage, type PageSize } from "@/lib/binder";
 import { mix } from "@/lib/theme";
-
-const ACCENT = "oklch(0.60 0.16 27)";
 
 interface PublicCard {
   key: string;
@@ -26,7 +24,6 @@ export function PublicSellBinder({
   showPrices,
   cards,
   sellerLabel,
-  sellerEmail,
 }: {
   title: string;
   note: string | null;
@@ -35,12 +32,17 @@ export function PublicSellBinder({
   showPrices: boolean;
   cards: PublicCard[];
   sellerLabel: string;
-  sellerEmail: string | null;
 }) {
   const [spread, setSpread] = useState(0);
   const [zoomImg, setZoomImg] = useState<string | null>(null);
 
   const pageSize = ([4, 9, 12].includes(size) ? size : 9) as PageSize;
+
+  // Grid shows low-res; zoom opens the full scan.
+  const fullImgBySlot = useMemo(
+    () => new Map(cards.map((c) => [c.slotPosition, c.imageUrl])),
+    [cards]
+  );
 
   const { slots, nCards, ask, priced } = useMemo(() => {
     const arr: (SellSlot | null)[] = [];
@@ -57,7 +59,7 @@ export function PublicSellBinder({
         key: c.key,
         name: c.name,
         num: `#${c.number}`,
-        img: c.imageUrl,
+        img: lowResCardImage(c.imageUrl),
         rev: c.rev,
         priceTag: showPrices ? `${askLabel} · ${c.condition}` : c.condition,
       };
@@ -124,8 +126,8 @@ export function PublicSellBinder({
           onSpreadChange={setSpread}
           editMode={false}
           onZoom={(i) => {
-            const s = slots[i];
-            if (s?.img) setZoomImg(s.img);
+            const full = fullImgBySlot.get(i);
+            if (full || slots[i]?.img) setZoomImg(full ?? slots[i]!.img);
           }}
         />
 
@@ -147,25 +149,9 @@ export function PublicSellBinder({
           }}
         >
           <div style={{ flex: 1, minWidth: 220, fontSize: 12.5, opacity: 0.65, lineHeight: 1.5 }}>
-            Interested in something? Shared by {sellerLabel} — reach out directly to make an offer.
+            Interested in something? This binder is shared by {sellerLabel} — check their note above
+            for how to get in touch. In-app messaging is coming soon.
           </div>
-          {sellerEmail ? (
-            <a
-              href={`mailto:${sellerEmail}?subject=${encodeURIComponent(`Your Binder Sync sell binder: ${title}`)}`}
-              style={{
-                borderRadius: 9,
-                padding: "10px 16px",
-                fontFamily: "inherit",
-                fontSize: 12.5,
-                fontWeight: 700,
-                color: "#ffffff",
-                background: ACCENT,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Message seller
-            </a>
-          ) : null}
         </div>
       </div>
 

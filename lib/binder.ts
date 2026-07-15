@@ -38,6 +38,15 @@ export function cardKey(cardId: string, rev: boolean): string {
   return rev ? `${cardId}::r` : cardId;
 }
 
+/**
+ * Stored image URLs point at the high-res scan (used in zoom). Grids and
+ * binder pockets should use the low-res variant — full scans are ~10x the
+ * bytes and make page grids crawl, especially on phones.
+ */
+export function lowResCardImage(url: string | null): string | null {
+  return url ? url.replace(/\/high\.webp$/, "/low.webp") : null;
+}
+
 /** Base mode: cards as-is. Master mode: insert a synthetic reverse-holo row after each card that has one. */
 export function seqFor(cards: CardBrief[], mode: BinderMode): SeqCard[] {
   const seq: SeqCard[] = [];

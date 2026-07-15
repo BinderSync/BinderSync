@@ -7,7 +7,7 @@ import { Header } from "@/components/Header";
 import { PaywallModal } from "@/components/PaywallModal";
 import { ZoomOverlay } from "@/components/ZoomOverlay";
 import { SellSpread, type SellSlot } from "@/components/SellSpread";
-import { fmtAmt, convertPrice, PAGE_SIZES, type PageSize } from "@/lib/binder";
+import { fmtAmt, convertPrice, lowResCardImage, PAGE_SIZES, type PageSize } from "@/lib/binder";
 
 const ACCENT = "oklch(0.60 0.16 27)";
 const CONDITIONS = ["NM", "LP", "MP", "HP", "DMG"] as const;
@@ -208,7 +208,7 @@ export function SellBinderClient({
         key: `${s.cardId}::${s.variant}::${i}`,
         name: s.name,
         num: `#${s.number}`,
-        img: s.imageUrl,
+        img: lowResCardImage(s.imageUrl),
         rev: s.variant === "reverse",
         priceTag: `${askLabel} · ${s.condition}`,
       });
@@ -805,7 +805,7 @@ export function SellBinderClient({
                     style={{
                       position: "absolute",
                       inset: "3%",
-                      backgroundImage: `url('${editingSlot.imageUrl}')`,
+                      backgroundImage: `url('${lowResCardImage(editingSlot.imageUrl)}')`,
                       backgroundSize: "contain",
                       backgroundRepeat: "no-repeat",
                       backgroundPosition: "center",
@@ -961,7 +961,7 @@ export function SellBinderClient({
                         key={`own-${pr.cardId}::${pr.variant}`}
                         name={pr.name}
                         meta={`${pr.setName} · #${pr.number}`}
-                        img={pr.imageUrl}
+                        img={lowResCardImage(pr.imageUrl)}
                         rev={pr.variant === "reverse"}
                         added={inBinder.has(`${pr.cardId}::${pr.variant}`)}
                         forSlot={typeof pickerFor === "number"}
@@ -994,7 +994,7 @@ export function SellBinderClient({
                             key={`cat-${hit.id}::${v}`}
                             name={hit.name}
                             meta={`${hit.meta} · #${hit.number}`}
-                            img={hit.img}
+                            img={lowResCardImage(hit.img)}
                             rev={v === "reverse"}
                             added={inBinder.has(`${hit.id}::${v}`)}
                             forSlot={typeof pickerFor === "number"}
