@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { SellSpread, type SellSlot } from "@/components/SellSpread";
 import { fmtAmt, lowResCardImage, type PageSize } from "@/lib/binder";
 import { mix } from "@/lib/theme";
@@ -97,9 +98,29 @@ export function PublicSellBinder({
           padding: "14px 28px",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Binder Sync" style={{ height: 36, width: "auto", display: "block" }} />
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 12 }}>
+          <Link href="/" title="Binder Sync home" style={{ display: "flex", flex: "none" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Binder Sync" style={{ height: 36, width: "auto", display: "block" }} />
+          </Link>
+          <div style={{ flex: 1 }} />
+          <Link
+            href="/register"
+            style={{
+              appearance: "none",
+              border: 0,
+              borderRadius: 9,
+              padding: "8px 14px",
+              fontFamily: "inherit",
+              fontSize: 12,
+              fontWeight: 700,
+              color: "#ffffff",
+              background: "oklch(0.60 0.16 27)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Start your own binder
+          </Link>
         </div>
       </div>
 
