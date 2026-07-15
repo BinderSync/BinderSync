@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { mix, themes, leatherById, leatherGradient } from "@/lib/theme";
 import type { PageSize } from "@/lib/binder";
 
@@ -78,14 +78,21 @@ export function SellSpread({
   const pages: (SellSlot | null)[][] = [];
   for (let i = 0; i < slots.length; i += size) pages.push(slots.slice(i, i + size));
   const pageCount = pages.length;
-  const max = pageCount > 0 ? Math.ceil((pageCount - 1) / 2) : 0;
+
+  // Phones show one page at a time (position 0 = cover, then page 1..N);
+  // wider screens keep the two-page spread (position = spread index).
+  const singlePage = vw < 640;
+  const max = singlePage ? pageCount : pageCount > 0 ? Math.ceil((pageCount - 1) / 2) : 0;
   const k = Math.min(spread, max);
 
   const spine = 44;
   const coverPad = 16;
-  const coverW = 2 * pageW + spine + 2 * coverPad;
+  const coverW = singlePage ? pageW + 2 * coverPad : 2 * pageW + spine + 2 * coverPad;
   const coverH = pageH + 2 * coverPad;
-  const scale = Math.max(0.2, Math.min(1, (vw - 60) / (coverW + 130), (vh - 280) / coverH));
+  const scale = Math.max(
+    0.2,
+    Math.min(1, (vw - (singlePage ? 24 : 60)) / (coverW + (singlePage ? 4 : 130)), (vh - 280) / coverH)
+  );
   const stageH = Math.round(coverH * scale);
 
   const lc = leatherById(color);
@@ -311,14 +318,40 @@ export function SellSpread({
   for (let j = 0; j <= max; j++) {
     jumpOpts.push({
       v: String(j),
-      label: j === 0 ? "Cover · Page 1" : `Pages ${2 * j}${2 * j + 1 <= pageCount ? `–${2 * j + 1}` : ""}`,
+      label: singlePage
+        ? j === 0
+          ? "Cover"
+          : `Page ${j}`
+        : j === 0
+          ? "Cover · Page 1"
+          : `Pages ${2 * j}${2 * j + 1 <= pageCount ? `–${2 * j + 1}` : ""}`,
     });
   }
   const pagesLabel = pageCount
-    ? k === 0
-      ? `Cover · Page 1 of ${pageCount}`
-      : `Pages ${2 * k}${2 * k + 1 <= pageCount ? `–${2 * k + 1}` : ""} of ${pageCount}`
+    ? singlePage
+      ? k === 0
+        ? `Cover · ${pageCount} page${pageCount === 1 ? "" : "s"}`
+        : `Page ${k} of ${pageCount}`
+      : k === 0
+        ? `Cover · Page 1 of ${pageCount}`
+        : `Pages ${2 * k}${2 * k + 1 <= pageCount ? `–${2 * k + 1}` : ""} of ${pageCount}`
     : "Empty binder";
+
+  // Touch swipe (primary navigation on phones)
+  const touchStartX = useRef<number | null>(null);
+  const touchHandlers = {
+    onTouchStart: (e: React.TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    },
+    onTouchEnd: (e: React.TouchEvent) => {
+      if (touchStartX.current == null) return;
+      const delta = e.changedTouches[0].clientX - touchStartX.current;
+      touchStartX.current = null;
+      if (Math.abs(delta) < 48) return;
+      if (delta < 0) onSpreadChange(Math.min(max, k + 1));
+      else onSpreadChange(Math.max(0, k - 1));
+    },
+  };
 
   return (
     <>
@@ -334,6 +367,7 @@ export function SellSpread({
           }}
         >
           <div
+            {...touchHandlers}
             style={{
               position: "relative",
               width: coverW,
@@ -388,46 +422,52 @@ export function SellSpread({
                     <div style={{ fontSize: 11, opacity: 0.5 }}>{coverHint}</div>
                   </div>
                 </div>
+              ) : singlePage ? (
+                renderPage(pages[k - 1] ?? [], k - 1)
               ) : left ? (
                 renderPage(left, 2 * k - 1)
               ) : (
                 <div style={{ width: pageW, height: pageH }} />
               )}
 
-              <div
-                style={{
-                  width: spine,
-                  flex: "none",
-                  background:
-                    "linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38))",
-                }}
-              />
-
-              {right ? (
-                renderPage(right, 2 * k)
-              ) : (
-                <div style={{ width: pageW, height: pageH, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {!singlePage ? (
+                <>
                   <div
                     style={{
-                      fontFamily: "ui-monospace,SFMono-Regular,monospace",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.22em",
-                      padding: "8px 14px",
-                      borderRadius: 6,
-                      color: isWhite ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.55)",
-                      border: isWhite ? "1px solid rgba(0,0,0,0.2)" : "1px solid rgba(255,255,255,0.22)",
+                      width: spine,
+                      flex: "none",
+                      background:
+                        "linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38))",
                     }}
-                  >
-                    END OF BINDER
-                  </div>
-                </div>
-              )}
+                  />
+
+                  {right ? (
+                    renderPage(right, 2 * k)
+                  ) : (
+                    <div style={{ width: pageW, height: pageH, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div
+                        style={{
+                          fontFamily: "ui-monospace,SFMono-Regular,monospace",
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: "0.22em",
+                          padding: "8px 14px",
+                          borderRadius: 6,
+                          color: isWhite ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.55)",
+                          border: isWhite ? "1px solid rgba(0,0,0,0.2)" : "1px solid rgba(255,255,255,0.22)",
+                        }}
+                      >
+                        END OF BINDER
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : null}
             </div>
           </div>
 
-          <NavArrow side="left" disabled={k <= 0} onClick={() => onSpreadChange(Math.max(0, k - 1))} />
-          <NavArrow side="right" disabled={k >= max} onClick={() => onSpreadChange(Math.min(max, k + 1))} />
+          <NavArrow side="left" inset={singlePage} disabled={k <= 0} onClick={() => onSpreadChange(Math.max(0, k - 1))} />
+          <NavArrow side="right" inset={singlePage} disabled={k >= max} onClick={() => onSpreadChange(Math.min(max, k + 1))} />
         </div>
       </div>
 
@@ -460,14 +500,24 @@ export function SellSpread({
   );
 }
 
-function NavArrow({ side, disabled, onClick }: { side: "left" | "right"; disabled: boolean; onClick: () => void }) {
+function NavArrow({
+  side,
+  disabled,
+  onClick,
+  inset = false,
+}: {
+  side: "left" | "right";
+  disabled: boolean;
+  onClick: () => void;
+  inset?: boolean;
+}) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       style={{
         position: "absolute",
-        [side]: -62,
+        [side]: inset ? 8 : -62,
         top: "50%",
         transform: "translateY(-50%)",
         width: 46,
@@ -482,7 +532,7 @@ function NavArrow({ side, disabled, onClick }: { side: "left" | "right"; disable
         alignItems: "center",
         justifyContent: "center",
         boxShadow: "0 6px 16px -8px rgba(0,0,0,0.3)",
-        opacity: disabled ? 0.3 : 1,
+        opacity: disabled ? 0.3 : inset ? 0.85 : 1,
         pointerEvents: disabled ? "none" : "auto",
       }}
     >

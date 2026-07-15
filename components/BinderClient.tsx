@@ -98,6 +98,7 @@ export function BinderClient({
   const [highlight, setHighlight] = useState<string | null>(null);
   const flipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const { vw, vh } = useViewportSize();
 
@@ -142,7 +143,10 @@ export function BinderClient({
   const seq = useMemo(() => seqFor(cards, prefs.mode), [cards, prefs.mode]);
   const pages = useMemo(() => buildPages(seq, prefs.size), [seq, prefs.size]);
   const pageCount = pages.length;
-  const spreadMax = spreadMaxFor(pageCount);
+  // Phones show one page per position (0 = cover, then page 1..N); wider
+  // screens keep the two-page spread with the 3D flip.
+  const singlePage = vw < 640;
+  const spreadMax = singlePage ? pageCount : spreadMaxFor(pageCount);
   const k = Math.min(spread, spreadMax);
 
   const { cols, rows, pageW, pageH } = pageGeometry(prefs.size);
@@ -176,10 +180,13 @@ export function BinderClient({
 
   const coverPad = 16;
   const spine = 44;
-  const coverW = 2 * pageW + spine + 2 * coverPad;
+  const coverW = singlePage ? pageW + 2 * coverPad : 2 * pageW + spine + 2 * coverPad;
   const coverH = pageH + 2 * coverPad;
   const coverHalf = Math.round(coverW / 2);
-  const scale = Math.max(0.2, Math.min(1, (vw - 60) / (coverW + 130), (vh - 240) / coverH));
+  const scale = Math.max(
+    0.2,
+    Math.min(1, (vw - (singlePage ? 24 : 60)) / (coverW + (singlePage ? 4 : 130)), (vh - 240) / coverH)
+  );
   const stageH = Math.round(coverH * scale);
 
   const ownedN = useMemo(() => seq.filter((c) => owned[c.key]).length, [seq, owned]);
@@ -212,10 +219,10 @@ export function BinderClient({
           name: c.name,
           rev: c.rev,
           loc: `Pg ${p} · Pk ${pk}`,
-          target: Math.ceil((p - 1) / 2),
+          target: singlePage ? p : Math.ceil((p - 1) / 2),
         };
       });
-  }, [seq, owned, prefs.size]);
+  }, [seq, owned, prefs.size, singlePage]);
 
   const needCountLabel = useMemo(() => {
     const total = fmtTotal(sumKeys(cardsById, needRows.map((r) => r.key)), "USD");
@@ -248,11 +255,11 @@ export function BinderClient({
   const jumpToSeqIndex = useCallback(
     (i: number, key: string) => {
       const page = Math.floor(i / prefs.size) + 1;
-      setSpread(Math.ceil((page - 1) / 2));
+      setSpread(singlePage ? page : Math.ceil((page - 1) / 2));
       setFlip(null);
       flashCard(key);
     },
-    [prefs.size, flashCard]
+    [prefs.size, flashCard, singlePage]
   );
 
   // Jump to a card passed via ?card= query param (from Home's global search).
@@ -270,6 +277,11 @@ export function BinderClient({
     if (flip) return;
     if (dir > 0 && k >= spreadMax) return;
     if (dir < 0 && k <= 0) return;
+    if (singlePage) {
+      // No spread to flip on phones — just switch pages.
+      setSpread(k + dir);
+      return;
+    }
     const startA = dir > 0 ? 0 : -180;
     const endA = dir > 0 ? -180 : 0;
     setFlip({ dir, angle: startA, go: false });
@@ -346,14 +358,25 @@ export function BinderClient({
     for (let j = 0; j <= spreadMax; j++) {
       opts.push({
         v: String(j),
-        label: j === 0 ? "Cover · Page 1" : `Pages ${2 * j}${2 * j + 1 <= pageCount ? `–${2 * j + 1}` : ""}`,
+        label: singlePage
+          ? j === 0
+            ? "Cover"
+            : `Page ${j}`
+          : j === 0
+            ? "Cover · Page 1"
+            : `Pages ${2 * j}${2 * j + 1 <= pageCount ? `–${2 * j + 1}` : ""}`,
       });
     }
     return opts;
-  }, [spreadMax, pageCount]);
+  }, [spreadMax, pageCount, singlePage]);
 
-  const pagesLabel =
-    k === 0
+  const pagesLabel = singlePage
+    ? k === 0
+      ? pageCount
+        ? `Cover · ${pageCount} pages`
+        : "Empty set"
+      : `Page ${k} of ${pageCount}`
+    : k === 0
       ? pageCount
         ? `Cover · Page 1 of ${pageCount}`
         : "Empty set"
@@ -556,6 +579,16 @@ export function BinderClient({
             }}
           >
             <div
+              onTouchStart={(e) => {
+                touchStartX.current = e.touches[0].clientX;
+              }}
+              onTouchEnd={(e) => {
+                if (touchStartX.current == null) return;
+                const delta = e.changedTouches[0].clientX - touchStartX.current;
+                touchStartX.current = null;
+                if (Math.abs(delta) < 48) return;
+                nav(delta < 0 ? 1 : -1);
+              }}
               style={{
                 position: "relative",
                 width: coverW,
@@ -642,47 +675,53 @@ export function BinderClient({
                       </div>
                     </div>
                   </div>
+                ) : singlePage ? (
+                  renderPage(pageAt(k - 1) ?? [], true)
                 ) : leftPage ? (
                   renderPage(leftPage, true)
                 ) : (
                   <div style={{ width: pageW, height: pageH }} />
                 )}
 
-                <div
-                  style={{
-                    width: 44,
-                    flex: "none",
-                    background:
-                      "linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38))",
-                  }}
-                />
-
-                {rightPage ? (
-                  renderPage(rightPage, true)
-                ) : rightIsEnd ? (
-                  <div style={{ width: pageW, height: pageH, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {!singlePage ? (
+                  <>
                     <div
                       style={{
-                        fontFamily: "ui-monospace,SFMono-Regular,monospace",
-                        fontSize: 11,
-                        fontWeight: 600,
-                        letterSpacing: "0.22em",
-                        padding: "8px 14px",
-                        borderRadius: 6,
-                        color:
-                          prefs.binderColor === "white" ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.55)",
-                        border:
-                          prefs.binderColor === "white"
-                            ? "1px solid rgba(0,0,0,0.2)"
-                            : "1px solid rgba(255,255,255,0.22)",
+                        width: 44,
+                        flex: "none",
+                        background:
+                          "linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.38))",
                       }}
-                    >
-                      END OF SET
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ width: pageW, height: pageH }} />
-                )}
+                    />
+
+                    {rightPage ? (
+                      renderPage(rightPage, true)
+                    ) : rightIsEnd ? (
+                      <div style={{ width: pageW, height: pageH, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div
+                          style={{
+                            fontFamily: "ui-monospace,SFMono-Regular,monospace",
+                            fontSize: 11,
+                            fontWeight: 600,
+                            letterSpacing: "0.22em",
+                            padding: "8px 14px",
+                            borderRadius: 6,
+                            color:
+                              prefs.binderColor === "white" ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.55)",
+                            border:
+                              prefs.binderColor === "white"
+                                ? "1px solid rgba(0,0,0,0.2)"
+                                : "1px solid rgba(255,255,255,0.22)",
+                          }}
+                        >
+                          END OF SET
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ width: pageW, height: pageH }} />
+                    )}
+                  </>
+                ) : null}
               </div>
 
               {flip ? (
@@ -738,7 +777,7 @@ export function BinderClient({
               disabled={!!flip || k <= 0}
               style={{
                 position: "absolute",
-                left: -62,
+                left: singlePage ? 8 : -62,
                 top: "50%",
                 transform: "translateY(-50%)",
                 width: 46,
@@ -764,7 +803,7 @@ export function BinderClient({
               disabled={!!flip || k >= spreadMax}
               style={{
                 position: "absolute",
-                right: -62,
+                right: singlePage ? 8 : -62,
                 top: "50%",
                 transform: "translateY(-50%)",
                 width: 46,
