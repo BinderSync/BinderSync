@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { getStripe, priceIdForPlan } from "@/lib/stripe";
 
 const checkoutSchema = z.object({
@@ -37,10 +38,19 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? new URL(request.url).origin;
 
+  // Reuse the Stripe customer if one exists — otherwise every checkout mints
+  // a duplicate customer and subscriptions scatter across them.
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { stripeCustomerId: true },
+  });
+
   try {
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",
-      customer_email: session.user.email,
+      ...(user?.stripeCustomerId
+        ? { customer: user.stripeCustomerId }
+        : { customer_email: session.user.email }),
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/dashboard?checkout=cancelled`,
