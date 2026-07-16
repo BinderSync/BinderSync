@@ -11,8 +11,9 @@ export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy Policy" updated="July 15, 2026">
       <p>
-        Binder Sync (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is a Pokémon TCG binder viewer and
-        marketplace at bindersync.com. This policy describes what we collect and how we use it.
+        Binder Sync (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is a Pokémon TCG collection tracker and
+        sell-binder sharing service at bindersync.com. This policy describes what we collect and
+        how we use it.
       </p>
 
       <LegalH2>What we collect</LegalH2>
