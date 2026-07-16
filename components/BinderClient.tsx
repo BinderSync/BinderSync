@@ -22,6 +22,7 @@ import {
   fmtTotal,
   convertPrice,
   setImageUrl,
+  lowResCardImage,
 } from "@/lib/binder";
 import { Header } from "@/components/Header";
 import { CardPocket } from "@/components/CardPocket";
@@ -178,6 +179,23 @@ export function BinderClient({
     flipFront = flip.dir > 0 ? pageAt(2 * k) : pageAt(2 * k - 2);
     flipBack = flip.dir > 0 ? pageAt(2 * k + 1) : pageAt(2 * k - 1);
   }
+
+  // Warm the browser cache for the pages one flip away in each direction —
+  // pocket images are CSS backgrounds, which only start downloading when
+  // their page mounts, i.e. mid-flip. Preloading kills that jank.
+  useEffect(() => {
+    const idxs = singlePage
+      ? [k, k + 1, k - 1]
+      : [2 * k - 3, 2 * k - 2, 2 * k + 1, 2 * k + 2];
+    for (const i of idxs) {
+      const page = i >= 0 && i < pageCount ? pages[i] : null;
+      if (!page) continue;
+      for (const c of page) {
+        const src = c?.imageUrl ? lowResCardImage(c.imageUrl) : null;
+        if (src) new Image().src = src;
+      }
+    }
+  }, [k, pages, pageCount, singlePage]);
 
   const coverPad = 16;
   const spine = 44;
@@ -742,6 +760,7 @@ export function BinderClient({
                     zIndex: 5,
                     transform: `rotateY(${flip.angle}deg)`,
                     transition: flip.go ? `transform ${FLIP_MS}ms cubic-bezier(0.25,0.1,0.25,1)` : "none",
+                    willChange: "transform",
                   }}
                 >
                   <div

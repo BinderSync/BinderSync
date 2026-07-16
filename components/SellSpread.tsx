@@ -101,6 +101,23 @@ export function SellSpread({
   const left = k === 0 ? null : (pages[2 * k - 1] ?? null);
   const right = pages[2 * k] ?? null;
 
+  // Warm the cache for the pages one flip away — slot images are CSS
+  // backgrounds that otherwise start downloading mid-flip.
+  useEffect(() => {
+    const idxs = singlePage
+      ? [k, k + 1, k - 1]
+      : [2 * k - 3, 2 * k - 2, 2 * k + 1, 2 * k + 2];
+    for (const i of idxs) {
+      const page = i >= 0 && i < pageCount ? pages[i] : null;
+      if (!page) continue;
+      for (const s of page) {
+        if (s?.img) new Image().src = s.img;
+      }
+    }
+    // pages is rebuilt each render from slots; keying on slots avoids re-running per render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [k, slots, pageCount, singlePage]);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const target = e.target as HTMLElement;

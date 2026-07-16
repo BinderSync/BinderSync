@@ -154,12 +154,26 @@ export async function fetchPtcgSetPrices(ptcgSetId: string): Promise<Map<string,
   const byNumber = new Map<string, PtcgPrice>();
   let page = 1;
   for (;;) {
-    const res = await fetch(
-      `${PTCG_BASE}/cards?q=${encodeURIComponent(`set.id:${ptcgSetId}`)}&pageSize=250&page=${page}&select=number,images,tcgplayer,cardmarket`,
-      { headers: headers() }
-    );
-    if (!res.ok) break;
-    const json = (await res.json()) as { data?: PtcgCard[] };
+    // Retry each page — pokemontcg.io 504s intermittently, and a dropped
+    // page silently truncates the overlay for big (250+) sets.
+    let json: { data?: PtcgCard[] } | null = null;
+    for (let attempt = 0; attempt < 3 && !json; attempt++) {
+      try {
+        const res = await fetch(
+          `${PTCG_BASE}/cards?q=${encodeURIComponent(`set.id:${ptcgSetId}`)}&pageSize=250&page=${page}&select=number,images,tcgplayer,cardmarket`,
+          { headers: headers() }
+        );
+        if (res.ok) {
+          json = (await res.json()) as { data?: PtcgCard[] };
+          break;
+        }
+        console.warn(`pokemontcg.io ${ptcgSetId} p${page} HTTP ${res.status} (attempt ${attempt + 1})`);
+      } catch (err) {
+        console.warn(`pokemontcg.io ${ptcgSetId} p${page} fetch failed (attempt ${attempt + 1}):`, err);
+      }
+      await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+    }
+    if (!json) break;
     const cards = json.data ?? [];
     for (const c of cards) byNumber.set(String(c.number).toLowerCase(), extractPtcgPrices(c));
     if (cards.length < 250 || page >= 6) break;
