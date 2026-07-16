@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalH2 } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Binder Sync",
+  title: "Terms of Service",
   description: "The terms that govern your use of Binder Sync.",
 };
 

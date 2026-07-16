@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalH2 } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Binder Sync",
+  title: "Privacy Policy",
   description: "How Binder Sync collects, uses, and protects your data.",
 };
 
