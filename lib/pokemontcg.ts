@@ -14,13 +14,25 @@ let setsCache: PtcgSet[] | null = null;
 
 async function loadSets(): Promise<PtcgSet[]> {
   if (setsCache) return setsCache;
-  const res = await fetch(`${PTCG_BASE}/sets?pageSize=250&select=id,name`, {
-    headers: headers(),
-  });
-  if (!res.ok) return [];
-  const json = (await res.json()) as { data?: PtcgSet[] };
-  setsCache = json.data ?? [];
-  return setsCache;
+  // pokemontcg.io intermittently 504s — retry before giving up, or a single
+  // failed fetch makes every set lookup silently miss.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(`${PTCG_BASE}/sets?pageSize=250&select=id,name`, {
+        headers: headers(),
+      });
+      if (res.ok) {
+        const json = (await res.json()) as { data?: PtcgSet[] };
+        setsCache = json.data ?? [];
+        return setsCache;
+      }
+      console.warn(`pokemontcg.io /sets HTTP ${res.status} (attempt ${attempt + 1})`);
+    } catch (err) {
+      console.warn(`pokemontcg.io /sets fetch failed (attempt ${attempt + 1}):`, err);
+    }
+    await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+  }
+  return [];
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -52,10 +64,13 @@ export interface PtcgPrice {
   hasReverseVariant: boolean;
   /** Direct TCGplayer product page for this card, when pokemontcg.io provides one. */
   url: string | null;
+  /** Card scan (hi-res) — fallback for cards tcgdex has no image for. */
+  image: string | null;
 }
 
 interface PtcgCard {
   number: string;
+  images?: { small?: string; large?: string };
   tcgplayer?: { url?: string; prices?: Record<string, { market?: number; mid?: number; low?: number }> };
   cardmarket?: { prices?: Record<string, number> };
 }
@@ -66,6 +81,7 @@ function extractPtcgPrices(card: PtcgCard): PtcgPrice {
     reverse: null,
     hasReverseVariant: false,
     url: card.tcgplayer?.url ?? null,
+    image: card.images?.large ?? card.images?.small ?? null,
   };
   const num = (v: unknown): number | null =>
     typeof v === "number" && isFinite(v) && v > 0 ? v : null;
@@ -122,7 +138,7 @@ export async function fetchPtcgSetPrices(ptcgSetId: string): Promise<Map<string,
   let page = 1;
   for (;;) {
     const res = await fetch(
-      `${PTCG_BASE}/cards?q=${encodeURIComponent(`set.id:${ptcgSetId}`)}&pageSize=250&page=${page}&select=number,tcgplayer,cardmarket`,
+      `${PTCG_BASE}/cards?q=${encodeURIComponent(`set.id:${ptcgSetId}`)}&pageSize=250&page=${page}&select=number,images,tcgplayer,cardmarket`,
       { headers: headers() }
     );
     if (!res.ok) break;

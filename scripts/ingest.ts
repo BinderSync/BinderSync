@@ -143,6 +143,9 @@ async function main() {
               data: {
                 ...(cardDetail ? { rarity: cardDetail.rarity, hasReverse } : {}),
                 ...(overlay?.url ? { tcgplayerUrl: overlay.url } : {}),
+                // tcgdex has no scan for some cards (Shiny Vault, galleries,
+                // promos) — fall back to pokemontcg.io's image.
+                ...(overlay?.image && !card.image ? { imageUrl: overlay.image } : {}),
               },
             });
           }

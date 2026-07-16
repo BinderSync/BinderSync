@@ -44,7 +44,9 @@ export function cardKey(cardId: string, rev: boolean): string {
  * bytes and make page grids crawl, especially on phones.
  */
 export function lowResCardImage(url: string | null): string | null {
-  return url ? url.replace(/\/high\.webp$/, "/low.webp") : null;
+  if (!url) return null;
+  // tcgdex: .../high.webp → .../low.webp; pokemontcg.io: ..._hires.png → ....png
+  return url.replace(/\/high\.webp$/, "/low.webp").replace(/_hires\.png$/, ".png");
 }
 
 /** Base mode: cards as-is. Master mode: insert a synthetic reverse-holo row after each card that has one. */
