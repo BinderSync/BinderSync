@@ -89,6 +89,11 @@ export function BinderClient({
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [spread, setSpread] = useState(0);
   const [flip, setFlip] = useState<{ dir: 1 | -1; angle: number; go: boolean } | null>(null);
+  // True once the flip passes 90° — used to hard-swap which face is shown.
+  // backface-visibility alone glitches (mirrored flash) because pocket
+  // `filter` styles force the browser to flatten the 3D context.
+  const [flipHalf, setFlipHalf] = useState(false);
+  const halfTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [zoomCard, setZoomCard] = useState<SeqCard | null>(null);
   const [owned, setOwned] = useState(initialOwned);
   const [ownedSetIds, setOwnedSetIds] = useState(new Set(initialOwnedSetIds));
@@ -185,8 +190,8 @@ export function BinderClient({
   // their page mounts, i.e. mid-flip. Preloading kills that jank.
   useEffect(() => {
     const idxs = singlePage
-      ? [k, k + 1, k - 1]
-      : [2 * k - 3, 2 * k - 2, 2 * k + 1, 2 * k + 2];
+      ? [k, k + 1, k + 2, k - 1]
+      : [2 * k - 3, 2 * k - 2, 2 * k + 1, 2 * k + 2, 2 * k + 3, 2 * k + 4];
     for (const i of idxs) {
       const page = i >= 0 && i < pageCount ? pages[i] : null;
       if (!page) continue;
@@ -304,9 +309,12 @@ export function BinderClient({
     const startA = dir > 0 ? 0 : -180;
     const endA = dir > 0 ? -180 : 0;
     setFlip({ dir, angle: startA, go: false });
+    setFlipHalf(false);
     requestAnimationFrame(() =>
       requestAnimationFrame(() => setFlip({ dir, angle: endA, go: true }))
     );
+    if (halfTimer.current) clearTimeout(halfTimer.current);
+    halfTimer.current = setTimeout(() => setFlipHalf(true), FLIP_MS / 2);
     if (flipTimer.current) clearTimeout(flipTimer.current);
     flipTimer.current = setTimeout(finishFlip, FLIP_MS + 200);
   }
@@ -317,6 +325,7 @@ export function BinderClient({
       setSpread(k + (f.dir > 0 ? 1 : -1));
       return null;
     });
+    setFlipHalf(false);
   }
 
   useEffect(() => {
@@ -768,6 +777,7 @@ export function BinderClient({
                       position: "absolute",
                       inset: 0,
                       backfaceVisibility: "hidden",
+                      visibility: (flip.dir > 0 ? !flipHalf : flipHalf) ? "visible" : "hidden",
                       borderRadius: 8,
                       background: theme.paper,
                       boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
@@ -780,6 +790,7 @@ export function BinderClient({
                       position: "absolute",
                       inset: 0,
                       backfaceVisibility: "hidden",
+                      visibility: (flip.dir > 0 ? flipHalf : !flipHalf) ? "visible" : "hidden",
                       transform: "rotateY(180deg)",
                       borderRadius: 8,
                       background: theme.paper,
