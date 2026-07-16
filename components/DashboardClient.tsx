@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { mix } from "@/lib/theme";
 import { Header } from "@/components/Header";
 import { PaywallModal } from "@/components/PaywallModal";
@@ -632,6 +632,8 @@ export function DashboardClient({
             </div>
           ))}
         </div>
+
+        <DeleteAccountSection />
       </div>
 
       {clearConfirm ? (
@@ -775,6 +777,116 @@ const outlineBtn: React.CSSProperties = {
   cursor: "pointer",
   whiteSpace: "nowrap",
 };
+
+/** Account danger zone: self-serve deletion. Cancels any Stripe
+ * subscription server-side and removes all data, gated behind typing
+ * DELETE so a stray click can't do it. */
+function DeleteAccountSection() {
+  const [open, setOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleDelete() {
+    setError(null);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/account", { method: "DELETE" });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(body?.error ?? `Could not delete the account (HTTP ${res.status}).`);
+        setBusy(false);
+        return;
+      }
+      await signOut({ callbackUrl: "/" });
+    } catch {
+      setError("Could not reach the server — check your connection.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      style={{
+        marginTop: 46,
+        borderRadius: 12,
+        border: `1px solid ${mix(10)}`,
+        background: "#ffffff",
+        padding: "16px 20px",
+      }}
+    >
+      {!open ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 240, fontSize: 12.5, opacity: 0.6, lineHeight: 1.5 }}>
+            Done with Binder Sync? Deleting your account removes your collection, sell binders,
+            and any subscription — permanently.
+          </div>
+          <button onClick={() => setOpen(true)} style={{ ...outlineBtn, color: "#c0392b", borderColor: "rgba(192,57,43,0.4)" }}>
+            Delete my account
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ fontSize: 13.5, fontWeight: 700, color: "#c0392b" }}>Delete this account?</div>
+          <div style={{ fontSize: 12.5, opacity: 0.65, lineHeight: 1.55 }}>
+            This permanently deletes your collection, sell binders (their share links stop
+            working), and cancels any active subscription immediately. There is no undo —
+            consider exporting your collection above first. Type <strong>DELETE</strong> to
+            confirm.
+          </div>
+          <input
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder="Type DELETE"
+            style={{
+              fontFamily: "inherit",
+              fontSize: 12.5,
+              padding: "9px 12px",
+              borderRadius: 9,
+              border: `1px solid ${mix(15)}`,
+              background: "transparent",
+              color: "inherit",
+              outline: "none",
+              width: 220,
+              boxSizing: "border-box",
+            }}
+          />
+          {error ? <div style={{ fontSize: 12, color: "#ab1d18" }}>{error}</div> : null}
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={handleDelete}
+              disabled={confirmText !== "DELETE" || busy}
+              style={{
+                appearance: "none",
+                border: 0,
+                borderRadius: 9,
+                padding: "9px 16px",
+                fontFamily: "inherit",
+                fontSize: 12.5,
+                fontWeight: 700,
+                color: "#ffffff",
+                background: confirmText === "DELETE" && !busy ? "#c0392b" : "#8a8c92",
+                cursor: confirmText === "DELETE" && !busy ? "pointer" : "default",
+              }}
+            >
+              {busy ? "Deleting…" : "Permanently delete account"}
+            </button>
+            <button
+              onClick={() => {
+                setOpen(false);
+                setConfirmText("");
+                setError(null);
+              }}
+              style={outlineBtn}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function csvEscape(v: string): string {
   if (/[",\n]/.test(v)) return `"${v.replace(/"/g, '""')}"`;
