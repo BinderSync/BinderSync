@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { SellSpread, type SellSlot } from "@/components/SellSpread";
 import { fmtAmt, lowResCardImage, type PageSize } from "@/lib/binder";
@@ -26,6 +26,7 @@ export function PublicSellBinder({
   showPrices,
   cards,
   sellerLabel,
+  shareId,
 }: {
   title: string;
   note: string | null;
@@ -34,6 +35,7 @@ export function PublicSellBinder({
   showPrices: boolean;
   cards: PublicCard[];
   sellerLabel: string;
+  shareId: string;
 }) {
   const [spread, setSpread] = useState(0);
   const [zoomImg, setZoomImg] = useState<string | null>(null);
@@ -157,24 +159,7 @@ export function PublicSellBinder({
           Use ← → arrow keys or the buttons to turn pages
         </div>
 
-        <div
-          style={{
-            marginTop: 28,
-            borderRadius: 12,
-            border: `1px solid ${mix(10)}`,
-            background: "#ffffff",
-            padding: "16px 20px",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            flexWrap: "wrap",
-          }}
-        >
-          <div style={{ flex: 1, minWidth: 220, fontSize: 12.5, opacity: 0.65, lineHeight: 1.5 }}>
-            Interested in something? This binder is shared by {sellerLabel} — check their note above
-            for how to get in touch. In-app messaging is coming soon.
-          </div>
-        </div>
+        <ContactSeller shareId={shareId} sellerLabel={sellerLabel} />
       </div>
 
       <SiteFooter />
@@ -210,6 +195,157 @@ export function PublicSellBinder({
           />
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/** Buyer → seller message form. The relay emails the seller with Reply-To
+ * set to the buyer, so neither address appears on the page. */
+function ContactSeller({ shareId, sellerLabel }: { shareId: string; sellerLabel: string }) {
+  const [open, setOpen] = useState(false);
+  const [fromEmail, setFromEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setState("sending");
+    try {
+      const res = await fetch("/api/sell-binders/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shareId, fromEmail, message }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(body?.error ?? "Could not send the message — try again.");
+        setState("idle");
+        return;
+      }
+      setState("sent");
+    } catch {
+      setError("Could not reach the server — check your connection.");
+      setState("idle");
+    }
+  }
+
+  const inputStyle: React.CSSProperties = {
+    fontFamily: "inherit",
+    fontSize: 12.5,
+    padding: "9px 12px",
+    borderRadius: 9,
+    border: `1px solid ${mix(15)}`,
+    background: "transparent",
+    color: "inherit",
+    outline: "none",
+    boxSizing: "border-box",
+    width: "100%",
+  };
+
+  return (
+    <div
+      style={{
+        marginTop: 28,
+        borderRadius: 12,
+        border: `1px solid ${mix(10)}`,
+        background: "#ffffff",
+        padding: "16px 20px",
+      }}
+    >
+      {state === "sent" ? (
+        <div style={{ fontSize: 12.5, opacity: 0.75, lineHeight: 1.5 }}>
+          Message sent — {sellerLabel} will get it by email and can reply straight to you. 📬
+        </div>
+      ) : !open ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 220, fontSize: 12.5, opacity: 0.65, lineHeight: 1.5 }}>
+            Interested in something? Send {sellerLabel} a message — it&rsquo;s emailed to them
+            privately, and they can reply directly to your address.
+          </div>
+          <button
+            onClick={() => setOpen(true)}
+            style={{
+              appearance: "none",
+              border: 0,
+              borderRadius: 9,
+              padding: "9px 16px",
+              fontFamily: "inherit",
+              fontSize: 12.5,
+              fontWeight: 700,
+              color: "#ffffff",
+              background: "oklch(0.60 0.16 27)",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Message seller
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700 }}>Message {sellerLabel}</div>
+          <input
+            type="email"
+            required
+            placeholder="Your email (for their reply)"
+            value={fromEmail}
+            onChange={(e) => setFromEmail(e.target.value)}
+            style={inputStyle}
+          />
+          <textarea
+            required
+            minLength={3}
+            maxLength={2000}
+            rows={4}
+            placeholder="Which cards are you interested in?"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            style={{ ...inputStyle, resize: "vertical" }}
+          />
+          {error ? <div style={{ fontSize: 12, color: "#ab1d18" }}>{error}</div> : null}
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <button
+              type="submit"
+              disabled={state === "sending"}
+              style={{
+                appearance: "none",
+                border: 0,
+                borderRadius: 9,
+                padding: "9px 16px",
+                fontFamily: "inherit",
+                fontSize: 12.5,
+                fontWeight: 700,
+                color: "#ffffff",
+                background: state === "sending" ? "#8a8c92" : "oklch(0.60 0.16 27)",
+                cursor: state === "sending" ? "default" : "pointer",
+              }}
+            >
+              {state === "sending" ? "Sending…" : "Send message"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              style={{
+                appearance: "none",
+                border: 0,
+                background: "transparent",
+                fontFamily: "inherit",
+                fontSize: 12,
+                cursor: "pointer",
+                opacity: 0.55,
+              }}
+            >
+              Cancel
+            </button>
+            <div style={{ flex: 1 }} />
+            <div style={{ fontSize: 10.5, opacity: 0.45 }}>
+              Your email is shared only with the seller.
+            </div>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

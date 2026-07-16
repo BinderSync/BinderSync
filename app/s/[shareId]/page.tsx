@@ -54,6 +54,7 @@ export default async function PublicSellBinderPage({
 
   return (
     <PublicSellBinder
+      shareId={shareId}
       title={binder.title}
       note={binder.note}
       color={binder.color}

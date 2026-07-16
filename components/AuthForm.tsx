@@ -7,6 +7,7 @@ export function AuthForm({
   submitLabel,
   loading,
   error,
+  notice = null,
   onSubmit,
   footer,
   showRemember = false,
@@ -15,6 +16,7 @@ export function AuthForm({
   submitLabel: string;
   loading: boolean;
   error: string | null;
+  notice?: string | null;
   onSubmit: (email: string, password: string, remember: boolean) => void;
   footer: ReactNode;
   showRemember?: boolean;
@@ -60,6 +62,9 @@ export function AuthForm({
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>
           {title}
         </h1>
+        {notice ? (
+          <div style={{ fontSize: 12.5, color: "#1e8234", fontWeight: 600 }}>{notice}</div>
+        ) : null}
         <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12.5, fontWeight: 600 }}>
           Email
           <input

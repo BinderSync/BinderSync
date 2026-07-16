@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
+  const justReset = useSearchParams().get("reset") === "1";
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +36,7 @@ export default function LoginPage() {
       submitLabel="Log in"
       loading={loading}
       error={error}
+      notice={justReset ? "Password updated — log in with your new password." : null}
       onSubmit={handleSubmit}
       showRemember
       footer={
@@ -43,8 +45,20 @@ export default function LoginPage() {
           <Link href="/register" style={{ fontWeight: 600 }}>
             Create one
           </Link>
+          {" · "}
+          <Link href="/forgot-password" style={{ fontWeight: 600 }}>
+            Forgot password?
+          </Link>
         </>
       }
     />
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
   );
 }

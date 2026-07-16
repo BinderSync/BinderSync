@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const registerSchema = z.object({
@@ -42,6 +44,30 @@ export async function POST(request: Request) {
     data: { email, passwordHash, name },
     select: { id: true, email: true },
   });
+
+  // Verification is non-blocking: the account works immediately, the email
+  // just confirms the address is real (and deliverable for password resets).
+  const token = randomBytes(32).toString("hex");
+  await prisma.verificationToken.create({
+    data: {
+      identifier: user.email,
+      token,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  });
+  const origin = request.headers.get("origin") ?? new URL(request.url).origin;
+  sendEmail({
+    to: user.email,
+    subject: "Welcome to Binder Sync — verify your email",
+    text: [
+      "Welcome to Binder Sync!",
+      "",
+      "Confirm this email address so account recovery works if you ever need it:",
+      `${origin}/api/auth/verify?token=${token}`,
+      "",
+      "The link is valid for 24 hours. If you didn't create this account, you can ignore this email.",
+    ].join("\n"),
+  }).catch(() => {});
 
   return NextResponse.json({ user }, { status: 201 });
 }
