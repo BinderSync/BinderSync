@@ -56,8 +56,9 @@ export default function PrivacyPage() {
 
       <LegalH2>Data retention &amp; deletion</LegalH2>
       <p>
-        Your data is kept while your account exists. To delete your account and everything in it,{" "}
-        <Link href="/contact">contact us</Link>{" "}and we&rsquo;ll remove it.
+        Your data is kept while your account exists. You can permanently delete your account and
+        everything in it yourself from the My Collection page (it also cancels any active
+        subscription), or <Link href="/contact">contact us</Link> and we&rsquo;ll do it for you.
       </p>
 
       <LegalH2>Changes</LegalH2>
