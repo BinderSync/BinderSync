@@ -103,6 +103,36 @@ const divider: React.CSSProperties = {
   background: mix(15),
 };
 
+/** Signed out: explicit signup CTA (the bare "FREE" chip read as a plan
+ * badge, not a call to action). Signed in: the usual plan chip. */
+function PlanChipOrSignup({ onOpenPlans }: { onOpenPlans: () => void }) {
+  const { status } = useSession();
+  const router = useRouter();
+  if (status === "unauthenticated") {
+    return (
+      <button
+        onClick={() => router.push("/register")}
+        style={{
+          appearance: "none",
+          border: 0,
+          borderRadius: 9,
+          padding: "8px 14px",
+          fontFamily: "inherit",
+          fontSize: 12.5,
+          fontWeight: 700,
+          color: "#ffffff",
+          background: "oklch(0.60 0.16 27)",
+          cursor: "pointer",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Create Free Account
+      </button>
+    );
+  }
+  return <PlanChip onClick={onOpenPlans} />;
+}
+
 function SessionButton() {
   const { status } = useSession();
   const router = useRouter();
@@ -227,7 +257,7 @@ export function Header(props: HeaderProps) {
                 </button>
               ) : null}
             </div>
-            <PlanChip onClick={props.onOpenPlans} />
+            <PlanChipOrSignup onOpenPlans={props.onOpenPlans} />
             <button onClick={goDash} style={collectionBtn}>
               My collection
             </button>
@@ -239,7 +269,7 @@ export function Header(props: HeaderProps) {
             <div style={divider} />
             <div style={{ fontSize: 14, fontWeight: 700 }}>My collection</div>
             <div style={{ flex: 1 }} />
-            <PlanChip onClick={props.onOpenPlans} />
+            <PlanChipOrSignup onOpenPlans={props.onOpenPlans} />
             <SessionButton />
           </>
         ) : null}
@@ -249,7 +279,7 @@ export function Header(props: HeaderProps) {
             <div style={divider} />
             <div style={{ fontSize: 14, fontWeight: 700 }}>Sell Binder</div>
             <div style={{ flex: 1 }} />
-            <PlanChip onClick={props.onOpenPlans} />
+            <PlanChipOrSignup onOpenPlans={props.onOpenPlans} />
             <button onClick={goDash} style={collectionBtn}>
               My collection
             </button>

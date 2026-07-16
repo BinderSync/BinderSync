@@ -57,6 +57,17 @@ export default function RegisterPage() {
           <Link href="/login" style={{ fontWeight: 600 }}>
             Log in
           </Link>
+          <div style={{ marginTop: 10, fontSize: 11, opacity: 0.6, lineHeight: 1.5 }}>
+            By creating an account you agree to the{" "}
+            <Link href="/terms" style={{ fontWeight: 600 }}>
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" style={{ fontWeight: 600 }}>
+              Privacy Policy
+            </Link>
+            .
+          </div>
         </>
       }
     />

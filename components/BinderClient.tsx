@@ -21,6 +21,7 @@ import {
   sumKeys,
   fmtTotal,
   convertPrice,
+  setImageUrl,
 } from "@/lib/binder";
 import { Header } from "@/components/Header";
 import { CardPocket } from "@/components/CardPocket";
@@ -466,7 +467,7 @@ export function BinderClient({
         variant="set"
         setName={set.name}
         setSerie={set.seriesName}
-        setSymbolUrl={set.symbolUrl ? `${set.symbolUrl}.webp` : null}
+        setSymbolUrl={setImageUrl(set.symbolUrl)}
         progressPct={progressPct}
         progressLabel={progressLabel}
         cardQuery={cardQuery}
@@ -632,7 +633,7 @@ export function BinderClient({
                           style={{
                             width: "82%",
                             height: 82,
-                            backgroundImage: `url('${set.logoUrl}.webp')`,
+                            backgroundImage: `url('${setImageUrl(set.logoUrl)}')`,
                             backgroundSize: "contain",
                             backgroundRepeat: "no-repeat",
                             backgroundPosition: "center",

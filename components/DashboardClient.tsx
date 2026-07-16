@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { mix } from "@/lib/theme";
 import { Header } from "@/components/Header";
 import { PaywallModal } from "@/components/PaywallModal";
-import { BINDER_LIMIT, convertPrice, fmtAmt } from "@/lib/binder";
+import { BINDER_LIMIT, convertPrice, fmtAmt, setImageUrl } from "@/lib/binder";
 
 const ACCENT = "oklch(0.60 0.16 27)";
 
@@ -116,7 +116,7 @@ export function DashboardClient({
           setId: g.setId,
           name: g.setName,
           serie: g.seriesName,
-          symbolUrl: g.setSymbolUrl ? `${g.setSymbolUrl}.webp` : null,
+          symbolUrl: setImageUrl(g.setSymbolUrl),
           pct,
           count: g.cards.length,
           label: g.setCardCount

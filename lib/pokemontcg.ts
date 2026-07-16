@@ -8,6 +8,7 @@ function headers(): Record<string, string> {
 interface PtcgSet {
   id: string;
   name: string;
+  images?: { symbol?: string; logo?: string };
 }
 
 let setsCache: PtcgSet[] | null = null;
@@ -18,7 +19,7 @@ async function loadSets(): Promise<PtcgSet[]> {
   // failed fetch makes every set lookup silently miss.
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const res = await fetch(`${PTCG_BASE}/sets?pageSize=250&select=id,name`, {
+      const res = await fetch(`${PTCG_BASE}/sets?pageSize=250&select=id,name,images`, {
         headers: headers(),
       });
       if (res.ok) {
@@ -37,10 +38,10 @@ async function loadSets(): Promise<PtcgSet[]> {
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-export async function resolvePtcgSetId(
+async function findPtcgSet(
   tcgdexSetId: string,
   tcgdexSetName: string
-): Promise<string | null> {
+): Promise<PtcgSet | null> {
   const sets = await loadSets();
   if (!sets.length) return null;
 
@@ -54,7 +55,23 @@ export async function resolvePtcgSetId(
     const target = norm(tcgdexSetName);
     hit = sets.find((s) => norm(s.name) === target);
   }
-  return hit?.id ?? null;
+  return hit ?? null;
+}
+
+export async function resolvePtcgSetId(
+  tcgdexSetId: string,
+  tcgdexSetName: string
+): Promise<string | null> {
+  return (await findPtcgSet(tcgdexSetId, tcgdexSetName))?.id ?? null;
+}
+
+/** Set logo/symbol fallback for sets tcgdex has no assets for. */
+export async function ptcgSetImages(
+  tcgdexSetId: string,
+  tcgdexSetName: string
+): Promise<{ logo: string | null; symbol: string | null }> {
+  const hit = await findPtcgSet(tcgdexSetId, tcgdexSetName);
+  return { logo: hit?.images?.logo ?? null, symbol: hit?.images?.symbol ?? null };
 }
 
 export interface PtcgPrice {

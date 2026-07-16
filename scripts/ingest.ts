@@ -17,7 +17,7 @@ import {
   fetchCardDetail,
   extractTcgdexPrices,
 } from "../lib/tcgdex.js";
-import { resolvePtcgSetId, fetchPtcgSetPrices } from "../lib/pokemontcg.js";
+import { resolvePtcgSetId, fetchPtcgSetPrices, ptcgSetImages } from "../lib/pokemontcg.js";
 
 const args = process.argv.slice(2);
 const seriesFilter = args
@@ -81,22 +81,32 @@ async function main() {
         continue;
       }
 
+      // tcgdex is missing logo/symbol assets for ~50 sets — fill from
+      // pokemontcg.io (cached set list, so this costs nothing extra).
+      let logoUrl = setDetail.logo ?? null;
+      let symbolUrl = setDetail.symbol ?? null;
+      if (!logoUrl || !symbolUrl) {
+        const imgs = await ptcgSetImages(setDetail.id, setDetail.name).catch(() => null);
+        logoUrl = logoUrl ?? imgs?.logo ?? null;
+        symbolUrl = symbolUrl ?? imgs?.symbol ?? null;
+      }
+
       await prisma.set.upsert({
         where: { id: setDetail.id },
         create: {
           id: setDetail.id,
           seriesId: detail.id,
           name: setDetail.name,
-          logoUrl: setDetail.logo,
-          symbolUrl: setDetail.symbol,
+          logoUrl,
+          symbolUrl,
           cardCount: setDetail.cardCount?.total ?? setDetail.cards.length,
           releaseDate: setDetail.releaseDate ? new Date(setDetail.releaseDate) : null,
           position,
         },
         update: {
           name: setDetail.name,
-          logoUrl: setDetail.logo,
-          symbolUrl: setDetail.symbol,
+          logoUrl,
+          symbolUrl,
           cardCount: setDetail.cardCount?.total ?? setDetail.cards.length,
           releaseDate: setDetail.releaseDate ? new Date(setDetail.releaseDate) : null,
           position,

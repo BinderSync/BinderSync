@@ -5,6 +5,7 @@ import Link from "next/link";
 import { SellSpread, type SellSlot } from "@/components/SellSpread";
 import { fmtAmt, lowResCardImage, type PageSize } from "@/lib/binder";
 import { mix } from "@/lib/theme";
+import { SiteFooter } from "@/components/SiteFooter";
 
 interface PublicCard {
   key: string;
@@ -175,6 +176,8 @@ export function PublicSellBinder({
           </div>
         </div>
       </div>
+
+      <SiteFooter />
 
       {zoomImg ? (
         <div

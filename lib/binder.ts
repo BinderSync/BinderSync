@@ -43,6 +43,13 @@ export function cardKey(cardId: string, rev: boolean): string {
  * binder pockets should use the low-res variant — full scans are ~10x the
  * bytes and make page grids crawl, especially on phones.
  */
+/** Set logos/symbols: tcgdex URLs are stored extension-less (append .webp);
+ * pokemontcg.io fallbacks are complete .png URLs — use as-is. */
+export function setImageUrl(url: string | null): string | null {
+  if (!url) return null;
+  return /\.(png|webp|jpe?g)$/i.test(url) ? url : `${url}.webp`;
+}
+
 export function lowResCardImage(url: string | null): string | null {
   if (!url) return null;
   // tcgdex: .../high.webp → .../low.webp; pokemontcg.io: ..._hires.png → ....png

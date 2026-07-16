@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { mix } from "@/lib/theme";
-import { lowResCardImage } from "@/lib/binder";
+import { lowResCardImage, setImageUrl } from "@/lib/binder";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Header } from "@/components/Header";
 import { Shimmer } from "@/components/Shimmer";
 import { PaywallModal } from "@/components/PaywallModal";
@@ -339,21 +340,7 @@ export function HomeClient({ series }: { series: SeriesBrief[] }) {
             </div>
           ))}
 
-          <div
-            style={{
-              maxWidth: 1280,
-              margin: "0 auto",
-              padding: "24px 28px 48px",
-              fontFamily: "ui-monospace,SFMono-Regular,monospace",
-              fontSize: 10,
-              opacity: 0.4,
-              lineHeight: 1.7,
-            }}
-          >
-            Card data &amp; images via TCGdex · market prices via the Pokémon TCG API (TCGplayer /
-            Cardmarket). Fan-made viewer — not affiliated with or endorsed by Nintendo, Creatures,
-            GAME FREAK, or The Pokémon Company.
-          </div>
+          <SiteFooter />
         </div>
       </div>
 
@@ -387,7 +374,7 @@ function SetCard({ set, onOpen }: { set: SetBrief; onOpen: () => void }) {
         {set.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`${set.logoUrl}.webp`}
+            src={setImageUrl(set.logoUrl)!}
             alt=""
             loading="lazy"
             style={{ maxWidth: "86%", maxHeight: 54, objectFit: "contain" }}
@@ -402,7 +389,7 @@ function SetCard({ set, onOpen }: { set: SetBrief; onOpen: () => void }) {
         {set.symbolUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`${set.symbolUrl}.webp`}
+            src={setImageUrl(set.symbolUrl)!}
             alt=""
             loading="lazy"
             style={{ width: 15, height: 15, objectFit: "contain", flex: "none" }}
