@@ -32,6 +32,10 @@ export function SiteFooter() {
         <Link href="/contact" style={linkStyle}>
           Contact
         </Link>
+        {" · "}
+        <Link href="/giveaway-rules" style={linkStyle}>
+          Giveaway Rules
+        </Link>
       </div>
       Card data &amp; images via TCGdex and the Pokémon TCG API · market prices via TCGplayer /
       Cardmarket. Fan-made viewer — not affiliated with or endorsed by Nintendo, Creatures, GAME
