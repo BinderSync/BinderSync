@@ -165,6 +165,12 @@ model BinderVisit {
   @@index([sellBinderId, createdAt])
 }
 
+model GiveawayEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 model Series {
   id    String @id
   name  String
