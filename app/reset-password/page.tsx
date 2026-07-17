@@ -79,7 +79,7 @@ function ResetForm() {
           fontSize: 13.5,
           fontWeight: 700,
           color: "#ffffff",
-          background: loading ? "#8a8c92" : "#17181a",
+          background: loading ? "#8a8c92" : "var(--ink)",
           cursor: loading ? "default" : "pointer",
         }}
       >
@@ -94,8 +94,8 @@ export default function ResetPasswordPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#f7f6f4",
-        color: "#17181a",
+        background: "var(--bg)",
+        color: "var(--ink)",
         fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif",
         display: "flex",
         alignItems: "center",

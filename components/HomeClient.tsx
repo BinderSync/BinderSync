@@ -86,8 +86,8 @@ export function HomeClient({ series }: { series: SeriesBrief[] }) {
     <div
       style={{
         minHeight: "100vh",
-        background: "#f7f6f4",
-        color: "#17181a",
+        background: "var(--bg)",
+        color: "var(--ink)",
         fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif",
       }}
     >
@@ -179,7 +179,7 @@ export function HomeClient({ series }: { series: SeriesBrief[] }) {
                     gap: 8,
                     cursor: "pointer",
                     border: `1px solid ${mix(10)}`,
-                    background: "#ffffff",
+                    background: "var(--surf)",
                   }}
                 >
                   <div
@@ -364,7 +364,7 @@ function SetCard({ set, onOpen }: { set: SetBrief; onOpen: () => void }) {
         gap: 12,
         cursor: "pointer",
         border: `1px solid ${mix(10)}`,
-        background: "#ffffff",
+        background: "var(--surf)",
         transition: "transform 0.15s ease, box-shadow 0.15s ease",
         transform: hover ? "translateY(-2px)" : "none",
         boxShadow: hover ? "0 12px 26px -14px rgba(0,0,0,0.3)" : "none",

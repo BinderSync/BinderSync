@@ -1,3 +1,34 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f6f4;
+  --ink: #17181a;
+  --surf: #ffffff;
+  --paper: #fbfaf8;
+  --pocket: rgba(0, 0, 0, 0.055);
+  --accent: oklch(0.6 0.16 27);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121316;
+  --ink: #e8e7e3;
+  --surf: #1c1e23;
+  --paper: #212329;
+  --pocket: rgba(255, 255, 255, 0.055);
+  --accent: oklch(0.72 0.14 27);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* The navy logo is near-invisible on the dark background — flip it to a
+   light-on-dark rendition. invert+hue-rotate preserves the blue hue. */
+:root[data-theme="dark"] img[alt="Binder Sync"] {
+  filter: invert(1) hue-rotate(180deg) brightness(1.15);
+}
+
 html,
 body {
   margin: 0;

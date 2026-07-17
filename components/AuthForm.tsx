@@ -34,8 +34,8 @@ export function AuthForm({
     <div
       style={{
         minHeight: "100vh",
-        background: "#f7f6f4",
-        color: "#17181a",
+        background: "var(--bg)",
+        color: "var(--ink)",
         fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif",
         display: "flex",
         alignItems: "center",
@@ -101,7 +101,7 @@ export function AuthForm({
               type="checkbox"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              style={{ width: 15, height: 15, accentColor: "#17181a", cursor: "pointer" }}
+              style={{ width: 15, height: 15, accentColor: "var(--ink)", cursor: "pointer" }}
             />
             Remember me for 30 days
           </label>
@@ -121,7 +121,7 @@ export function AuthForm({
             fontSize: 13.5,
             fontWeight: 700,
             color: "#ffffff",
-            background: loading ? "#8a8c92" : "#17181a",
+            background: loading ? "#8a8c92" : "var(--ink)",
             cursor: loading ? "default" : "pointer",
           }}
         >

@@ -415,7 +415,7 @@ export function SellBinderClient({
   const editingSlot = editSlot != null ? slots[editSlot] : null;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f7f6f4", color: "#17181a", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
       <Header variant="sell" onOpenPlans={() => setPaywallOpen(true)} />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "44px 28px 80px" }}>
@@ -440,7 +440,7 @@ export function SellBinderClient({
                       border: `1px solid ${mix(15)}`,
                       color: "inherit",
                       cursor: "pointer",
-                      background: "#ffffff",
+                      background: "var(--surf)",
                     }}
                   >
                     {siblings.map((sb) => (
@@ -620,8 +620,8 @@ export function SellBinderClient({
                       fontWeight: 600,
                       padding: "6px 11px",
                       borderRadius: 7,
-                      background: size === n ? "#17181a" : "transparent",
-                      color: size === n ? "#f7f6f4" : "inherit",
+                      background: size === n ? "var(--ink)" : "transparent",
+                      color: size === n ? "var(--bg)" : "inherit",
                       opacity: size === n ? 1 : 0.55,
                       whiteSpace: "nowrap",
                     }}
@@ -635,7 +635,7 @@ export function SellBinderClient({
               </div>
             </div>
 
-            <div style={{ marginTop: 26, borderRadius: 12, border: `1px solid ${mix(10)}`, background: "#ffffff", padding: "18px 20px" }}>
+            <div style={{ marginTop: 26, borderRadius: 12, border: `1px solid ${mix(10)}`, background: "var(--surf)", padding: "18px 20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
                 <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.01em" }}>Analytics</div>
                 <div
@@ -761,7 +761,7 @@ export function SellBinderClient({
                 marginTop: 28,
                 borderRadius: 12,
                 border: `1px solid ${mix(10)}`,
-                background: "#ffffff",
+                background: "var(--surf)",
                 padding: "16px 20px",
                 display: "flex",
                 alignItems: "center",
@@ -865,7 +865,7 @@ export function SellBinderClient({
                     border: `1px solid ${mix(15)}`,
                     color: "inherit",
                     cursor: "pointer",
-                    background: "#ffffff",
+                    background: "var(--surf)",
                   }}
                 >
                   {CONDITIONS.map((co) => (
@@ -1149,7 +1149,7 @@ function PickerCard({
         gap: 8,
         cursor: "pointer",
         border: added ? "2px solid oklch(0.60 0.16 27)" : `1px solid ${mix(10)}`,
-        background: "#ffffff",
+        background: "var(--surf)",
       }}
     >
       <div style={{ position: "relative" }}>
@@ -1287,5 +1287,5 @@ const modalStyle: React.CSSProperties = {
   boxShadow: "0 40px 90px -30px rgba(0,0,0,0.6)",
   display: "flex",
   flexDirection: "column",
-  background: "#ffffff",
+  background: "var(--surf)",
 };

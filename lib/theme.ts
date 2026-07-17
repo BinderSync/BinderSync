@@ -52,6 +52,21 @@ export const themes: Record<Look, ThemeTokens> = {
   },
 };
 
+/** Site-chrome theme as CSS variables — follows the light/dark toggle
+ * (set via `data-theme` on <html>) instead of a fixed Look. */
+export const site: ThemeTokens = {
+  bg: "var(--bg)",
+  ink: "var(--ink)",
+  surf: "var(--surf)",
+  paper: "var(--paper)",
+  pocket: "var(--pocket)",
+  l1: "#33343a",
+  l2: "#1e1f24",
+  stitch: "rgba(255,255,255,0.16)",
+  accent: "var(--accent)",
+  dim: "filter:grayscale(1);opacity:0.3",
+};
+
 export interface Leather {
   id: string;
   l1: string;

@@ -6,6 +6,7 @@ import { SellSpread, type SellSlot } from "@/components/SellSpread";
 import { fmtAmt, lowResCardImage, type PageSize } from "@/lib/binder";
 import { mix } from "@/lib/theme";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface PublicCard {
   key: string;
@@ -89,14 +90,14 @@ export function PublicSellBinder({
     (showPrices && ask > 0 ? ` · asking ${fmtAmt(ask, "USD")}` : "");
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f7f6f4", color: "#17181a", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
       <div
         style={{
           position: "sticky",
           top: 0,
           zIndex: 20,
           backdropFilter: "blur(12px)",
-          background: "rgba(247,246,244,0.82)",
+          background: "color-mix(in srgb, var(--bg) 82%, transparent)",
           borderBottom: `1px solid ${mix(9)}`,
           padding: "14px 28px",
         }}
@@ -107,6 +108,7 @@ export function PublicSellBinder({
             <img src="/logo.png" alt="Binder Sync" style={{ height: 36, width: "auto", display: "block" }} />
           </Link>
           <div style={{ flex: 1 }} />
+          <ThemeToggle />
           <Link
             href="/register"
             style={{
@@ -250,7 +252,7 @@ function ContactSeller({ shareId, sellerLabel }: { shareId: string; sellerLabel:
         marginTop: 28,
         borderRadius: 12,
         border: `1px solid ${mix(10)}`,
-        background: "#ffffff",
+        background: "var(--surf)",
         padding: "16px 20px",
       }}
     >

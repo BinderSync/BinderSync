@@ -130,8 +130,8 @@ export function PaywallModal({
           padding: 30,
           boxSizing: "border-box",
           boxShadow: "0 40px 90px -30px rgba(0,0,0,0.6)",
-          background: "#ffffff",
-          color: "#17181a",
+          background: "var(--surf)",
+          color: "var(--ink)",
           fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif",
         }}
       >

@@ -255,7 +255,7 @@ export function DashboardClient({
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f7f6f4", color: "#17181a", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
       <Header variant="dashboard" onOpenPlans={() => setPaywallOpen(true)} />
 
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "52px 28px 64px" }}>
@@ -271,7 +271,7 @@ export function DashboardClient({
                 borderRadius: 12,
                 padding: "16px 18px",
                 border: `1px solid ${mix(10)}`,
-                background: "#ffffff",
+                background: "var(--surf)",
               }}
             >
               <div style={{ fontFamily: "ui-monospace,SFMono-Regular,monospace", fontSize: 24, fontWeight: 700 }}>
@@ -288,7 +288,7 @@ export function DashboardClient({
             borderRadius: 12,
             padding: "18px 20px",
             border: `1px solid ${mix(10)}`,
-            background: "#ffffff",
+            background: "var(--surf)",
             display: "flex",
             alignItems: "center",
             gap: 20,
@@ -373,7 +373,7 @@ export function DashboardClient({
             borderRadius: 12,
             padding: "18px 20px",
             border: `1px solid ${mix(10)}`,
-            background: "#ffffff",
+            background: "var(--surf)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
@@ -522,8 +522,8 @@ export function DashboardClient({
                     fontWeight: 600,
                     padding: "6px 11px",
                     borderRadius: 7,
-                    background: currency === c ? "#17181a" : "transparent",
-                    color: currency === c ? "#f7f6f4" : "inherit",
+                    background: currency === c ? "var(--ink)" : "transparent",
+                    color: currency === c ? "var(--bg)" : "inherit",
                     opacity: currency === c ? 1 : 0.55,
                     whiteSpace: "nowrap",
                   }}
@@ -585,7 +585,7 @@ export function DashboardClient({
                 padding: "14px 18px",
                 cursor: "pointer",
                 border: `1px solid ${mix(10)}`,
-                background: "#ffffff",
+                background: "var(--surf)",
                 transition: "transform 0.15s ease, box-shadow 0.15s ease",
               }}
             >
@@ -659,7 +659,7 @@ export function DashboardClient({
               maxWidth: "100%",
               borderRadius: 16,
               padding: 26,
-              background: "#ffffff",
+              background: "var(--surf)",
               boxShadow: "0 40px 90px -30px rgba(0,0,0,0.6)",
               display: "flex",
               flexDirection: "column",
@@ -716,7 +716,7 @@ export function DashboardClient({
             borderRadius: 12,
             border: `1px solid ${mix(12)}`,
             boxShadow: "0 18px 44px -14px rgba(0,0,0,0.45)",
-            background: "#ffffff",
+            background: "var(--surf)",
           }}
         >
           <div style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>{undoData.msg}</div>
@@ -811,7 +811,7 @@ function DeleteAccountSection() {
         marginTop: 46,
         borderRadius: 12,
         border: `1px solid ${mix(10)}`,
-        background: "#ffffff",
+        background: "var(--surf)",
         padding: "16px 20px",
       }}
     >

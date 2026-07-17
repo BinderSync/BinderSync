@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { mix, themes, leathers, leatherById, leatherGradient } from "@/lib/theme";
+import { mix, site, leathers, leatherById, leatherGradient } from "@/lib/theme";
 import {
   BINDER_LIMIT,
   FLIP_MS,
@@ -83,7 +83,7 @@ export function BinderClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const theme = themes.Gallery;
+  const theme = site;
 
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [prefsLoaded, setPrefsLoaded] = useState(false);

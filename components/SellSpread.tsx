@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { mix, themes, leatherById, leatherGradient } from "@/lib/theme";
+import { mix, site, leatherById, leatherGradient } from "@/lib/theme";
 import type { PageSize } from "@/lib/binder";
 
 export interface SellSlot {
@@ -63,7 +63,7 @@ export function SellSpread({
   onPlus?: (i: number) => void;
   onMove?: (from: number, to: number) => void;
 }) {
-  const theme = themes.Gallery;
+  const theme = site;
   const { vw, vh } = useViewport();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
@@ -398,7 +398,7 @@ export function SellSpread({
               style={{
                 position: "absolute",
                 inset: 7,
-                border: `1.5px dashed ${isWhite ? "rgba(0,0,0,0.18)" : themes.Gallery.stitch}`,
+                border: `1.5px dashed ${isWhite ? "rgba(0,0,0,0.18)" : site.stitch}`,
                 borderRadius: 12,
                 pointerEvents: "none",
               }}
@@ -541,7 +541,7 @@ function NavArrow({
         height: 46,
         borderRadius: "50%",
         border: `1px solid ${mix(14)}`,
-        background: "#ffffff",
+        background: "var(--surf)",
         color: "inherit",
         fontSize: 18,
         cursor: "pointer",

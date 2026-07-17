@@ -34,7 +34,7 @@ export function SellListClient({ binders }: { binders: BinderBrief[] }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f7f6f4", color: "#17181a", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" }}>
       <Header variant="sell" onOpenPlans={() => setPaywallOpen(true)} />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 28px 80px" }}>
@@ -73,7 +73,7 @@ export function SellListClient({ binders }: { binders: BinderBrief[] }) {
               fontSize: 13,
               fontWeight: 700,
               color: "#ffffff",
-              background: "#17181a",
+              background: "var(--ink)",
               cursor: creating ? "default" : "pointer",
             }}
           >
@@ -93,7 +93,7 @@ export function SellListClient({ binders }: { binders: BinderBrief[] }) {
                   borderRadius: 12,
                   padding: 16,
                   border: `1px solid ${mix(10)}`,
-                  background: "#ffffff",
+                  background: "var(--surf)",
                   cursor: "pointer",
                   display: "flex",
                   flexDirection: "column",

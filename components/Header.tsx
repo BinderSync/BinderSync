@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { mix } from "@/lib/theme";
 import { PlanChip } from "@/components/PlanChip";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface PillOption {
   label: string;
@@ -56,7 +57,7 @@ const barBase: React.CSSProperties = {
   top: 0,
   zIndex: 20,
   backdropFilter: "blur(12px)",
-  background: "rgba(247,246,244,0.82)",
+  background: "color-mix(in srgb, var(--bg) 82%, transparent)",
   borderBottom: `1px solid ${mix(9)}`,
 };
 
@@ -190,8 +191,8 @@ function PillGroup({ options }: { options: PillOption[] }) {
             fontWeight: 600,
             padding: "6px 11px",
             borderRadius: 7,
-            background: o.active ? "#17181a" : "transparent",
-            color: o.active ? "#f7f6f4" : "inherit",
+            background: o.active ? "var(--ink)" : "transparent",
+            color: o.active ? "var(--bg)" : "inherit",
             opacity: o.active ? 1 : 0.55,
             whiteSpace: "nowrap",
           }}
@@ -212,6 +213,7 @@ export function Header(props: HeaderProps) {
     <div style={barBase}>
       <div style={rowBase}>
         <Logo onClick={goHome} />
+        <ThemeToggle />
 
         {props.variant === "home" ? (
           <>
@@ -404,7 +406,7 @@ export function Header(props: HeaderProps) {
                       zIndex: 50,
                       padding: 5,
                       boxSizing: "border-box",
-                      background: "#ffffff",
+                      background: "var(--surf)",
                     }}
                   >
                     {props.cardDropRows.length === 0 ? (
@@ -506,8 +508,8 @@ export function Header(props: HeaderProps) {
                     fontWeight: 600,
                     padding: "6px 11px",
                     borderRadius: 7,
-                    background: props.priceActive ? "#17181a" : "transparent",
-                    color: props.priceActive ? "#f7f6f4" : "inherit",
+                    background: props.priceActive ? "var(--ink)" : "transparent",
+                    color: props.priceActive ? "var(--bg)" : "inherit",
                     opacity: props.priceActive ? 1 : 0.55,
                     whiteSpace: "nowrap",
                     display: "flex",
@@ -556,8 +558,8 @@ export function Header(props: HeaderProps) {
                     fontWeight: 600,
                     padding: "6px 11px",
                     borderRadius: 7,
-                    background: props.needActive ? "#17181a" : "transparent",
-                    color: props.needActive ? "#f7f6f4" : "inherit",
+                    background: props.needActive ? "var(--ink)" : "transparent",
+                    color: props.needActive ? "var(--bg)" : "inherit",
                     opacity: props.needActive ? 1 : 0.55,
                     whiteSpace: "nowrap",
                   }}
