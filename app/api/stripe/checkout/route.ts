@@ -46,6 +46,24 @@ export async function POST(request: Request) {
   });
 
   try {
+    // Someone with an active subscription must switch plans through the
+    // billing portal (prorated), not a fresh checkout — a second checkout
+    // would create a second, parallel subscription and double-bill them.
+    if (user?.stripeCustomerId) {
+      const subs = await stripe.subscriptions.list({
+        customer: user.stripeCustomerId,
+        status: "active",
+        limit: 1,
+      });
+      if (subs.data.length > 0) {
+        const portal = await stripe.billingPortal.sessions.create({
+          customer: user.stripeCustomerId,
+          return_url: `${origin}/dashboard`,
+        });
+        return NextResponse.json({ url: portal.url });
+      }
+    }
+
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       allow_promotion_codes: true,
